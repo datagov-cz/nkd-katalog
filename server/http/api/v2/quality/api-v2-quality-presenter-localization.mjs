@@ -23,7 +23,7 @@ export default {
       "mediaTypeTrue": `Datový formát registrovaný poskytovatelem odpovídá datovému formátu, který indikuje webový server.`,
       "mediaTypeFalse": ({ note }) => `Datový formát registrovaný poskytovatelem je jiný, než datový formát indikovaný webovým serverem: ${note}.`,
       // Distribution
-      "downloadTrue": ({ date }) => `Soubor byl $${date} dostupný.`,
+      "downloadTrue": ({ date }) => `Soubor byl ${date} dostupný.`,
       "downloadFalse": ({ date, note }) => `Soubor byl ${date} nedostupný. ${note}`,
       "downloadCorsTrue": ({ date }) => `Technika CORS byla pro soubor ke stažení dostupná ${date}.`,
       "downloadCorsFalse": ({ date }) => `Technika CORS nebyla pro soubor ke stažení dostupná ${date}.`,
