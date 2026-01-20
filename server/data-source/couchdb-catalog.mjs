@@ -25,7 +25,7 @@ function jsonldToCatalogs(languages, jsonld) {
   const result = [];
   for (const entity of jsonld) {
     let isCatalog = false;
-    const catalog = jsonldToPublisher(languages, entity);
+    const catalog = jsonldToCatalog(languages, entity);
     if (hasType(entity, NKOD.CkanApiLkod)) {
       catalog["isCkanApi"] = true;
       isCatalog = true;
@@ -49,7 +49,7 @@ function jsonldToCatalogs(languages, jsonld) {
   return result;
 }
 
-function jsonldToPublisher(languages, entity) {
+function jsonldToCatalog(languages, entity) {
   const contactPoint = entity[DCAT.contactPoint] ?? {};
   return {
     "iri": entity["@id"],
