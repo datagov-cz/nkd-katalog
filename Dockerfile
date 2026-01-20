@@ -1,6 +1,6 @@
 FROM node:21.1.0-bullseye
 
-WORKDIR /opt/application-catalog/
+WORKDIR /opt/catalog/
 COPY ./package*.json ./
 RUN npm ci
 
@@ -13,4 +13,3 @@ ENV HOST="0.0.0.0"
 EXPOSE 3000
 
 CMD ["npm", "run", "start"]
-
