@@ -54,7 +54,8 @@ a {
 }
 
 .break-word-wrap {
-  word-wrap: break-word;
+  /* break-word does not work on Chrome 143.0.7499.194 */
+  word-break: break-all;
 }
 
 .grow {
