@@ -3,7 +3,7 @@ on:
   push:
 jobs:
   publish-docker:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,6 +21,6 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/datagov-cz/nkod-application-catalog:${{ github.ref_name }}
+          tags: ghcr.io/datagov-cz/nkd-catalog:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
