@@ -10,11 +10,17 @@ export function createCouchDbCatalog(couchDbConnector) {
   };
 }
 
+const COUCHDB_DATABASE_NAME = "static";
+
 async function fetchCatalogs(couchDbConnector, languages) {
-  const response = await couchDbConnector.fetch("static", "local_catalogs");
+  const response = await couchDbConnector.fetch(
+    COUCHDB_DATABASE_NAME, "local_catalogs");
   if (response["error"] !== undefined) {
     // We assume it is missing.
-    logger.error("Can't fetch local catalogs for error '%s'.", JSON.stringify(response));
+    logger.error(
+      "Can't fetch local catalogs for error '%s'.",
+      JSON.stringify(response),
+    );
     return null;
   }
   const jsonld = response["jsonld"] ?? [];

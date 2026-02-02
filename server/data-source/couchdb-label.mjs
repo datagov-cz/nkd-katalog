@@ -11,7 +11,9 @@ export function createCouchDbLabel(couchDbConnector) {
   };
 }
 
+const COUCHDB_DATABASE_NAME = "label";
+
 async function fetchLabel(couchDbConnector, languages, iri) {
-  const response = await couchDbConnector.fetch("labels", iri);
+  const response = await couchDbConnector.fetch(COUCHDB_DATABASE_NAME, iri);
   return parseLabelResponse(languages, response, [SKOS.prefLabel, DCTERMS.title]);
 }

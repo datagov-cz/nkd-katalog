@@ -1,3 +1,4 @@
+import logger from "../logger";
 
 const VDF_PREFIX = "https://data.gov.cz/slovník/nkod/role-poskytovatele-ve-vdf/";
 
@@ -12,8 +13,11 @@ export function createCouchDbVdf(couchDbConnector) {
   };
 }
 
+const COUCHDB_DATABASE_NAME = "static";
+
 async function fetchPublishersVdf(couchDbConnector) {
-  const response = await couchDbConnector.fetch("static", "publishers_vdf");
+  const response = await couchDbConnector.fetch(
+    COUCHDB_DATABASE_NAME, "publishers_vdf");
   if (response["error"] !== undefined) {
     // We assume it is missing.
     logger.error("Can't fetch publisher VDF, error '%s'.", JSON.stringify(response));

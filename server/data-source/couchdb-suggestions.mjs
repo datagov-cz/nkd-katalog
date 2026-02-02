@@ -13,13 +13,17 @@ export function createCouchDbSuggestions(couchDbConnector) {
   };
 }
 
+const COUCHDB_DATABASE_NAME = "suggestion";
+
 async function fetchLabel(couchDbConnector, languages, iri) {
-  const response = await couchDbConnector.fetch("suggestions", iri);
+  const response = await couchDbConnector.fetch(
+    COUCHDB_DATABASE_NAME, iri);
   return parseLabelResponse(languages, response, FOAF.name);
 }
 
 async function fetchInitialCache(couchDbConnector, languages) {
-  const response = await couchDbConnector.fetch("suggestions", "initial_data_cache");
+  const response = await couchDbConnector.fetch(
+    COUCHDB_DATABASE_NAME, "initial_data_cache");
   return parseInitialDataCacheResponse(response, languages);
 }
 

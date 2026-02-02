@@ -11,6 +11,8 @@ export function createCouchDbDataset(couchDbConnector) {
   };
 }
 
+const COUCHDB_DATABASE_NAME = "dataset";
+
 async function fetchDataset(couchDbConnector, languages, query) {
   const {
     iri,
@@ -18,7 +20,7 @@ async function fetchDataset(couchDbConnector, languages, query) {
     distributionLimit,
   } = query;
 
-  const response = await couchDbConnector.fetch("datasets", iri);
+  const response = await couchDbConnector.fetch(COUCHDB_DATABASE_NAME, iri);
   if (response["error"] !== undefined) {
     // We assume it is missing.
     return null;
@@ -307,7 +309,7 @@ function loadDistributionLegal(jsonld, distribution) {
 function loadDistributionDataService(jsonld, iri) {
   const entity = getEntityByIri(jsonld, iri);
   if (entity === null) {
-    return createEmptyDataService();
+    return createEmptyDataService(iri);
   }
   return {
     "iri": getId(entity),
@@ -319,7 +321,7 @@ function loadDistributionDataService(jsonld, iri) {
   }
 }
 
-function createEmptyDataService() {
+function createEmptyDataService(accessServiceIri) {
   return {
     "iri": accessServiceIri,
     "title": null,
@@ -331,7 +333,7 @@ function createEmptyDataService() {
 }
 
 async function fetchDatasetPreview(couchDbConnector, languages, iri) {
-  const response = await couchDbConnector.fetch("datasets", iri);
+  const response = await couchDbConnector.fetch(COUCHDB_DATABASE_NAME, iri);
   if (response["error"] !== undefined) {
     // We assume it is missing.
     return null;

@@ -1,7 +1,7 @@
 import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query";
 import { selectLanguage, parseFacet } from "./shared/solr-response";
 
-const CORE = "dcat-ap-viewer";
+const SOLR_CORE_NAME = "dataset";
 
 export function createSolrDataset(solrConnector) {
   return {
@@ -26,7 +26,7 @@ async function fetchStatistics(solrConnector, language) {
     "rows": 0,
     "q": "*:*",
   };
-  const response = await solrConnector.query(CORE, solrQuery);
+  const response = await solrConnector.query(SOLR_CORE_NAME, solrQuery);
   const facetFields = response["facet_counts"]["facet_fields"];
   return {
     "datasetsCount": response["response"]["numFound"],
@@ -37,7 +37,7 @@ async function fetchStatistics(solrConnector, language) {
 
 async function fetchDatasets(solrConnector, languages, query) {
   const solrQuery = buildDatasetsQuery(languages[0], query);
-  const response = await solrConnector.query(CORE, solrQuery);
+  const response = await solrConnector.query(SOLR_CORE_NAME, solrQuery);
   return parseDatasetsResponse(languages, response);
 }
 
@@ -144,7 +144,7 @@ function parseDatasetsResponse(languages, response) {
 
 async function fetchDatasetsForDatasetsDetail(solrConnector, languages, query) {
   const solrQuery = buildDatasetsDetailQuery(languages[0], query);
-  const response = await solrConnector.query(CORE, solrQuery);
+  const response = await solrConnector.query(SOLR_CORE_NAME, solrQuery);
   return parseDatasetsDetailResponse(languages, response);
 }
 

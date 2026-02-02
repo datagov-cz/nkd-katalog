@@ -1,6 +1,6 @@
 import { parseFacet } from "./shared/solr-response";
 
-const CORE = "dcat-ap-viewer";
+const SOLR_CORE_NAME = "dataset";
 
 export function createSolrPublisher(solrConnector) {
   return {
@@ -11,7 +11,7 @@ export function createSolrPublisher(solrConnector) {
 
 async function fetchPublishers(solrConnector) {
   const solrQuery = buildPublishersQuery();
-  const response = await solrConnector.query(CORE, solrQuery);
+  const response = await solrConnector.query(SOLR_CORE_NAME, solrQuery);
   return parsePublishersResponse(response);
 }
 

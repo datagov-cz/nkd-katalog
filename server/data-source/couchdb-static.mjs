@@ -7,8 +7,11 @@ export function createCouchDbStatic(couchDbConnector) {
   };
 }
 
+const COUCHDB_DATABASE_NAME = "static";
+
 async function fetchInitialCache(couchDbConnector, languages) {
-  const response = await couchDbConnector.fetch("static", "initial_data_cache");
+  const response = await couchDbConnector.fetch(
+    COUCHDB_DATABASE_NAME, "initial_data_cache");
   return parseInitialDataCacheResponse(response, languages);
 }
 

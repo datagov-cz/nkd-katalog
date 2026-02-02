@@ -15,10 +15,12 @@ export function createSparqlVdf(sparqlConnector) {
  */
 async function fetchDatasetVdf(sparqlConnector, iri) {
   const usedBy = await sparqlConnector.executeSparqlSelect(
-    createUsingDatasetAsCodelistSparql(dataset));
+    createUsingDatasetAsCodelistSparql(iri),
+  );
 
   const usingCodelists = await sparqlConnector.executeSparqlSelect(
-    createCodelistsUsedByDatasetSparql(dataset));
+    createCodelistsUsedByDatasetSparql(iri),
+  );
 
   return {
     "usedAsCodelistBy": usedBy.map((entry) => (entry["iri"]["value"])),
