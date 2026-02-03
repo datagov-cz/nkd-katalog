@@ -66,7 +66,7 @@ async function fetchAndRenderDatasetQuality(language, element, iri) {
 
 function fetchQuality(language, iri) {
   const url =
-    "/api/v2/quality?iri=" +
+    "/api/v2/catalog/v1/quality?iri=" +
     encodeURIComponent(iri) +
     "&language=" +
     encodeURIComponent(language);
@@ -90,7 +90,7 @@ function renderQualityMeasure(
   }
   // As the icon may change size to fit the content we force
   // it to have a fixed size.
-  icon.style.width="1.25rem";
+  icon.style.width = "1.25rem";
   element.appendChild(icon);
 }
 
