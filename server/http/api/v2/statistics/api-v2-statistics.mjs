@@ -1,8 +1,7 @@
-
 export default function createHandler(services) {
   // Create handler.
   return {
-    "path": "api/v2/statistics",
+    "path": "api/v2/catalog/v1/statistics",
     "handler": (request, reply) => handleRequest(services, request, reply),
   };
 }

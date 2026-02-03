@@ -7,12 +7,12 @@ export default function createHandler(services) {
     ...services,
     "translation": {
       "cs": createTranslationService(local.cs.translation),
-      "en": createTranslationService(local.en.translation)
+      "en": createTranslationService(local.en.translation),
     },
   };
   // Create handler.
   return {
-    "path": "api/v2/quality",
+    "path": "api/v2/catalog/v1/quality",
     "handler": (request, reply) => handleRequest(handlerServices, request, reply),
   };
 }
