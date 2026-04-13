@@ -17,19 +17,7 @@
 <link rel="icon" type="image/png" sizes="96x96" href="/assets/catalog/images/favicons/favicon-96x96.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/catalog/images/favicons/favicon-16x16.png">
 {{#if head.matomoIsActive}}
-<script>
-  var _paq = window._paq = window._paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
-  (function() {
-    var u="{{head.matomoUrl}}";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '{{head.matomoSiteId}}']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
+<script src="/assets/data-portal/js/matomo.js"></script>
 {{/if}}
 <!-- External resources. -->
 <script>
