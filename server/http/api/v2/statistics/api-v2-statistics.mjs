@@ -26,5 +26,6 @@ async function handleRequest(services, request, reply) {
   reply
     .code(200)
     .header("Content-Type", "application/json; charset=utf-8")
+    .header("Cache-Control", `public, max-age=${5 * 60}`)
     .send({ "data": responseData });
 }
