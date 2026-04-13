@@ -6,7 +6,7 @@ const ConfigurationZod = z.object({
   development: z.boolean(),
   http: z.object({
     port: z.number().positive(),
-    host: z.string().ip(),
+    host: z.string(),
     /*
      * https://fastify.dev/docs/latest/Reference/Server/#trustproxy
      */
@@ -131,5 +131,4 @@ function stripTrailingSlash(value: string | undefined) {
 }
 
 const configuration = createConfiguration();
-console.log('{"configuration": ' + JSON.stringify(configuration) + "}");
 export default configuration;
