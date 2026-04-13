@@ -1,4 +1,4 @@
-FROM node:21.1.0-bullseye
+FROM node:24.14.1-bookworm
 
 WORKDIR /opt/catalog/
 COPY ./package*.json ./
