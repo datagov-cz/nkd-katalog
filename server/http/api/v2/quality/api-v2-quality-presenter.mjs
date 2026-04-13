@@ -1,5 +1,6 @@
 import { createTranslationService } from "../../../../service/translation-service";
 import local from "./api-v2-quality-presenter-localization.mjs";
+import logger from "../../../../logger";
 
 export default function createHandler(services) {
   // Handler services.
@@ -13,7 +14,17 @@ export default function createHandler(services) {
   // Create handler.
   return {
     "path": "api/v2/catalog/v1/quality",
-    "handler": (request, reply) => handleRequest(handlerServices, request, reply),
+    "handler": async (request, reply) => {
+      try {
+        await handleRequest(handlerServices, request, reply);
+      } catch (error) {
+        logger.error(error, "Quality request failed.");
+        reply
+          .code(500)
+          .header("Content-Type", "application/json; charset=utf-8")
+          .send({});
+      }
+    },
   };
 }
 
