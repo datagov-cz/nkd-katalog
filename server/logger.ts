@@ -8,7 +8,7 @@ import configuration from "./configuration";
 const pinoConfiguration: LoggerOptions = {};
 
 if (configuration.development) {
-  // Add pretty print for development.
+  pinoConfiguration.level = "debug";
   pinoConfiguration["transport"] = {
     target: "pino-pretty",
     options: {
