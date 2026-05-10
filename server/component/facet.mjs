@@ -17,7 +17,6 @@ export function createFacetData(navigationService, query, facetData, facetName, 
       ...query,
       [facetName + "Limit"]: query[facetName + "Limit"] + DEFAULT_FACET_SIZE,
     });
-    console.log(result["showMoreHref"], {facetName});
   }
   if (DEFAULT_FACET_SIZE < facetData.length) {
     result["showInitialHref"] = navigationService.linkFromServer({

@@ -365,7 +365,7 @@ function parseXsdDuration(value) {
 function temporalAsString({ iri, startDate, endDate }) {
   if (startDate === null) {
     if (endDate === null) {
-      result = iri;
+      return iri;
     } else {
       return " - " + removeTimeZone(endDate);
     }

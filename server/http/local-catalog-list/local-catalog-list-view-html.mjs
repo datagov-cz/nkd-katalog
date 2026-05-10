@@ -30,7 +30,6 @@ function prepareCatalogsInPlace(configuration, link, translation, catalogs) {
     catalog.deleteUrl = configuration.client.catalogFormUrl
       + translation.translate("url-remove-link")
       + encodeURIComponent(catalog.iri);
-    console.log(">", configuration.client);
     catalog.validateUrl = substituteToTemplate(
       configuration.client.catalogValidatorTemplate, catalog.endpointURL);
   }

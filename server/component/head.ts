@@ -8,7 +8,7 @@ export interface HeadData {
   matomoSiteId: string | null;
 }
 
-export function registerHead(templateService: any, language: string) {
+export function registerHead(templateService: any) {
   templateService.syncAddComponent("head", "head.html");
 }
 

@@ -1,5 +1,4 @@
 // Load values from .env file and put them into process.env.
-import "dotenv/config";
 import { z } from "zod";
 
 const ConfigurationZod = z.object({

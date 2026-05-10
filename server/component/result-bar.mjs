@@ -1,4 +1,4 @@
-export function registerResultBar(templateService, language) {
+export function registerResultBar(templateService) {
   templateService.syncAddComponent("result-bar", "result-bar.html");
 }
 
@@ -12,7 +12,7 @@ export function createResultBarData(translationService, navigationService, query
 function createOrderingForTemplate(translation, navigation, query, sortOptions) {
   const activeSort = query["sort"];
   const activeDirection = query["sortDirection"];
-  // 
+  //
   const options = [];
   for (const [sort, direction] of sortOptions) {
     options.push({
@@ -25,7 +25,7 @@ function createOrderingForTemplate(translation, navigation, query, sortOptions) 
       }),
     });
   }
-  // 
+  //
   return {
     "active": navigation.linkFromServer({
       ...query,

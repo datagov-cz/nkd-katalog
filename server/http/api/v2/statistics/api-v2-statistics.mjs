@@ -15,12 +15,10 @@ async function handleRequest(services, request, reply) {
       responseData.numberOfDatasets = statistics.datasetsCount;
       responseData.numberOfKeywords = statistics.keywordsCount;
       responseData.numberOfPublishers = statistics.publishersCount;
-      console.log({ responseData });
     })(),
     (async () => {
       responseData.numberOfApplications =
         await services.solrApplication.fetchApplicationsCount();
-      console.log({ responseData });
     })(),
   ]);
   reply

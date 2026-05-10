@@ -23,20 +23,16 @@ async function executeSparqlConstruct(sparqlUrl, http, query) {
   const format = "application/ld+json";
   const url = sparqlUrl +  "?format=" + encodeURIComponent(format) + "&query=" + encodeURIComponent(query);
   const startTime = performance.now();
-  try {
-    const response = await http.fetch(url, {
-      "headers": {
-        "accept": format
-      }
-    });
-    const endTime = performance.now();
-    const durationMs = endTime - startTime;
-    if (durationMs > 100) {
-      logger.warn("SPARQL query execution took %i ms.", durationMs);
+  const response = await http.fetch(url, {
+    "headers": {
+      "accept": format
     }
-    const content = await response.json();
-    return await jsonld.flatten(content);
-  } catch (error) {
-    throw error;
+  });
+  const endTime = performance.now();
+  const durationMs = endTime - startTime;
+  if (durationMs > 100) {
+    logger.warn("SPARQL query execution took %i ms.", durationMs);
   }
+  const content = await response.json();
+  return await jsonld.flatten(content);
 }

@@ -4,7 +4,7 @@ import { type LoggerOptions } from "pino";
 
 import configuration from "./configuration";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const pinoConfiguration: LoggerOptions = {};
 
 if (configuration.development) {

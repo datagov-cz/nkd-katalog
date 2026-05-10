@@ -42,7 +42,7 @@ CLIENT_CATALOG_VALIDATOR_RUN_VALIDATION = "https://datagov-cz.github.io/lkod-val
 
 Pak je již možné provést samotné spuštění.
 ```bash
-npm run start
+npm --env-file-if-exists=.env run start
 ```
 
 ## Sestavení a spuštění pomocí Dockeru
