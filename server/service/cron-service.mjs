@@ -15,7 +15,7 @@ function initialize(configuration, labelService) {
   if (isNotEmpty(configuration.server.labelReloadCron)) {
     logger.info("Cache reload registered.")
     cron.schedule(configuration.server.labelReloadCron, () => {
-      labelService.reloadCache();
+      labelService.reloadCache(["cs", "en"]);
     });
   }
 }

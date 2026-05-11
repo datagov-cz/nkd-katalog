@@ -9,11 +9,15 @@ import { registerHttpRoutes } from "./route.mjs";
 export async function createHttpServer(configuration) {
   const application = Fastify({
     loggerInstance: logger,
+    // For development.
+    disableRequestLogging: configuration.development,
+    // From https://www.npmjs.com/package/@fastify/session
+    // If you are terminating HTTPs at the reverse proxy, you need to add
+    // the trustProxy setting to your fastify instance if you want to use
+    // secure cookies.
     trustProxy: configuration.http.trustProxy,
   });
-  await application.register(cors, {
-    "origin": true,
-  });
+  await application.register(cors, { origin: true });
   return application;
 }
 

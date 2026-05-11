@@ -15,7 +15,7 @@ import { createSparqlQuality } from "../data-source/sparql-quality.mjs";
 import { createCouchDbVdf } from "../data-source/couchdb-vdf.mjs";
 
 import { createNavigationService } from "./navigation-service.mjs";
-import { createLabelService } from "./label-service.mjs";
+import { createLabelService } from "./label-service.ts";
 import { createFacetService } from "./facet-service.mjs";
 import { createDatasetService } from "./dataset-service.mjs";
 import { createCronService } from "./cron-service.mjs";
@@ -48,8 +48,7 @@ export async function createServices(configuration, http) {
   const dataset = createDatasetService(couchDbDataset);
   const link = createLinkService(configuration);
 
-  // Initialize static data.
-  await label.reloadCache();
+  await loadLabelCache(label);
 
   // Start time-based services.
   createCronService(configuration, label).initialize();
@@ -76,4 +75,15 @@ export async function createServices(configuration, http) {
     // Configuration
     "configuration": configuration,
   };
+}
+
+async function loadLabelCache(label) {
+  const status = await label.reloadCache(["cs", "en"]);
+  if (status === true) {
+    return;
+  }
+  // Reload has failed, we try again.
+  setTimeout(() => {
+    loadLabelCache(label);
+  }, 5000);
 }
