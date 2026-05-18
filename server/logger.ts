@@ -2,12 +2,9 @@
 import pino from "pino";
 import { type LoggerOptions } from "pino";
 
-import configuration from "./configuration";
-
- 
 const pinoConfiguration: LoggerOptions = {};
 
-if (configuration.development) {
+if (process.env.NODE_ENV === "development") {
   pinoConfiguration.level = "debug";
   pinoConfiguration["transport"] = {
     target: "pino-pretty",
