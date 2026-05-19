@@ -1,4 +1,4 @@
-import { FOAF } from "./shared/vocabulary.ts";
+import { FOAF, SKOS } from "./shared/vocabulary.ts";
 
 export function createCouchDbStatic(couchDbConnector) {
   return {
@@ -22,7 +22,7 @@ function parseInitialDataCacheResponse(response, languages) {
     if (iri === undefined) {
       continue;
     }
-    const labels = (item[FOAF.name] ?? [])
+    const labels = (item[FOAF.name] ?? item[SKOS.prefLabel] ?? [])
       .map(item => ({
         "value": item["@value"],
         "language": item["@language"],

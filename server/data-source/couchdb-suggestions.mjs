@@ -1,5 +1,5 @@
 import { parseLabelResponse } from "./shared/couchdb-response.mjs";
-import { FOAF } from "./shared/vocabulary.ts";
+import { FOAF, SKOS } from "./shared/vocabulary.ts";
 
 export function createCouchDbSuggestions(couchDbConnector) {
   return {
@@ -34,7 +34,7 @@ function parseInitialDataCacheResponse(response, languages) {
     if (iri === undefined) {
       continue;
     }
-    const labels = (item[FOAF.name] ?? [])
+    const labels = (item[FOAF.name] ?? item[SKOS.prefLabel]  ?? [])
       .map(item => ({
         "value": item["@value"],
         "language": item["@language"],

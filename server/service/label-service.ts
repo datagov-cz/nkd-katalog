@@ -10,12 +10,15 @@ interface Source {
 
   /**
    * Fetch labels for given IRI in given languages.
+   * @returns Null if there was an error.
    */
-  fetchLabel: (languages: string[], iri: string) => Promise<LanguageString>;
+  fetchLabel: (
+    languages: string[], iri: string,
+  ) => Promise<LanguageString | null>;
 
 }
 
-type LanguageString = { language: string };
+type LanguageString = { [language: string]: string };
 
 interface CacheSource {
 
@@ -28,38 +31,30 @@ interface CacheSource {
   }[]>;
 }
 
-interface LabelService {
+export interface LabelService {
 
   /**
-   * Return label for given IRI.
+   * Return label for given IRI based on given language preferences.
    */
-  fetchLabel: (
-    languages: string[],
-    iri: string,
-  ) => Promise<String | undefined>;
+  fetchLabel: (languages: Language[], iri: string) => Promise<string | null>;
 
   /**
-   * Add labels to given resources.
+   * Add labels to given resources based on given language preferences.
    */
   addLabelToResources: <Type extends { iri: string }> (
-    languages: string[],
+    languages: Language[],
     resources: (Type | null | undefined)[],
     defaultValue?: (resource: Type) => string | null,
   ) => Promise<void>;
 
-  // TODO Update addLabelToResources to addLabelToResourcesNext
-  // addLabelToResourcesNext: <Type extends { iri: string }> (
-  //   languages: string[],
-  //   resources: (Type | null | undefined)[],
-  //   defaultValue?: (resource: Type) => string | null,
-  // ) => Promise<(Type | { label: string })[]>;
-
   /**
    * @throws False when reload failed.
    */
-  reloadCache: (languages: string[]) => Promise<boolean>;
+  reloadCache: (languages: Language[]) => Promise<boolean>;
 
 }
+
+type Language = "en" | "cs";
 
 class DefaultLabelService implements LabelService {
 
@@ -74,65 +69,57 @@ class DefaultLabelService implements LabelService {
     this.cacheSources = cacheSources;
   }
 
-  async fetchLabel(languages: string[], iri: string) {
-    const cached = this.retrieveFromCache(languages, iri);
-    if (cached !== undefined) {
-      return cached;
+  async fetchLabel(languages: Language[], iri: string) {
+    let label = this.cache.get(iri);
+    if (label === undefined) {
+      label = await this.fetchLabelFromSources(languages, iri);
+      this.cache.add(iri, label);
     }
-    // Fetch all data.
-    let labels: { [language: string]: string } = {};
+    return this.selectFromLanguageString(languages, label);
+  }
+
+  private async fetchLabelFromSources(
+    languages: string[], iri: string,
+  ): Promise<LanguageString> {
+    let result: LanguageString = {};
     for (const labelSource of this.sources) {
       const response = await labelSource.fetchLabel(languages, iri);
       if (response === null) {
         continue;
       }
-      labels = { ...labels, ...response };
-    }
-    // Update cache and find our result.
-    let result = null;
-    for (const language of languages) {
-      const cached = this.cache.get(language, iri);
-      const label = labels[language] ?? null;
-      if (cached === undefined) {
-        this.cache.set(language, iri, label);
-      }
-      result = result ?? cached ?? label;
-    }
-    // Result can be null when there is no value in any of required languages.
-    // This is also the case for strings without a language.
-    if (result === null) {
-      result = labels[""] ?? null;
-      if (result !== null) {
-        this.cache.set(languages[0], iri, result);
-      }
+      result = { ...result, ...response };
     }
     return result;
   }
 
-  private retrieveFromCache(
-    languages: string[], iri: string,
-  ): string | undefined {
+  /**
+   * @returns Available label for most preferred language.
+   */
+  private selectFromLanguageString(
+    languages: Language[], value: LanguageString,
+  ): string | null {
     for (const language of languages) {
-      const cached = this.cache.get(language, iri);
-      if (cached === undefined) {
+      const candidate = value[language];
+      if (candidate === undefined) {
         continue;
       }
-      return cached;
+      return candidate;
     }
-    return undefined;
+    // Try empty string.
+    return value[""] ?? null;
   }
 
   async addLabelToResources<Type extends { iri: string; }>(
-    languages: string[], resources: (Type | null | undefined)[],
+    languages: Language[], resources: (Type | null | undefined)[],
     defaultValue?: (resource: Type) => string | null,
   ) {
+    // We use IRI as a default.
     const fallback = defaultValue ?? ((resource: Type) => resource.iri);
     await Promise.all(resources
       .filter(item => item !== undefined && item !== null)
       .map(async item => {
-        const label =
-          await this.fetchLabel(languages, item.iri) ?? fallback(item);
-        (item as any).label = label;
+        const label = await this.fetchLabel(languages, item.iri);
+        (item as any).label = label ?? fallback(item);
       })
     )
   }
@@ -143,11 +130,14 @@ class DefaultLabelService implements LabelService {
       // Load data from all sources.
       for (const source of this.cacheSources) {
         const items = await source.fetchInitialCache(languages);
-        // Save
-        for (const item of items) {
-          for (const label of item.labels) {
-            nextCache.set(label.language, item.iri, label.value);
-          }
+        for (const { iri, labels } of items) {
+          const label: LanguageString = {};
+          labels
+            .filter(({ language }) =>
+              // We enable empty languages to be cached as well.
+              languages.includes(language) || language === "")
+            .forEach(({ value, language }) => label[language] = value);
+          nextCache.add(iri, label);
         }
       }
       logger.info("Replacing old cache of size %d with new of size %d.",
@@ -167,24 +157,22 @@ class DefaultLabelService implements LabelService {
  */
 class MemoryCache {
 
-  private cache: Map<string, string>;
+  private cache: Map<string, LanguageString>;
 
   constructor() {
     this.cache = new Map();
   }
 
-  get(language: string, iri: string): string | undefined {
-    const key = this.key(language, iri);
-    return this.cache.get(key);
+  get(iri: string): LanguageString | undefined {
+    return this.cache.get(iri);
   }
 
-  private key(language: string, iri: string): string {
-    return language + ":" + iri;
-  }
-
-  set(language: string, iri: string, value: string): void {
-    const key = this.key(language, iri);
-    this.cache.set(key, value);
+  /**
+   * Add new values to the cache.
+   */
+  add(iri: string, value: LanguageString): void {
+    const previous = this.cache.get(iri) ?? {};
+    this.cache.set(iri, { ...previous, ...value });
   }
 
   /**
