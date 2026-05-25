@@ -528,10 +528,7 @@ function prepareDistribution(distribution) {
       "distribution": null,
     };
   }
-  let downloadArray = distribution.downloadURL;
-  if (downloadArray.length === 0 && distribution.accessURL !== null) {
-    downloadArray = [distribution.accessURL];
-  }
+  //
   let mediaType;
   if (distribution.mediaType !== null) {
     mediaType = {
@@ -541,8 +538,13 @@ function prepareDistribution(distribution) {
   }
   return {
     "distribution": {
-      "downloadArrayVisible": downloadArray.length > 0,
-      "downloadArray": downloadArray,
+      "downloadSectionVisible":
+        distribution.downloadURL.length > 0
+        || distribution.accessURL !== null,
+      "downloadArray": distribution.downloadURL,
+      // We render access URL only when is is not part of download.
+      "access": distribution.downloadURL.includes(distribution.accessURL)
+        ? null : distribution.accessURL,
       "schemaArrayVisible": distribution.conformsTo.length > 0,
       "schemaArray": distribution.conformsTo,
       "mediaType": mediaType,
@@ -573,6 +575,8 @@ function prepareDataService(configuration, distribution, dataService) {
       "iri": dataService.iri,
       "endpointDescription": dataService.endpointDescription,
       "endpointUrl": dataService.endpointURL,
+      "access": dataService.endpointURL === distribution.accessURL
+        ? null : distribution.accessURL,
       "sparqlEditor": showSparqlEditor
         ? `${client.sparqlEditorUrl}#query=${client.sparqlDefaultQuery}&endpoint=${dataService.endpointURL}`
         : null,

@@ -335,12 +335,20 @@
                 <h5 class="gov-text--l gov-color--secondary-700">Downloadable file</h5>
               </div>
               <ul>
-                {{#if downloadArrayVisible}}
-                <li class="download">
+                {{#if downloadSectionVisible}}
+                <li>
                   {{#each downloadArray}}
-                  <a href="{{this}}">Download</a>
-                  <span class="quality"></span>
+                  <div class="download">
+                    <a href="{{this}}">Download</a>
+                    <span class="quality"></span>
+                  </div>
                   {{/each}}
+                  {{#if access}}
+                  <div class="access">
+                    <a href="{{access}}">Access information</a>
+                    <span class="quality"></span>
+                  </div>
+                  {{/if}}
                 </li>
                 {{/if}}
                 {{#if schemaArrayVisible}}
@@ -394,12 +402,20 @@
                 </h5>
               </div>
               <ul>
-                <li class="endpointDescription">
-                  <a href="{{endpointDescription}}">Endpoint description</a>
-                  <span class="quality"></span>
+                <li>
+                  <div class="endpointDescription">
+                    <a href="{{endpointDescription}}">Popis endpointu</a>
+                    <span class="quality"></span>
+                  </div>
+                  {{#if access}}
+                  <div class="access">
+                    <a href="{{access}}">Informace o přístupu</a>
+                    <span class="quality"></span>
+                  </div>
+                  {{/if}}
                 </li>
-                <li class="endpointUrl">
-                  <div>
+                <li>
+                  <div class="endpointUrl">
                     <a href="{{endpointUrl}}">Endpoint</a>
                     <span class="quality"></span>
                   </div>

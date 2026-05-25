@@ -173,6 +173,12 @@ function renderDistributionQuality(element, response) {
   renderQualityMeasure(downloadElement, download, "award", "bug");
   renderQualityMeasure(downloadElement, downloadCors, "globe2", "globe2");
 
+  const accessElement = element.querySelector(".access .quality");
+  const access = response.access;
+  const accessCors = response.accessCors;
+  renderQualityMeasure(accessElement, access, "award", "bug");
+  renderQualityMeasure(accessElement, accessCors, "globe2", "globe2");
+
   const schemaElement = element.querySelector(".schema .quality");
   const schema = response.schema;
   const schemaCors = response.schemaCors;
