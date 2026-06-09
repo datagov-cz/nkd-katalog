@@ -45,21 +45,7 @@
                   <gov-button variant="primary" size="m" data-type="last-year">Last year</gov-button>
                 </div>
               </div>
-              <div class="flex-row flex-space-evenly m-4">
-                <div class="flex-row align-items-center">
-                  <gov-form-switch data-type="high-value-dataset" {{#if query.hvdDataset}}checked{{/if}}>
-                    <gov-form-label slot="label">
-                      High-Value Datasets (HVD)
-                    </gov-form-label>
-                  </gov-form-switch>
-                  &nbsp;
-                  <gov-tooltip>
-                    <gov-icon name="question-circle" type="bootstrap" class="larger"></gov-icon>
-                    <gov-tooltip-content>
-                      High-Value Datasets
-                    </gov-tooltip-content>
-                  </gov-tooltip>
-                </div>
+              <div class="flex-row flex-justify-end m-4">
                 <div class="flex-row align-items-center">
                   <gov-form-switch data-type="dynamic-data" {{#if query.dynamicData}}checked{{/if}}>
                     <gov-form-label slot="label">Dynamic data</gov-form-label>
@@ -92,7 +78,6 @@
               "temporalTo": "temporal-end",
               "publicData": "vdf-public-data",
               "codelist": "vdf-codelist",
-              "hvdDataset": "hvd",
               "dynamicData": "dynamic-data",
             },
             "query": {{{queryObjectAsString}}},

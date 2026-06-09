@@ -1,10 +1,10 @@
-import configuration from "./configuration";
+import configuration from "./configuration.ts";
 import {
   createHttpServer,
   registerRoutes,
   startServer,
 } from "./http/http-server.mjs";
-import { createHttpConnector } from "./connector/http-connector";
+import { createHttpConnector } from "./connector/http-connector.ts";
 import { createServices } from "./service/service.mjs";
 
 (async function main() {

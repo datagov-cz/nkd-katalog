@@ -1,4 +1,4 @@
-import { Configuration } from "../configuration";
+import { Configuration } from "../configuration.ts";
 
 export interface HeadData {
   matomoIsActive: boolean;

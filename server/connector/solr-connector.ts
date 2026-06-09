@@ -1,10 +1,10 @@
-import logger from "../logger";
-import { hasRequestFailed, HttpConnector, HttpFailed } from "./http-connector";
+import logger from "../logger.ts";
+import { hasRequestFailed, HttpConnector, HttpFailed } from "./http-connector.ts";
 import {
   SuccessSolrResponse,
   isErrorSolrResponse,
   isSuccessSolrResponse,
-} from "./solr-connector-model";
+} from "./solr-connector-model.ts";
 
 export type SolrQuery = Record<string, string | string[] | number | boolean>;
 

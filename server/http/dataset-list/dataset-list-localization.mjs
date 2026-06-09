@@ -21,10 +21,12 @@ export default {
       "sort-direction": "směr-řazení",
       "page": "stránka",
       "page-size": "velikost-stránky",
-      "hdf-dataset": "hvd",
+      "hvd-dataset": "hvd",
       "hvd-category": "kategorie-hvd",
       "hvd-category-limit": "počet-kategorie-hvd",
       "dynamic-data": "dynamická-data",
+      "dataset-type": "druh-dat",
+      "dataset-type-limit": "počet-druh-dat"
     },
     "argument": {
       "title": "název",
@@ -52,6 +54,7 @@ export default {
       "formatTooltip": "Formáty distribucí ve formě souboru ke stažení",
       "dataServiceType": "Datová služba",
       "dataServiceTypeTooltip": "Datové sady poskytované pomocí datových služeb",
+      "datasetType": "Druh datové sady",
       "title": "Název",
       "asc": "vzestupně",
       "desc": "sestupně",
@@ -79,10 +82,12 @@ export default {
       "sort-direction": "sort-direction",
       "page": "page",
       "page-size": "page-size",
-      "hdf-dataset": "hvd",
+      "hvd-dataset": "hvd",
       "hvd-category": "hvd-category",
       "hvd-category-limit": "hvd-category-limit",
       "dynamic-data": "dynamic-data",
+      "dataset-type": "dataset-kind",
+      "dataset-type-limit": "dataset-kind-limit"
     },
     "argument": {
       "title": "title",
@@ -109,6 +114,7 @@ export default {
       "formatTooltip": "Data formats of distributions in the form of downloadable files",
       "dataServiceType": "Data service",
       "dataServiceTypeTooltip": "Datasets distributed via a data service",
+      "datasetType": "Dataset kind",
       "title": "Title",
       "asc": "ascending",
       "desc": "descending",

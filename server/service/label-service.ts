@@ -1,4 +1,4 @@
-import logger from "../logger";
+import logger from "../logger.ts";
 
 export function createLabelService(
   sources: Source[], cacheSources: CacheSource[],

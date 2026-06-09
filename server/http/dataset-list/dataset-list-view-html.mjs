@@ -7,6 +7,7 @@ const FACET_SERIES = {
 };
 
 const FACETS = [
+  { "name": "datasetType" },
   { "name": "publisher", "tooltip": "publisherTooltip" },
   { "name": "theme", "tooltip": "themeTooltip" },
   { "name": "hvdCategory", "tooltip": "hvdCategoryTooltip" },
@@ -104,7 +105,8 @@ function prepareFacets(translation, navigation, query, facets, counts) {
   for (const { name, tooltip } of FACETS) {
     const facetData = facets[name];
     const facetLabel = translation.translate(name);
-    const facetTooltip = translation.translate(tooltip);
+    const facetTooltip = tooltip === undefined ? undefined :
+      translation.translate(tooltip);
     result.push(components.createFacetData(
       navigation, query, facetData, name, facetLabel, facetTooltip,
       counts[name]));

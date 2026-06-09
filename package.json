@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "tsx --env-file-if-exists=.env ./server/server.ts",
+    "dev": "nodemon --env-file-if-exists=.env ./server/server.ts",
     "test": "tsc && node --import tsx --test",
     "lint": "eslint ."
   },

@@ -1,3 +1,9 @@
+/**
+ * @typedef {{
+ * solrDataset: import('../data-source/solr-dataset.mjs').SolrDatasetService,
+ * }} Services
+ */
+
 import { createDefaultSolrConnector } from "../connector/solr-connector";
 import { createCouchDbConnector } from "../connector/couchdb.mjs";
 import { createSparqlConnector } from "../connector/sparql.mjs";
@@ -21,6 +27,9 @@ import { createDatasetService } from "./dataset-service.mjs";
 import { createCronService } from "./cron-service.mjs";
 import { createLinkService } from "./link-service.mjs";
 
+/**
+ * @returns {Promise<Services>}
+ */
 export async function createServices(configuration, http) {
   const solr = createDefaultSolrConnector(http, configuration.services.solrUrl);
   const couchdb = createCouchDbConnector(configuration.services.couchDbUrl, http);

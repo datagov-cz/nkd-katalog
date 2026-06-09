@@ -1,14 +1,108 @@
+/**
+ * @typedef {{
+ * searchQuery: string | null,
+ * publisher: string[],
+ * theme: string[],
+ * keyword: string[],
+ * format: string[],
+ * dataServiceType: string[],
+ * temporalStart: string | null,
+ * temporalEnd: string | null,
+ * vdfPublicData: boolean | null,
+ * vdfCodelist: boolean | null,
+ * isPartOf: string[],
+ * dataset_type: string[],
+ * sort: string,
+ * sortDirection: "asc" | "desc",
+ * offset: number,
+ * limit: number,
+ * }} SolrDatasetQuery
+ *
+ * @typedef {{
+ * iri: string,
+ * title: string,
+ * description: string,
+ * file_type: string[],
+ * applicable_legislation: string[],
+ * dataset_type: [],
+ * }} SolrDataset
+ *
+ * @typedef {{
+ * found: number,
+ * documents: SolrDataset[],
+ * facets: Record<string, number>
+ * }} SolrDatasetResponse
+ *
+ * @typedef {{
+ * iri: string,
+ * count: number,
+ * }} Facet[]
+ *
+ * @typedef {{
+ * found: number,
+ * documents: SolrDataset[],
+ * facets: {
+ *   keyword: Facet,
+ *   format: Facet,
+ *   dataServiceType: Facet,
+ *   publisher: Facet,
+ *   theme: Facet,
+ *   hvdCategory: Facet,
+ *   datasetType: Facet,
+ * }}} DatasetsResponse
+ *
+ * @typedef {{
+ * isPartOf: string[],
+ * sort: string,
+ * sortDirection: "asc" | "desc",
+ * }} SolrPartOfDatasetQuery
+ *
+ * @typedef {{
+ * iri: string,
+ * title: string,
+ * description: string,
+ * file_type: string[],
+ * }} SolrPartOfDataset
+ *
+ * @typedef {{
+ * found: number,
+ * documents: SolrPartOfDataset[],
+ * }} SolrPartOfDatasetResponse
+ *
+ * @typedef {{
+ * fetchStatistics: (language:string) => any,
+ * fetchDatasets: (languages: string[], query: SolrDatasetQuery) => SolrDatasetResponse,
+ * fetchDatasetsForDatasetsDetail: (languages: string[], query: SolrPartOfDatasetQuery) => SolrPartOfDatasetResponse,
+ * }} SolrDatasetService
+ */
+
 import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query";
 import { selectLanguage, parseFacet } from "./shared/solr-response";
 
 const SOLR_CORE_NAME = "dataset";
 
+/**
+ * @returns {SolrDatasetService}
+ */
 export function createSolrDataset(solrConnector) {
   return {
+    /**
+     * @param {string} languages
+     */
     "fetchStatistics": (language) =>
       fetchStatistics(solrConnector, language),
+    /**
+     * @param {string[]} languages
+     * @param {SolrDatasetQuery} query
+     * @returns {SolrDatasetResponse}
+     */
     "fetchDatasets": (languages, query) =>
       fetchDatasets(solrConnector, languages, query),
+    /**
+     * @param {string[]} languages
+     * @param {SolrPartOfDatasetQuery} query
+     * @returns {SolrPartOfDatasetResponse}
+     */
     "fetchDatasetsForDatasetsDetail": (languages, query) =>
       fetchDatasetsForDatasetsDetail(solrConnector, languages, query),
   };
@@ -35,12 +129,23 @@ async function fetchStatistics(solrConnector, language) {
   };
 }
 
+/**
+ * @param {*} solrConnector
+ * @param {string[]} languages
+ * @param {SolrDatasetQuery} query
+ * @returns {{found: number, documents: SolrDataset[], facets: Record<string, number>}}
+ */
 async function fetchDatasets(solrConnector, languages, query) {
   const solrQuery = buildDatasetsQuery(languages[0], query);
   const response = await solrConnector.query(SOLR_CORE_NAME, solrQuery);
   return parseDatasetsResponse(languages, response);
 }
 
+/**
+ * @param {string[]} languages
+ * @param {SolrDatasetQuery} query
+ * @returns
+ */
 function buildDatasetsQuery(language, query) {
   const {
     searchQuery,
@@ -60,6 +165,7 @@ function buildDatasetsQuery(language, query) {
     limit,
     hvdCategory,
     applicableLegislation,
+    datasetType,
   } = query;
   const fq = [
     ...prepareFieldQuery("publisher", publisher),
@@ -70,6 +176,7 @@ function buildDatasetsQuery(language, query) {
     ...prepareFieldQuery("is_part_of", isPartOf),
     ...prepareFieldQuery("hvd_category", hvdCategory),
     ...prepareFieldQuery("applicable_legislation", applicableLegislation),
+    ...prepareFieldQuery("dataset_type", datasetType),
   ];
   if (temporalStart !== null) {
     fq.push(`temporal_start:[* TO ${temporalStart}T00:00:00Z]`);
@@ -91,6 +198,7 @@ function buildDatasetsQuery(language, query) {
       "publisher",
       "theme",
       "hvd_category",
+      "dataset_type",
     ],
     "fl": [
       "iri",
@@ -115,6 +223,9 @@ function buildDatasetsQuery(language, query) {
   return result;
 }
 
+/**
+ * @returns {DatasetsResponse}
+ */
 function parseDatasetsResponse(languages, response) {
   const language = languages[0];
   const documents = response["response"]["docs"].map(document => ({
@@ -133,6 +244,7 @@ function parseDatasetsResponse(languages, response) {
     "publisher": parseFacet(facet_fields["publisher"]),
     "theme": parseFacet(facet_fields["theme"]),
     "hvdCategory": parseFacet(facet_fields["hvd_category"]),
+    "datasetType": parseFacet(facet_fields["dataset_type"]),
   };
 
   return {
@@ -142,12 +254,23 @@ function parseDatasetsResponse(languages, response) {
   };
 }
 
+/**
+ * @param {*} solrConnector
+ * @param {string[]} languages
+ * @param {SolrPartOfDatasetQuery} query
+ * @returns {{found: number, documents: SolrPartOfDataset[]}}
+ */
 async function fetchDatasetsForDatasetsDetail(solrConnector, languages, query) {
   const solrQuery = buildDatasetsDetailQuery(languages[0], query);
   const response = await solrConnector.query(SOLR_CORE_NAME, solrQuery);
   return parseDatasetsDetailResponse(languages, response);
 }
 
+/**
+ * @param {string[]} languages
+ * @param {SolrPartOfDatasetQuery} query
+ * @returns
+ */
 function buildDatasetsDetailQuery(language, query) {
   const {
     isPartOf,
@@ -174,6 +297,9 @@ function buildDatasetsDetailQuery(language, query) {
   return result;
 }
 
+/**
+ * @returns {{found: number, documents: SolrPartOfDataset[]}}
+ */
 function parseDatasetsDetailResponse(languages, response) {
   const documents = response["response"]["docs"].map(document => ({
     "iri": document["iri"],

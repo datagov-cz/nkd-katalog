@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createLabelService } from "./label-service";
+import { createLabelService } from "./label-service.ts";
 
 describe("createLabelService", () => {
 

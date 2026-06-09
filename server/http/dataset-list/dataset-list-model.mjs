@@ -4,12 +4,12 @@ const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
 const LEGISLATION_DYNAMIC_DATA = "https://www.e-sbirka.cz/eli/cz/sb/1999/106/2024-01-01/dokument/norma/cast_1/par_3a/odst_6";
 
 export async function prepareData(services, languages, query) {
-  const legislation = [];
+  const applicableLegislation = [];
   if (query.hvdDataset === true) {
-    legislation.push(LEGISLATION_HVD);
+    applicableLegislation.push(LEGISLATION_HVD);
   }
   if (query.dynamicData === true) {
-    legislation.push(LEGISLATION_DYNAMIC_DATA);
+    applicableLegislation.push(LEGISLATION_DYNAMIC_DATA);
   }
   const data = await services.solrDataset.fetchDatasets(languages, {
     "searchQuery": query.searchQuery,
@@ -28,7 +28,8 @@ export async function prepareData(services, languages, query) {
     "offset": query.page * query.pageSize,
     "limit": query.pageSize,
     "hvdCategory": query.hvdCategory,
-    "applicableLegislation": legislation,
+    "applicableLegislation": applicableLegislation,
+    "datasetType": query.datasetType,
   });
 
   const facets = data["facets"];
@@ -41,6 +42,7 @@ export async function prepareData(services, languages, query) {
     "publisher": facets["publisher"].length,
     "theme": facets["theme"].length,
     "hvdCategory": facets["hvdCategory"].length,
+    "datasetType": facets["datasetType"].length,
   };
 
   await updateDatasetsInPlace(services, languages, data["documents"]);
@@ -71,7 +73,9 @@ export async function prepareData(services, languages, query) {
     languages, facets["theme"], query["theme"], query["themeLimit"]);
   await services.facet.updateFacetInPlace(
     languages, facets["hvdCategory"], query["hvdCategory"], query["hvdCategoryLimit"]);
-
+  await services.facet.updateFacetInPlace(
+    languages, facets["datasetType"], query["datasetType"],
+    query["datasetTypeLimit"]);
   return data;
 };
 
@@ -87,4 +91,3 @@ async function updateDatasetsInPlace(services, languages, documents) {
     await services.label.addLabelToResources(languages, document["format"]);
   }
 }
-

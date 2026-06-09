@@ -10,6 +10,8 @@ const DEFAULT_SORT_DIRECTION = "asc";
 
 const DEFAULT_PAGE = 0;
 
+const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
+
 export function parseClientQuery(navigation, query) {
   const clientSort = navigation.queryArgumentFromClient(query, "sort");
   const sort = selectArgumentFromClientQueryOrDefault(
@@ -29,10 +31,12 @@ export function parseClientQuery(navigation, query) {
   const keywordLimit = navigation.queryArgumentFromClient(query, "keyword-limit");
   const formatLimit = navigation.queryArgumentFromClient(query, "format-limit");
   const hvdCategoryLimit = navigation.queryArgumentFromClient(query, "hvd-category-limit");
+  const datasetType = navigation.queryArgumentArrayFromClient(query, "dataset-type");
+  const datasetTypeLimit= navigation.queryArgumentFromClient(query, "dataset-type-limit");
 
   const vdfPublicData = navigation.queryArgumentFromClient(query, "vdf-public-data") === "1";
   const vdfCodelist = navigation.queryArgumentFromClient(query, "vdf-codelist") === "1";
-  const hdfDataset = navigation.queryArgumentFromClient(query, "hdf-dataset") === "1";
+  const hvdDataset = navigation.queryArgumentFromClient(query, "hdf-dataset") === "1";
   const dynamicData = navigation.queryArgumentFromClient(query, "dynamic-data") === "1";
 
   return {
@@ -57,7 +61,9 @@ export function parseClientQuery(navigation, query) {
     "page": asPositiveNumber(page, 1) - 1,
     "pageSize": asPositiveNumber(pageSize, DEFAULT_PAGE_SIZE),
     //
-    "hvdDataset": hdfDataset,
+    "hvdDataset": hvdDataset,
+    "datasetType": datasetType,
+    "datasetTypeLimit": asPositiveNumber(datasetTypeLimit, DEFAULT_FACET_SIZE),
     "hvdCategory": navigation.queryArgumentArrayFromClient(query, "hvd-category"),
     "hvdCategoryLimit": asPositiveNumber(hvdCategoryLimit, DEFAULT_FACET_SIZE),
     "dynamicData": dynamicData,
@@ -106,6 +112,8 @@ export function beforeLinkCallback(navigation, serverQuery) {
   setIfTrue(result, "vdf-codelist", serverQuery.vdfCodelist);
   setIfNotEmpty(result, "is-part-of", serverQuery.isPartOf);
   setIfTrue(result, "hdf-dataset", serverQuery.hvdDataset);
+  setIfNotEmpty(result, "dataset-type", serverQuery.datasetType);
+  setIfNotDefault(result, "dataset-type-limit", serverQuery.datasetTypeLimit, DEFAULT_FACET_SIZE);
   setIfNotEmpty(result, "hvd-category", serverQuery.hvdCategory);
   setIfNotDefault(result, "hvd-category-limit", serverQuery.hvdCategoryLimit, DEFAULT_FACET_SIZE);
   setIfTrue(result, "dynamic-data", serverQuery.dynamicData);

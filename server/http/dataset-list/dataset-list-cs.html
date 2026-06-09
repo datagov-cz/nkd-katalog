@@ -45,20 +45,8 @@
                   <gov-button variant="primary" size="m" data-type="last-year">Minulý rok</gov-button>
                 </div>
               </div>
-              <div class="flex-row flex-space-evenly m-4">
-                <div class="flex-row align-items-center">
-                  <gov-form-switch data-type="high-value-dataset" {{#if query.hvdDataset}}checked{{/if}}>
-                    <gov-form-label slot="label">HVD Datové sady</gov-form-label>
-                  </gov-form-switch>
-                  &nbsp;
-                  <gov-tooltip>
-                    <gov-icon name="question-circle" type="bootstrap" class="larger"></gov-icon>
-                    <gov-tooltip-content>
-                      Datové sady s vysokou socio-ekonomickou hodnotou (High-Value Dataset - HVD)
-                    </gov-tooltip-content>
-                  </gov-tooltip>
-                </div>
-                <div class="flex-row align-items-center">
+              <div class="flex-row flex-justify-end m-4">
+                <div class="flex-row">
                   <gov-form-switch data-type="dynamic-data" {{#if query.dynamicData}}checked{{/if}}>
                     <gov-form-label slot="label">Dynamická data</gov-form-label>
                   </gov-form-switch>
@@ -90,7 +78,6 @@
               "temporalTo": "časové-období-konec",
               "publicData": "vdf-veřejné-údaje",
               "codelist": "vdf-číselník",
-              "hvdDataset": "hvd",
               "dynamicData": "dynamická-data",
             },
             "query": {{{queryObjectAsString}}},

@@ -1,4 +1,4 @@
-import logger from "../../logger";
+import logger from "../../logger.ts";
 
 /**
  * Combine name_prefix with languages returning the first non-empty value found.

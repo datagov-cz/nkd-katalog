@@ -3,12 +3,14 @@
     <h3 class="facet-title inline">
       {{label}} ({{count}})
     </h3>
+    {{#if tooltipMessage}}
     <gov-tooltip>
       <gov-icon name="question-circle" type="bootstrap" class="larger"></gov-icon>
       <gov-tooltip-content>
         {{tooltipMessage}}
       </gov-tooltip-content>
     </gov-tooltip>
+    {{/if}}
   </div>
   <ul class="facet-list">
     {{#each items}}
