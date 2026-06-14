@@ -225,13 +225,15 @@ function buildDatasetsQuery(language, query) {
 }
 
 /**
+ * @param {string[]} languages
+ * @param {*} response
  * @returns {DatasetsResponse}
  */
 function parseDatasetsResponse(languages, response) {
-  const language = languages[0];
   const documents = response["response"]["docs"].map(document =>
-    parseDatasetResponseDocument(document, language));
+    parseDatasetResponseDocument(document, languages));
 
+  const language = languages[0];
   const facet_fields = response["facet_counts"]["facet_fields"];
   const facets = {
     "keyword": parseFacet(facet_fields[`keyword_${language}`]),
@@ -252,7 +254,7 @@ function parseDatasetsResponse(languages, response) {
 
 /**
  * @param {*} document
- * @param {string} languages
+ * @param {string[]} languages
  * @returns {SolrDataset}
  */
 function parseDatasetResponseDocument(document, languages) {
