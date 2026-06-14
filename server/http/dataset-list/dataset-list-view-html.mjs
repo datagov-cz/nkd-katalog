@@ -7,8 +7,8 @@ const FACET_SERIES = {
 };
 
 const FACETS = [
-  { "name": "datasetType" },
   { "name": "publisher", "tooltip": "publisherTooltip" },
+  { "name": "datasetType" },
   { "name": "theme", "tooltip": "themeTooltip" },
   { "name": "hvdCategory", "tooltip": "hvdCategoryTooltip" },
   { "name": "dataServiceType", "tooltip": "dataServiceTypeTooltip" },
