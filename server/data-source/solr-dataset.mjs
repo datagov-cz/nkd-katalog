@@ -208,6 +208,7 @@ function buildDatasetsQuery(language, query) {
       "description_en",
       "file_type",
       "applicable_legislation",
+      "dataset_type",
     ],
     "fq": fq,
     "sort": prepareSort(language, sort, sortDirection),
@@ -228,13 +229,8 @@ function buildDatasetsQuery(language, query) {
  */
 function parseDatasetsResponse(languages, response) {
   const language = languages[0];
-  const documents = response["response"]["docs"].map(document => ({
-    "iri": document["iri"],
-    "title": selectLanguage(document, "title_", languages),
-    "description": selectLanguage(document, "description_", languages),
-    "file_type": document["file_type"] ?? [],
-    "applicable_legislation": document["applicable_legislation"] ?? [],
-  }));
+  const documents = response["response"]["docs"].map(document =>
+    parseDatasetResponseDocument(document, language));
 
   const facet_fields = response["facet_counts"]["facet_fields"];
   const facets = {
@@ -252,6 +248,22 @@ function parseDatasetsResponse(languages, response) {
     "documents": documents,
     "facets": facets,
   };
+}
+
+/**
+ * @param {*} document
+ * @param {string} languages
+ * @returns {SolrDataset}
+ */
+function parseDatasetResponseDocument(document, languages) {
+  return {
+    "iri": document["iri"],
+    "title": selectLanguage(document, "title_", languages),
+    "description": selectLanguage(document, "description_", languages),
+    "file_type": document["file_type"] ?? [],
+    "applicable_legislation": document["applicable_legislation"] ?? [],
+    "dataset_type": document["dataset_type"] ?? [],
+  }
 }
 
 /**

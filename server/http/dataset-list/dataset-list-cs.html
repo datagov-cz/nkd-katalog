@@ -101,7 +101,7 @@
               {{breaklines description}}
             </p>
             <div>
-              {{#if hvd}}
+              {{#if isHvd}}
               <gov-tooltip>
                 <gov-chip variant="error" type="outlined" size="xs">
                   HVD
@@ -111,7 +111,17 @@
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/if}}
-              {{#if dynamicData}}
+              {{#if isOpenData}}
+              <gov-chip variant="warning" type="outlined" size="xs">
+                Otevřená data
+              </gov-chip>
+              {{/if}}
+              {{#if isNonPublicData}}
+              <gov-chip variant="warning" type="outlined" size="xs">
+                Neveřejná data
+              </gov-chip>
+              {{/if}}
+              {{#if isDynamicData}}
               <gov-tooltip>
                 <gov-chip variant="warning" type="outlined" size="xs">
                   Dynamická

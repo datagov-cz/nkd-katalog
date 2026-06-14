@@ -3,6 +3,10 @@ const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
 
 const LEGISLATION_DYNAMIC_DATA = "https://www.e-sbirka.cz/eli/cz/sb/1999/106/2024-01-01/dokument/norma/cast_1/par_3a/odst_6";
 
+const DATASET_TYPE_OPEN_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/otevřená-data";
+
+const DATASET_TYPE_NON_PUBLIC_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/neveřejná-data";
+
 export async function prepareData(services, languages, query) {
   const applicableLegislation = [];
   if (query.hvdDataset === true) {
@@ -81,13 +85,20 @@ export async function prepareData(services, languages, query) {
 
 async function updateDatasetsInPlace(services, languages, documents) {
   for (const document of documents) {
+    // Tags based on distribution formats.
     document["format"] = document["file_type"].map(iri => ({ "iri": iri }));
     delete document["file_type"];
-    //
+    // Tags based on legislation.
     const legislation = document["applicable_legislation"];
     delete document["applicable_legislation"];
-    document["hvd"] =  legislation.includes(LEGISLATION_HVD);
-    document["dynamicData"] =  legislation.includes(LEGISLATION_DYNAMIC_DATA);
+    document["isHvd"] =  legislation.includes(LEGISLATION_HVD);
+    document["isDynamicData"] =  legislation.includes(LEGISLATION_DYNAMIC_DATA);
+    // Tags based on dataset_type.
+    const datasetType = document["dataset_type"];
+    delete document["dataset_type"];
+    document["isOpenData"] = datasetType.includes(DATASET_TYPE_OPEN_DATA);
+    document["isNonPublicData"] = datasetType.includes(DATASET_TYPE_NON_PUBLIC_DATA);
+    //
     await services.label.addLabelToResources(languages, document["format"]);
   }
 }
