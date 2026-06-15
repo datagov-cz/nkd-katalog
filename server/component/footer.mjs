@@ -9,7 +9,7 @@ import configuration from "../configuration.ts";
  */
 
 /**
- * @param {import('../service/template-service.ts').TemplateService} templateService
+ * @param {import('../handlebars/index.ts').HandlebarsService} templateService
  * @param {string} language
  */
 export function registerFooter(templateService, language) {

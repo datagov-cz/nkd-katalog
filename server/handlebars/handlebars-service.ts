@@ -2,17 +2,17 @@ import fileSystem from "node:fs";
 
 import Handlebars from "handlebars";
 
-import { createHandlebars } from "../handlebars/handlebars.ts";
+import { createHandlebars } from "./handlebars.ts";
 import configuration from "../configuration.ts";
 
-export function createTemplateService(basePath: string): TemplateService {
+export function createHandlebarsService(basePath: string): HandlebarsService {
   if (configuration.server.reloadTemplates) {
-    return new ReloadingTemplateService(basePath);
+    return new ReloadingHandlebarsService(basePath);
   }
-  return new BoundTemplateService(basePath);
+  return new DefaultHandlebarsService(basePath);
 }
 
-interface TemplateService {
+export interface HandlebarsService {
 
   view: (name: string) => Function | undefined;
 
@@ -28,7 +28,7 @@ interface TemplateService {
 
 }
 
-class BoundTemplateService implements TemplateService {
+class DefaultHandlebarsService implements HandlebarsService {
 
   readonly views: { [name: string]: Handlebars.TemplateDelegate } = {};
 
@@ -70,7 +70,7 @@ class BoundTemplateService implements TemplateService {
  * Reload content with every request.
  * Use this only for debugging!
  */
-class ReloadingTemplateService implements TemplateService {
+class ReloadingHandlebarsService implements HandlebarsService {
 
   readonly views: { [name: string]: string } = {};
 

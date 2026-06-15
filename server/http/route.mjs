@@ -11,7 +11,7 @@ import createLocalCatalogList from "./local-catalog-list/local-catalog-list-pres
 import createDatasetList from "./dataset-list/dataset-list-presenter.mjs";
 import createDatasetDetail from "./dataset-detail/dataset-detail-presenter.mjs";
 
-import { createTemplateService } from "../service/template-service.ts";
+import { createHandlebarsService } from "../handlebars/handlebars-service.ts";
 import { registerComponents } from "../component/index.mjs";
 
 /**
@@ -135,7 +135,7 @@ function registerHandler(server, handler) {
 }
 
 function createAndPreloadTemplateService(language) {
-  const service = createTemplateService("./server/");
+  const service = createHandlebarsService("./server/");
   registerComponents(service, language);
   return service;
 }

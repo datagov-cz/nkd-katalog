@@ -5,7 +5,7 @@ import * as components from "../../component/index.mjs";
  * @typedef {{
  *   configuration: import('../../configuration.ts').Configuration,
  *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
- *   template: import('../../service/template-service.ts').TemplateService,
+ *   template: import('../../handlebars/index.ts').HandlebarsService,
  *   http: any,
  * }} ApplicationDetailViewServices
  *

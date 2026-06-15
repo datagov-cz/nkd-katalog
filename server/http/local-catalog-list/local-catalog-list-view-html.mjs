@@ -7,7 +7,7 @@ import * as components from "../../component/index.mjs";
  *   translation: import('../../service/translation-service.ts').TranslationService,
  *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
  *   link: import('../../service/link-service.mjs').LinkService,
- *   template: import('../../service/template-service.ts').TemplateService,
+ *   template: import('../../handlebars/index.ts').HandlebarsService,
  * }} LocalCatalogListViewServices
  *
  * @typedef {{

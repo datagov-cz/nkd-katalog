@@ -8,7 +8,7 @@
  */
 
 /**
- * @param {import('../../service/template-service.ts').TemplateService[]} templates
+ * @param {import('../../handlebars/index.ts').HandlebarsService[]} templates
  * @returns {HttpStatusHandlers}
  */
 export default function createHandlers(templates) {

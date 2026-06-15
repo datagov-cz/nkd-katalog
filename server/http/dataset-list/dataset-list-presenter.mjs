@@ -7,7 +7,7 @@ import localization from "./dataset-list-localization.mjs";
 
 /**
  * @param {import('../../service/service.mjs').Services & {http: any}} services
- * @param {import('../../service/template-service.ts').TemplateService} templates
+ * @param {import('../../handlebars/index.ts').HandlebarsService} templates
  * @param {string[]} languages
  * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
  */

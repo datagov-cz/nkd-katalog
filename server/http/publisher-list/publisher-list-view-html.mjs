@@ -6,7 +6,7 @@ import * as components from "../../component/index.mjs";
  *   configuration: import('../../configuration.ts').Configuration,
  *   translation: import('../../service/translation-service.ts').TranslationService,
  *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
- *   template: import('../../service/template-service.ts').TemplateService,
+ *   template: import('../../handlebars/index.ts').HandlebarsService,
  * }} PublisherListViewServices
  *
  * @typedef {{

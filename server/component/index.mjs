@@ -13,7 +13,7 @@ export {createPaginationData} from "./pagination.mjs";
 export {createResultBarData} from "./result-bar.mjs";
 
 /**
- * @param {import('../service/template-service.ts').TemplateService} templateService
+ * @param {import('../handlebars/index.ts').HandlebarsService} templateService
  * @param {string} language
  */
 export function registerComponents(templateService, language) {
