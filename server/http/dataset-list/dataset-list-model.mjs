@@ -9,7 +9,7 @@ const DATASET_TYPE_NON_PUBLIC_DATA = "https://data.dia.gov.cz/zdroj/číselníky
 
 /**
  * @param {import('../../service/service.mjs').Services} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @returns {Promise<any>}
  */

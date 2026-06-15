@@ -18,7 +18,7 @@ export function createDatasetService(couchDbDataset) {
   return {
     /**
      * Fetch and return preview data for datasets with given IRIs.
-     * @param {string[]} languages
+     * @param {('cs' | 'en')[]} languages
      * @param {string[]} iris
      * @returns {Promise<DatasetPreview[]>}
      */
@@ -29,7 +29,7 @@ export function createDatasetService(couchDbDataset) {
 
 /**
  * @param {*} couchDbDataset
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {string[]} iris
  * @returns {Promise<DatasetPreview[]>}
  */

@@ -3,8 +3,8 @@ import { FOAF, SKOS } from "./shared/vocabulary.ts";
 
 /**
  * @typedef {{
- *   fetchLabel: (languages: string[], iri: string) => Promise<{[language: string]: string} | null>,
- *   fetchInitialCache: (languages: string[]) => Promise<import('./couchdb-static.mjs').CacheItem[]>
+ *   fetchLabel: (languages: ('cs' | 'en')[], iri: string) => Promise<{[language: string]: string} | null>,
+ *   fetchInitialCache: (languages: ('cs' | 'en')[]) => Promise<import('./couchdb-static.mjs').CacheItem[]>
  * }} CouchDbSuggestionsService
  */
 
@@ -25,7 +25,7 @@ const COUCHDB_DATABASE_NAME = "suggestion";
 
 /**
  * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {string} iri
  * @returns {Promise<{[language: string]: string} | null>}
  */
@@ -37,7 +37,7 @@ async function fetchLabel(couchDbConnector, languages, iri) {
 
 /**
  * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {Promise<import('./couchdb-static.mjs').CacheItem[]>}
  */
 async function fetchInitialCache(couchDbConnector, languages) {
@@ -48,7 +48,7 @@ async function fetchInitialCache(couchDbConnector, languages) {
 
 /**
  * @param {any} response
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {import('./couchdb-static.mjs').CacheItem[]}
  */
 function parseInitialDataCacheResponse(response, languages) {

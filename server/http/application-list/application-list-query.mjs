@@ -11,7 +11,7 @@ const DEFAULT_SORT_DIRECTION = "asc";
 const DEFAULT_PAGE = 0;
 
 /**
- * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
  * @param {Record<string, string | string[]>} query
  * @returns {any}
  */
@@ -76,7 +76,7 @@ function asPositiveNumber(value, defaultValue) {
 }
 
 /**
- * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
  * @param {any} serverQuery
  * @returns {Record<string, any>}
  */

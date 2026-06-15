@@ -24,7 +24,7 @@ export function registerFacet(templateService, language) {
 }
 
 /**
- * @param {import('../service/navigation-service.mjs').IViewBoundNavigation} navigationService
+ * @param {import('../service/navigation-service.ts').NavigationEntry} navigationService
  * @param {any} query
  * @param {any[]} facetData
  * @param {string} facetName

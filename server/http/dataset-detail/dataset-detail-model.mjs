@@ -1,7 +1,7 @@
 
 /**
  * @param {import('../../service/service.mjs').Services} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {{ iri: string, distributionPage: number, distributionPageSize: number }} query
  * @returns {Promise<any>}
  */

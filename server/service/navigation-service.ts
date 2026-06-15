@@ -12,38 +12,100 @@ const NOOP = (_, serverQuery) => serverQuery;
  *   queryArgumentArrayFromClient: (clientQuery: object, serverKey: string) => string[],
  *   argumentFromServer: (serverKey: string) => string | null,
  *   linkFromServer: (query: object) => string,
- *   changeLanguage: (language: string) => IViewBoundNavigation,
- *   changeView: (viewName: string) => IViewBoundNavigation,
- *   setNavigationData: (serverToLocal: object) => IViewBoundNavigation,
- *   setBeforeLink: (callback: Function) => IViewBoundNavigation,
- * }} IViewBoundNavigation
- *
- * @typedef {{
- *   view: (language: string, viewName: string) => IViewBoundNavigation,
- * }} INavigationService
+ *   changeLanguage: (language: string) => NavigationEntry,
+ *   changeView: (viewName: string) => NavigationEntry,
+ *   setNavigationData: (serverToLocal: object) => NavigationEntry,
+ *   setBeforeLink: (callback: Function) => NavigationEntry,
+ * }} NavigationEntry
  */
 
-/**
- * @returns {NavigationService}
- */
-export function createNavigationService() {
-  return new NavigationService();
+export function createNavigationService(): NavigationService {
+  return new DefaultNavigationService();
 }
 
-class NavigationService {
-
-  constructor() {
-    this.beforeLinks = {};
-    this.data = {};
-  }
+export interface NavigationService {
 
   /**
-   * Return navigation for given view.
-   * @param {String} language
-   * @param {String} viewName
-   * @returns {ViewBoundNavigation}
+   * Return navigation for given view in given language.
    */
-  view(language, viewName) {
+  view: (language: Language, viewName: string) => NavigationEntry;
+
+}
+
+type Language = "cs" | "en";
+
+export interface NavigationEntry {
+
+  setNavigationData(serverToLocal: {
+    path: string;
+    query: Record<string, string | string[]>;
+    argument: Record<string, string>;
+  }): NavigationEntry;
+
+  /**
+   * Called on server query before it is translated into a client URL query.
+   */
+  setBeforeLink(beforeLink: BeforeLink): NavigationEntry;
+
+  /**
+   * Returns a new entry with changed language.
+   */
+  changeLanguage(language: Language): NavigationEntry;
+
+  /**
+   * Returns a new entry with the same language but for a different view.
+   */
+  changeView(viewName: string): NavigationEntry;
+
+  /**
+   * Returns a value, as an array, from user query under given server key.
+   */
+  queryArgumentArrayFromClient(
+    clientQuery: Record<string, string | string[]>,
+    serverKey: string,
+  ): string[] | null;
+
+  /**
+   * Returns a value from user query under given server key.
+   */
+  queryArgumentFromClient(
+    clientQuery: Record<string, string | string[]>,
+    serverKey: string,
+  ): string | null;
+
+  /**
+   * Returns local argument for server key.
+   */
+  argumentFromServer(serverKey: string): string | null;
+
+  /**
+   * Returns a relative link to this view with given query.
+   */
+  linkFromServer(serverQuery: Record<string, string | string[]>): string;
+
+}
+
+type BeforeLink = (
+  server: any, serverQuery: Record<string, string>,
+) => Record<string, string>;
+
+interface NavigationEntryData {
+
+  path: string;
+
+  query: Record<string, string>;
+
+  argument: Record<string, string>;
+
+  beforeLink: BeforeLink;
+
+}
+
+class DefaultNavigationService {
+
+  readonly data: { [key: string]: NavigationEntryData } = {};
+
+  view(language: Language, viewName: string) {
     const key = language + ":" + viewName;
     if (this.data[key] === undefined) {
       this.data[key] = {
@@ -53,12 +115,20 @@ class NavigationService {
         "beforeLink": NOOP,
       };
     }
-    return new ViewBoundNavigation(this, language, viewName, this.data[key]);
+    return new DefaultNavigationEntry(this, language, viewName, this.data[key]);
   }
 
 }
 
-class ViewBoundNavigation {
+class DefaultNavigationEntry {
+
+  readonly parent: NavigationService;
+
+  readonly language: Language;
+
+  readonly viewName: string;
+
+  readonly data: NavigationEntryData;
 
   constructor(parent, language, viewName, data) {
     this.parent = parent;
@@ -69,8 +139,8 @@ class ViewBoundNavigation {
 
   setNavigationData(serverToLocal) {
     this.data.path = serverToLocal.path;
-    this.data.query = serverToLocal.query ?? {};
-    this.data.argument = serverToLocal.argument ?? {};
+    this.data.query = serverToLocal.query;
+    this.data.argument = serverToLocal.argument;
     return this;
   }
 
@@ -87,9 +157,6 @@ class ViewBoundNavigation {
     return this.parent.view(this.language, viewName);
   }
 
-  /**
-   * Return array value from query for given key.
-   */
   queryArgumentArrayFromClient(clientQuery, serverKey) {
     const value = this.getClientQueryValue(clientQuery, serverKey);
     if (Array.isArray(value)) {
@@ -98,7 +165,7 @@ class ViewBoundNavigation {
     return asArray(value);
   }
 
-  getClientQueryValue(clientQuery, serverKey) {
+  private getClientQueryValue(clientQuery, serverKey) {
     const clientKey = this.data.query[serverKey];
     if (Array.isArray(clientKey)) {
       // We have multiple options, we try them all in given order
@@ -116,29 +183,20 @@ class ViewBoundNavigation {
     }
   }
 
-  /**
-   * Return value from query for given key.
-   */
   queryArgumentFromClient(clientQuery, serverKey) {
     const value = this.getClientQueryValue(clientQuery, serverKey);
     if (Array.isArray(value)) {
       return clientQuery[0];
     }
-    return value;
+    return value ?? null;
   }
 
-  /**
-   * Return local argument for server key.
-   */
   argumentFromServer(serverKey) {
     return this.data.argument[serverKey] ?? null;
   }
 
-  /**
-   * Return relative link to this view with given query.
-   */
   linkFromServer(query) {
-    const effectiveQuery =  this.data.beforeLink(this, query);
+    const effectiveQuery = this.data.beforeLink(this, query);
     const queryString = this.queryFromServer(effectiveQuery);
     const clientPath = this.data.path;
     if (queryString === "") {
@@ -148,14 +206,8 @@ class ViewBoundNavigation {
     }
   }
 
-  /**
-   * Translate URL query into encoded string.
-   * @param {Object} query Server query object.
-   * @returns {String}
-   */
-  queryFromServer(query) {
-    /** @type querystring.ParsedUrlQueryInput */
-    const localized = {};
+  private queryFromServer(query: Record<string, string>) {
+    const localized: Record<string, string> = {};
     for (const [key, value] of Object.entries(query)) {
       if (isEmpty(value)) {
         continue;
@@ -172,7 +224,7 @@ class ViewBoundNavigation {
 
 }
 
-function asArray(value) {
+function asArray<Type>(value: Type | Type[] | undefined | null): Type[] {
   if (value === undefined || value === null) {
     return [];
   } else if (Array.isArray(value)) {
@@ -182,7 +234,7 @@ function asArray(value) {
   }
 }
 
-function isEmpty(value) {
+function isEmpty<Type>(value: Type[] | string | undefined | null): boolean {
   if (value === null || value === undefined) {
     return true;
   } else if (Array.isArray(value)) {

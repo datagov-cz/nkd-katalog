@@ -1,7 +1,7 @@
 
 /**
  * @param {import('../../service/service.mjs').Services} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {Promise<{ catalogs: import('../../data-source/couchdb-catalog.mjs').LocalCatalog[] | null }>}
  */
 export async function prepareData(services, languages) {

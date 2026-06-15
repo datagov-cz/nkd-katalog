@@ -81,7 +81,7 @@ const QUALITY = {
 export function createSparqlQuality(sparqlConnector) {
   return {
     /**
-     * @param {string[]} languages
+     * @param {('cs' | 'en')[]} languages
      * @param {string} iri
      * @return {Promise<QualityMeasures>}
      */
@@ -92,7 +92,7 @@ export function createSparqlQuality(sparqlConnector) {
 
 /**
  * @param {*} sparqlConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {string} iri
  * @return {Promise<QualityMeasures>}
  */

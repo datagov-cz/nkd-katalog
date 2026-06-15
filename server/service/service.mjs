@@ -11,7 +11,7 @@
  * solrPublisher: import('../data-source/solr-publisher.mjs').SolrPublisherService,
  * solrDataset: import('../data-source/solr-dataset.mjs').SolrDatasetService,
  * sparqlQuality: import('../data-source/sparql-quality.mjs').SparqlQualityService,
- * navigation: import('./navigation-service.mjs').INavigationService,
+ * navigation: import('./navigation-service.ts').NavigationService,
  * label: import('./label-service.ts').LabelService,
  * facet: import('./facet-service.mjs').FacetService,
  * dataset: import('./dataset-service.mjs').DatasetService,
@@ -36,7 +36,7 @@ import { createSolrDataset } from "../data-source/solr-dataset.mjs";
 import { createSparqlQuality } from "../data-source/sparql-quality.mjs";
 import { createCouchDbVdf } from "../data-source/couchdb-vdf.mjs";
 
-import { createNavigationService } from "./navigation-service.mjs";
+import { createNavigationService } from "./navigation-service.ts";
 import { createLabelService } from "./label-service.ts";
 import { createFacetService } from "./facet-service.mjs";
 import { createDatasetService } from "./dataset-service.mjs";

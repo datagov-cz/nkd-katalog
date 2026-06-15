@@ -14,7 +14,7 @@ export function registerPagination(templateService, language) {
 }
 
 /**
- * @param {import('../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {import('../service/navigation-service.ts').NavigationEntry} navigation
  * @param {any} query
  * @param {number} documentsCount
  * @returns {PaginationData}

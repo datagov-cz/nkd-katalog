@@ -3,7 +3,7 @@ import { FOAF, SKOS } from "./shared/vocabulary.ts";
 /**
  * @typedef {{ iri: string, labels: Array<{ value: string, language: string }> }} CacheItem
  *
- * @typedef {{ fetchInitialCache: (languages: string[]) => Promise<CacheItem[]> }} CouchDbStaticService
+ * @typedef {{ fetchInitialCache: (languages: ('cs' | 'en')[]) => Promise<CacheItem[]> }} CouchDbStaticService
  */
 
 /**
@@ -21,7 +21,7 @@ const COUCHDB_DATABASE_NAME = "static";
 
 /**
  * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {Promise<CacheItem[]>}
  */
 async function fetchInitialCache(couchDbConnector, languages) {
@@ -32,7 +32,7 @@ async function fetchInitialCache(couchDbConnector, languages) {
 
 /**
  * @param {any} response
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {CacheItem[]}
  */
 function parseInitialDataCacheResponse(response, languages) {

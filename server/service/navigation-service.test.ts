@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test"
 
-import { createNavigationService } from "./navigation-service.mjs";
+import { createNavigationService } from "./navigation-service.ts";
 
 describe("Navigation service", () => {
 
@@ -13,18 +13,20 @@ describe("Navigation service", () => {
       "query": { "title": "název", "sort": "pořadí" },
       "argument": { "title": "název" },
     })
-    .setBeforeLink((server, query) => query);
+    .setBeforeLink((_, query) => query);
 
   service.view("cs", "detail")
     .setNavigationData({
       "path": "detail",
-      "query": { "detail": "detail" }
+      "query": { "detail": "detail" },
+      "argument": {},
     });
 
   service.view("cs", "multiple")
     .setNavigationData({
       "path": "multiple",
-      "query": { "keyword": ["klíčová-slova", "klíčová slova"] }
+      "query": { "keyword": ["klíčová-slova", "klíčová slova"] },
+      "argument": {},
     });
 
   it("Path", () => {

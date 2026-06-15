@@ -4,7 +4,7 @@ import * as components from "../../component/index.mjs";
 /**
  * @typedef {{
  *   configuration: import('../../configuration.ts').Configuration,
- *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
  *   template: import('../../handlebars/index.ts').HandlebarsService,
  *   http: any,
  * }} SuggestionDetailViewServices
@@ -33,7 +33,7 @@ import * as components from "../../component/index.mjs";
 
 /**
  * @param {SuggestionDetailViewServices} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {any} data
  * @param {any} reply
@@ -53,7 +53,7 @@ export function renderHtml(services, languages, query, data, reply) {
 
 /**
  * @param {SuggestionDetailViewServices} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {any} data
  * @returns {SuggestionDetailTemplateData}

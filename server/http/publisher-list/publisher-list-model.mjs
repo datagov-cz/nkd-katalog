@@ -1,7 +1,7 @@
 
 /**
  * @param {import('../../service/service.mjs').Services} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {Promise<{ publishers: any[] }>}
  */
 export async function prepareData(services, languages) {

@@ -14,8 +14,8 @@ export function registerNavigation(templateService, language) {
 }
 
 /**
- * @param {import('../service/navigation-service.mjs').IViewBoundNavigation} navigationService
- * @param {string[]} languages
+ * @param {import('../service/navigation-service.ts').NavigationEntry} navigationService
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {Record<string, boolean> | any} [options]
  * @returns {NavigationData}

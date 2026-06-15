@@ -5,7 +5,7 @@ import * as components from "../../component/index.mjs";
  * @typedef {{
  *   configuration: import('../../configuration.ts').Configuration,
  *   translation: import('../../service/translation-service.ts').TranslationService,
- *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
  *   template: import('../../handlebars/index.ts').HandlebarsService,
  * }} ApplicationListViewServices
  *
@@ -37,7 +37,7 @@ const SORT_OPTIONS = [
 
 /**
  * @param {ApplicationListViewServices} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {any} data
  * @param {any} reply
@@ -55,8 +55,8 @@ export function renderHtml(services, languages, query, data, reply) {
 /**
  * @param {import('../../configuration.ts').Configuration} configuration
  * @param {import('../../service/translation-service.ts').TranslationService} translation
- * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
- * @param {string[]} languages
+ * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {any} data
  * @returns {ApplicationListTemplateData}

@@ -93,14 +93,14 @@ export function createSolrDataset(solrConnector) {
     "fetchStatistics": (language) =>
       fetchStatistics(solrConnector, language),
     /**
-     * @param {string[]} languages
+     * @param {('cs' | 'en')[]} languages
      * @param {SolrDatasetQuery} query
      * @returns {Promise<DatasetsResponse>}
      */
     "fetchDatasets": (languages, query) =>
       fetchDatasets(solrConnector, languages, query),
     /**
-     * @param {string[]} languages
+     * @param {('cs' | 'en')[]} languages
      * @param {SolrPartOfDatasetQuery} query
      * @returns {Promise<SolrPartOfDatasetResponse>}
      */
@@ -132,7 +132,7 @@ async function fetchStatistics(solrConnector, language) {
 
 /**
  * @param {*} solrConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {SolrDatasetQuery} query
  * @returns {Promise<DatasetsResponse>}
  */
@@ -226,7 +226,7 @@ function buildDatasetsQuery(language, query) {
 }
 
 /**
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {*} response
  * @returns {DatasetsResponse}
  */
@@ -255,7 +255,7 @@ function parseDatasetsResponse(languages, response) {
 
 /**
  * @param {*} document
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {SolrDataset}
  */
 function parseDatasetResponseDocument(document, languages) {
@@ -271,7 +271,7 @@ function parseDatasetResponseDocument(document, languages) {
 
 /**
  * @param {*} solrConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {SolrPartOfDatasetQuery} query
  * @returns {Promise<{found: number, documents: SolrPartOfDataset[]}>}
  */

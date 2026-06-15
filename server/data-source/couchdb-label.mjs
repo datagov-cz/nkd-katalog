@@ -3,7 +3,7 @@ import { SKOS, DCTERMS } from "./shared/vocabulary.ts";
 
 /**
  * @typedef {{
- *   fetchLabel: (languages: string[], iri: string) => Promise<{[language: string]: string} | null>
+ *   fetchLabel: (languages: ('cs' | 'en')[], iri: string) => Promise<{[language: string]: string} | null>
  * }} CouchDbLabelService
  */
 
@@ -22,7 +22,7 @@ const COUCHDB_DATABASE_NAME = "label";
 
 /**
  * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {string} iri
  * @returns {Promise<{[language: string]: string} | null>}
  */

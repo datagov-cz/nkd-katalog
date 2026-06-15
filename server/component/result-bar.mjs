@@ -14,7 +14,7 @@ export function registerResultBar(templateService) {
 
 /**
  * @param {import('../service/translation-service.ts').TranslationService} translationService
- * @param {import('../service/navigation-service.mjs').IViewBoundNavigation} navigationService
+ * @param {import('../service/navigation-service.ts').NavigationEntry} navigationService
  * @param {any} query
  * @param {string[][]} sortOptions
  * @param {number} itemsCount

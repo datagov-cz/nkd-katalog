@@ -18,7 +18,7 @@ export function createFacetService(labelService) {
   return {
     /**
      * Make sure active are part of result, add labels, and sort.
-     * @param {String[]} languages Language preferences.
+     * @param {('cs' | 'en')[]} languages Language preferences.
      * @param {Object[]} items Items.
      * @param {String[]} active IRIs of active facets.
      * @param {Number} limit Number of facets to prepare.

@@ -16,7 +16,7 @@ import logger from "../logger.ts";
  *   isDcatApSparql?: boolean,
  * }} LocalCatalog
  *
- * @typedef {{ fetchCatalogs: (languages: string[]) => Promise<LocalCatalog[] | null> }} CouchDbCatalogService
+ * @typedef {{ fetchCatalogs: (languages: ('cs' | 'en')[]) => Promise<LocalCatalog[] | null> }} CouchDbCatalogService
  */
 
 /**
@@ -34,7 +34,7 @@ const COUCHDB_DATABASE_NAME = "static";
 
 /**
  * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {Promise<LocalCatalog[] | null>}
  */
 async function fetchCatalogs(couchDbConnector, languages) {
@@ -53,7 +53,7 @@ async function fetchCatalogs(couchDbConnector, languages) {
 }
 
 /**
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {object[]} jsonld
  * @returns {LocalCatalog[]}
  */
@@ -86,7 +86,7 @@ function jsonldToCatalogs(languages, jsonld) {
 }
 
 /**
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {object} entity
  * @returns {LocalCatalog}
  */

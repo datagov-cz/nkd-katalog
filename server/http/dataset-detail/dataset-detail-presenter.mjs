@@ -8,7 +8,7 @@ import localization from "./dataset-detail-localization.mjs";
 /**
  * @param {import('../../service/service.mjs').Services & {http: any}} services
  * @param {import('../../handlebars/index.ts').HandlebarsService} templates
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
  */
 export default function createHandler(services, templates, languages) {

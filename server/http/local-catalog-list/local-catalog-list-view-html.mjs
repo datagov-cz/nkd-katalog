@@ -5,7 +5,7 @@ import * as components from "../../component/index.mjs";
  * @typedef {{
  *   configuration: import('../../configuration.ts').Configuration,
  *   translation: import('../../service/translation-service.ts').TranslationService,
- *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
  *   link: import('../../service/link-service.mjs').LinkService,
  *   template: import('../../handlebars/index.ts').HandlebarsService,
  * }} LocalCatalogListViewServices
@@ -30,7 +30,7 @@ import * as components from "../../component/index.mjs";
 
 /**
  * @param {LocalCatalogListViewServices} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {any} data
  * @param {any} reply
@@ -46,7 +46,7 @@ export function renderHtml(services, languages, query, data, reply) {
 
 /**
  * @param {LocalCatalogListViewServices} services
- * @param {string[]} languages
+ * @param {('cs' | 'en')[]} languages
  * @param {any} query
  * @param {any} data
  * @returns {LocalCatalogListTemplateData}
