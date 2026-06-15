@@ -1,4 +1,10 @@
 
+/**
+ * @param {import('../../service/service.mjs').Services} services
+ * @param {string[]} languages
+ * @param {{ iri: string, distributionPage: number, distributionPageSize: number }} query
+ * @returns {Promise<any>}
+ */
 export async function prepareData(services, languages, query) {
   const dataset = await services.couchDbDataset.fetchDataset(languages, {
     "iri": query.iri,

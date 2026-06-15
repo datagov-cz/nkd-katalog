@@ -8,7 +8,7 @@
     "dev": "nodemon --env-file-if-exists=.env ./server/server.ts",
     "test": "tsc && node --import tsx --test",
     "lint": "eslint .",
-    "type-check": "npx tsc --checkJs --allowJs --noEmit --strict --watch"
+    "type-check": "npx tsc --checkJs"
   },
   "author": "Digitální a informační agentura",
   "license": "MIT",

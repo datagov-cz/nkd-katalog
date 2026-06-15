@@ -1,8 +1,66 @@
-import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query";
-import { selectLanguage, emptyAsNull, parseFacet, parseDate } from "./shared/solr-response";
+import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query.ts";
+import { selectLanguage, emptyAsNull, parseFacet, parseDate } from "./shared/solr-response.ts";
+
+/**
+ * @typedef {{
+ *   iri: string,
+ *   title: string | null,
+ *   description: string | null,
+ *   states: any[],
+ *   platforms: any[],
+ *   themes: any[],
+ *   types: any[],
+ *   author: { iri: string | null, title: string | null },
+ *   link: string,
+ *   datasets: any[],
+ *   modified: Date | null,
+ *   published: Date | null,
+ * }} SolrApplication
+ *
+ * @typedef {{
+ *   searchQuery: string | null,
+ *   state: string[],
+ *   platform: string[],
+ *   theme: string[],
+ *   type: string[],
+ *   sort: string,
+ *   sortDirection: "asc" | "desc",
+ *   offset: number,
+ *   limit: number,
+ * }} SolrApplicationQuery
+ *
+ * @typedef {{
+ *   iri: string,
+ *   title: string | null,
+ *   description: string | null,
+ *   themes: string[],
+ * }} SolrApplicationListItem
+ *
+ * @typedef {{
+ *   found: any,
+ *   documents: SolrApplicationListItem[],
+ *   facets: {
+ *     state: import('./shared/solr-response.ts').FacetItem[],
+ *     platform: import('./shared/solr-response.ts').FacetItem[],
+ *     theme: import('./shared/solr-response.ts').FacetItem[],
+ *     type: import('./shared/solr-response.ts').FacetItem[],
+ *   },
+ * }} SolrApplicationsResponse
+ *
+ * @typedef {{
+ *   fetchApplicationsCount: () => Promise<number>,
+ *   fetchApplication: (languages: string[], iri: string) => Promise<SolrApplication | null>,
+ *   fetchApplications: (languages: string[], query: SolrApplicationQuery) => Promise<SolrApplicationsResponse>,
+ *   fetchApplicationsWithDatasets: (languages: string[], datasets: string[]) => Promise<SolrApplicationListItem[]>,
+ * }} SolrApplicationService
+ */
 
 const SOLR_CORE_NAME = "application";
 
+/**
+ * @param {import('../connector/solr-connector.ts').SolrConnector} solrConnector
+ * @returns {SolrApplicationService}
+ */
 export function createSolrApplication(solrConnector) {
   return {
     "fetchApplicationsCount": () =>

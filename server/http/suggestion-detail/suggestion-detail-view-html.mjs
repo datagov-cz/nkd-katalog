@@ -1,6 +1,43 @@
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 
+/**
+ * @typedef {{
+ *   configuration: import('../../configuration.ts').Configuration,
+ *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   template: import('../../service/template-service.ts').TemplateService,
+ *   http: any,
+ * }} SuggestionDetailViewServices
+ *
+ * @typedef {{
+ *   head: import('../../component/head.ts').HeadData,
+ *   navigation: import('../../component/navigation.mjs').NavigationData,
+ *   footer: import('../../component/footer.mjs').FooterData,
+ *   suggestion: {
+ *     iri: string,
+ *     title: string,
+ *     description: string,
+ *     themes: Array<{ iri: string, label: string, href: string }>,
+ *     state: any,
+ *     created: string,
+ *     mandatory_106: any,
+ *     obstacle_special_regulation: any,
+ *     obstacle_106: any,
+ *     publisher: { iri: string | null, title: string | null },
+ *     publication_plan: string | null,
+ *     publication_plan_visible: boolean,
+ *   },
+ *   datasets: { visible: boolean, items: Array<{ iri: string, title: string, description: string, href: string }> },
+ * }} SuggestionDetailTemplateData
+ */
+
+/**
+ * @param {SuggestionDetailViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @param {any} reply
+ */
 export function renderHtml(services, languages, query, data, reply) {
   if (data == null) {
     services.http.handleNotFound(services, reply);
@@ -14,6 +51,13 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
+/**
+ * @param {SuggestionDetailViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @returns {SuggestionDetailTemplateData}
+ */
 export function prepareTemplateData(services, languages, query, data) {
   const language = languages[0];
   const datasets = data["datasets"];

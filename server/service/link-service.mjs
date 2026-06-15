@@ -1,7 +1,12 @@
+/**
+ * @typedef {{ wrapLink: (url: string) => string }} LinkService
+ */
 
 /**
  * Objective of link service is to update links to external resources.
  * Those may include links to publishers, catalogs, and datasets.
+ * @param {import('../configuration.ts').Configuration} configuration
+ * @returns {LinkService}
  */
 export function createLinkService(configuration) {
   const template = configuration.client.dereferenceTemplate;
@@ -22,10 +27,19 @@ export function createLinkService(configuration) {
   };
 }
 
+/**
+ * @param {string} url
+ * @returns {string}
+ */
 function pass(url) {
   return url;
 }
 
+/**
+ * @param {string} template
+ * @param {string} url
+ * @returns {string}
+ */
 function substituteToTemplate(template, url) {
   return template.replace("{}", encodeURIComponent(url));
 }

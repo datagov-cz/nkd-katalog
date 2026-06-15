@@ -1,4 +1,16 @@
 
+/**
+ * @typedef {{
+ *   handlerError: (reply: any) => void,
+ *   handlePathNotFound: (reply: any) => void,
+ *   handleNotFound: (viewServices: any, reply: any) => void,
+ * }} HttpStatusHandlers
+ */
+
+/**
+ * @param {import('../../service/template-service.ts').TemplateService[]} templates
+ * @returns {HttpStatusHandlers}
+ */
 export default function createHandlers(templates) {
   return {
     "handlerError": (reply) =>

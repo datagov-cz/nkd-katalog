@@ -1,5 +1,13 @@
 /**
+ * @typedef {{
+ *   fetchDatasetVdf: (iri: string) => Promise<{usedAsCodelistBy: string[], usingCodelists: string[]}>
+ * }} SparqlVdfService
+ */
+
+/**
  * Data source for Veřejný datový fond (VDF).
+ * @param {import('../connector/sparql.mjs').SparqlConnector} sparqlConnector
+ * @returns {SparqlVdfService}
  */
 export function createSparqlVdf(sparqlConnector) {
   return {
@@ -11,7 +19,7 @@ export function createSparqlVdf(sparqlConnector) {
 /**
  * @param {*} sparqlConnector
  * @param {string} iri
- * @return {object}
+ * @return {Promise<{usedAsCodelistBy:string[], usingCodelists: string[]}>}
  */
 async function fetchDatasetVdf(sparqlConnector, iri) {
   const usedBy = await sparqlConnector.executeSparqlSelect(

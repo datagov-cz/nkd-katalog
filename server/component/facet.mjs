@@ -1,9 +1,38 @@
 import {DEFAULT_FACET_SIZE} from "../constants.mjs";
 
+/**
+ * @typedef {{
+ *   iri: string,
+ *   count: number,
+ *   href: string,
+ *   label?: string,
+ *   active?: boolean,
+ * }} FacetItemData
+ *
+ * @typedef {{
+ *   label: string,
+ *   count: number,
+ *   items: FacetItemData[],
+ *   tooltipMessage: string | undefined,
+ *   showMoreHref?: string,
+ *   showInitialHref?: string,
+ * }} FacetData
+ */
+
 export function registerFacet(templateService, language) {
   templateService.syncAddComponent("facet", "facet-" + language + ".html");
 }
 
+/**
+ * @param {import('../service/navigation-service.mjs').IViewBoundNavigation} navigationService
+ * @param {any} query
+ * @param {any[]} facetData
+ * @param {string} facetName
+ * @param {string} facetLabel
+ * @param {string | undefined} tooltipMessage
+ * @param {number} count
+ * @returns {FacetData}
+ */
 export function createFacetData(navigationService, query, facetData, facetName, facetLabel, tooltipMessage, count) {
   facetData.forEach(item => prepareFacetItemInPlace(navigationService, facetName, query, item))
   const result = {

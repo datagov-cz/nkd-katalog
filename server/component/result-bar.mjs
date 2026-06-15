@@ -1,7 +1,25 @@
+/**
+ * @typedef {{
+ *   message: string,
+ *   ordering: {
+ *     active: string,
+ *     items: Array<{ label: string, href: string }>,
+ *   },
+ * }} ResultBarData
+ */
+
 export function registerResultBar(templateService) {
   templateService.syncAddComponent("result-bar", "result-bar.html");
 }
 
+/**
+ * @param {import('../service/translation-service.ts').TranslationService} translationService
+ * @param {import('../service/navigation-service.mjs').IViewBoundNavigation} navigationService
+ * @param {any} query
+ * @param {string[][]} sortOptions
+ * @param {number} itemsCount
+ * @returns {ResultBarData}
+ */
 export function createResultBarData(translationService, navigationService, query, sortOptions, itemsCount) {
   return {
     "message": translationService.translate("items-found", itemsCount),

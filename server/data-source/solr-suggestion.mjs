@@ -1,8 +1,62 @@
-import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query";
-import { emptyAsNull, parseFacet, parseDate } from "./shared/solr-response";
+import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query.ts";
+import { emptyAsNull, parseFacet, parseDate } from "./shared/solr-response.ts";
+
+/**
+ * @typedef {{
+ *   iri: string,
+ *   title: string | null,
+ *   description: string | null,
+ *   created: Date | null,
+ *   themes: any[],
+ *   state: any,
+ *   datasets: any[],
+ *   publisher: { iri: string | null, title: string | null },
+ *   mandatory_106: unknown,
+ *   obstacle_special_regulation: unknown,
+ *   obstacle_106: unknown,
+ *   publication_plan: string | null,
+ * }} SolrSuggestion
+ *
+ * @typedef {{
+ *   searchQuery: string | null,
+ *   theme: string[],
+ *   publisher: string[],
+ *   state: string[],
+ *   sort: string,
+ *   sortDirection: "asc" | "desc",
+ *   offset: number,
+ *   limit: number,
+ * }} SolrSuggestionQuery
+ *
+ * @typedef {{
+ *   iri: string,
+ *   title: string | null,
+ *   description: string | null,
+ *   themes: string[],
+ * }} SolrSuggestionListItem
+ *
+ * @typedef {{
+ *   found: any,
+ *   documents: SolrSuggestionListItem[],
+ *   facets: {
+ *     theme: import('./shared/solr-response.ts').FacetItem[],
+ *     publisher: import('./shared/solr-response.ts').FacetItem[],
+ *     state: import('./shared/solr-response.ts').FacetItem[],
+ *   },
+ * }} SolrSuggestionsResponse
+ *
+ * @typedef {{
+ *   fetchSuggestion: (iri: string) => Promise<SolrSuggestion | null>,
+ *   fetchSuggestions: (query: SolrSuggestionQuery) => Promise<SolrSuggestionsResponse>,
+ * }} SolrSuggestionService
+ */
 
 const SOLR_CORE_NAME = "suggestion";
 
+/**
+ * @param {import('../connector/solr-connector.ts').SolrConnector} solrConnector
+ * @returns {SolrSuggestionService}
+ */
 export function createSolrSuggestion(solrConnector) {
   return {
     "fetchSuggestion": (query) =>

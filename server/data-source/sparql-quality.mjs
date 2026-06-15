@@ -1,3 +1,12 @@
+/**
+ * @typedef {{[key:string] : {
+ * value: string,
+ * lastCheck : string,
+ * note: string
+ * }  | null }} QualityMeasures
+ *
+ * @typedef {{ fetchQuality: (languages: string[], iri: string) => Promise<QualityMeasures> }} SparqlQualityService
+ */
 import { getId, getString, getResource, getEntitiesByType, getValue } from "./shared/jsonld.mjs";
 import { selectForLanguages } from "./shared/couchdb-response.mjs";
 import { SKOS, DQV, SDMX, SCHEMA } from "./shared/vocabulary.ts";
@@ -65,8 +74,17 @@ const QUALITY = {
   ...QUALITY_DATA_SERVICE
 };
 
+/**
+ * @param {import('../connector/sparql.mjs').SparqlConnector} sparqlConnector
+ * @returns {SparqlQualityService}
+ */
 export function createSparqlQuality(sparqlConnector) {
   return {
+    /**
+     * @param {string[]} languages
+     * @param {string} iri
+     * @return {Promise<QualityMeasures>}
+     */
     "fetchQuality": (languages, iri) =>
       fetchQuality(sparqlConnector, languages, iri),
   };
@@ -76,7 +94,7 @@ export function createSparqlQuality(sparqlConnector) {
  * @param {*} sparqlConnector
  * @param {string[]} languages
  * @param {string} iri
- * @return {object[]}
+ * @return {Promise<QualityMeasures>}
  */
 async function fetchQuality(sparqlConnector, languages, iri) {
   const query = createQualitySparql(iri);
@@ -112,6 +130,10 @@ async function fetchQuality(sparqlConnector, languages, iri) {
   return convertMeasuresToObject(measures);
 }
 
+/**
+ * @param {string} iri
+ * @returns {string}
+ */
 function createQualitySparql(iri) {
   return `
 prefix dqv: <http://www.w3.org/ns/dqv#>
@@ -139,6 +161,10 @@ CONSTRUCT {
 `;
 }
 
+/**
+ * @param {string} iri
+ * @returns {string}
+ */
 function sdmxRefToDate(iri) {
   if (iri === null) {
     return null;
@@ -146,11 +172,16 @@ function sdmxRefToDate(iri) {
   return iri.substr(iri.lastIndexOf("/") + 1).replace("T", " ");
 }
 
+/**
+ * @param {*} measures
+ * @returns {QualityMeasures}
+ */
 function convertMeasuresToObject(measures) {
   const measuresByType = {};
   for (const measure of measures) {
     measuresByType[measure.measureOf] = measure;
   }
+  /** @type QualityMeasures */
   const result = {};
   for (const [key, iri] of Object.entries(QUALITY)) {
     const measure = measuresByType[iri];

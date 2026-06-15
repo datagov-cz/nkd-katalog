@@ -2,6 +2,66 @@ import { getId, getTypes, getEntityByIri, getString, getStrings, getResource, ge
 import { selectForLanguages } from "./shared/couchdb-response.mjs";
 import { DCTERMS, DCAT, VCARD, SKOS, SGOV, EUA, ADMS, FOAF, OWL, NKOD, PU, SPDX , EUROPE} from "./shared/vocabulary.ts";
 
+/**
+ * @typedef {{
+ *   iri: string,
+ *   title: {[language: string]: string} | null,
+ *   description: {[language: string]: string} | null,
+ *   contactPoints: Array<{ iri: string, title: {[language: string]: string} | null, email: string | null }>,
+ *   distributions: string[],
+ *   distributionsFound: number,
+ *   keywords: Array<{[language: string]: string}>,
+ *   publisher: any,
+ *   themes: any[],
+ *   euroVocThemes: any[],
+ *   accessRights: any[],
+ *   conformsTo: any[],
+ *   documentation: string[],
+ *   frequency: any,
+ *   hasVersion: string[],
+ *   identifier: string[],
+ *   isVersionOf: string[],
+ *   landingPage: string[],
+ *   language: string[],
+ *   otherIdentifier: string[],
+ *   provenance: string[],
+ *   relation: string[],
+ *   issued: string[],
+ *   sample: string[],
+ *   source: string[],
+ *   spatial: any[],
+ *   spatialResolutionInMeters: number | null,
+ *   temporal: { iri: string, startDate: string | null, endDate: string | null } | null,
+ *   temporalResolution: string | null,
+ *   type: string[],
+ *   modified: string[],
+ *   version: string[],
+ *   versionNotes: string[],
+ *   datasets: string[],
+ *   parentDataset: any,
+ *   catalog: string | null,
+ *   catalogSource: string | null,
+ *   localCatalog: string | null,
+ *   isFromForm: boolean,
+ *   isFromCatalog: boolean,
+ *   semanticThemes: any[],
+ *   isFromVdf: boolean,
+ *   isCodelist: boolean,
+ *   vdfOriginator: string | null,
+ *   applicableLegislation: string[],
+ *   hvdCategory: any[],
+ * }} CouchDbDataset
+ *
+ * @typedef {{
+ *   fetchDataset: (languages: string[], query: { iri: string, distributionOffset: number, distributionLimit: number }) => Promise<CouchDbDataset | null>,
+ *   fetchDatasetPreview: (languages: string[], iri: string) => Promise<{ iri: string, title: string | null, description: string | null } | null>,
+ * }} CouchDbDatasetService
+ */
+
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @returns {CouchDbDatasetService}
+ */
 export function createCouchDbDataset(couchDbConnector) {
   return {
     "fetchDataset": (languages, query) =>

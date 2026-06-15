@@ -34,13 +34,14 @@ export function hasType(entity, type) {
 /**
  * @param {object} entity
  * @param {string} predicate
- * @returns {object | null} Object with language pairs.
+ * @returns {{[language: string]: string} | null} Object with language pairs.
  */
 export function getString(entity, predicate) {
   const strings = getStrings(entity, predicate);
   if (strings.length === 0) {
     return null;
   }
+  /** @type {{ [language: string]: string }} */
   let result = {}
   strings.forEach((string) => {
     result = { ...result, ...string };

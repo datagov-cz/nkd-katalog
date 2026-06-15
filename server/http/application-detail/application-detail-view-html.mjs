@@ -1,6 +1,41 @@
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 
+/**
+ * @typedef {{
+ *   configuration: import('../../configuration.ts').Configuration,
+ *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   template: import('../../service/template-service.ts').TemplateService,
+ *   http: any,
+ * }} ApplicationDetailViewServices
+ *
+ * @typedef {{
+ *   head: import('../../component/head.ts').HeadData,
+ *   navigation: import('../../component/navigation.mjs').NavigationData,
+ *   footer: import('../../component/footer.mjs').FooterData,
+ *   application: {
+ *     author: { title: string | null, titleVisible: boolean, iri: string | null, iriVisible: boolean },
+ *     title: string,
+ *     description: string,
+ *     states: Array<{ iri: string, label: string, href: string }>,
+ *     themes: Array<{ iri: string, label: string, href: string }>,
+ *     platforms: Array<{ iri: string, label: string, href: string }>,
+ *     types: Array<{ iri: string, label: string, href: string }>,
+ *     published: string,
+ *     modified: string,
+ *     link: string,
+ *   },
+ *   datasets: { visible: boolean, items: Array<{ iri: string, title: string, description: string, href: string }> },
+ * }} ApplicationDetailTemplateData
+ */
+
+/**
+ * @param {ApplicationDetailViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @param {any} reply
+ */
 export function renderHtml(services, languages, query, data, reply) {
   if (data == null) {
     services.http.handleNotFound(services, reply);
@@ -14,6 +49,13 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
+/**
+ * @param {ApplicationDetailViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @returns {ApplicationDetailTemplateData}
+ */
 export function prepareTemplateData(services, languages, query, data) {
   const language = languages[0];
   const datasets = data["datasets"];

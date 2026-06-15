@@ -1,6 +1,40 @@
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 
+/**
+ * @typedef {{
+ *   configuration: import('../../configuration.ts').Configuration,
+ *   translation: import('../../service/translation-service.ts').TranslationService,
+ *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   link: import('../../service/link-service.mjs').LinkService,
+ *   template: import('../../service/template-service.ts').TemplateService,
+ * }} LocalCatalogListViewServices
+ *
+ * @typedef {{
+ *   head: import('../../component/head.ts').HeadData,
+ *   navigation: import('../../component/navigation.mjs').NavigationData,
+ *   footer: import('../../component/footer.mjs').FooterData,
+ *   message: string,
+ *   catalogs: Array<{
+ *     iri: string,
+ *     title: string,
+ *     url: string,
+ *     publisher: { iri: string, label: string },
+ *     homepageUrl: string,
+ *     endpointUrl: string,
+ *     deleteUrl: string,
+ *     validateUrl: string,
+ *   }>,
+ * }} LocalCatalogListTemplateData
+ */
+
+/**
+ * @param {LocalCatalogListViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @param {any} reply
+ */
 export function renderHtml(services, languages, query, data, reply) {
   const templateData = prepareTemplateData(services, languages, query, data);
   const template = services.template.view(ROUTE.LOCAL_CATALOG_LIST);
@@ -10,6 +44,13 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
+/**
+ * @param {LocalCatalogListViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @returns {LocalCatalogListTemplateData}
+ */
 export function prepareTemplateData(services, languages, query, data) {
   prepareCatalogsInPlace(services.configuration, services.link, services.translation, data["catalogs"])
   return {

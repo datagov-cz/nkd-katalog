@@ -1,7 +1,16 @@
 import cron from "node-cron";
 
-import logger from "../logger";
+import logger from "../logger.ts";
 
+/**
+ * @typedef {{ initialize: () => void }} CronService
+ */
+
+/**
+ * @param {import('../configuration.ts').Configuration} configuration
+ * @param {import('./label-service.ts').LabelService} labelService
+ * @returns {CronService}
+ */
 export function createCronService(configuration, labelService) {
   return {
     /**
@@ -11,6 +20,10 @@ export function createCronService(configuration, labelService) {
   };
 }
 
+/**
+ * @param {import('../configuration.ts').Configuration} configuration
+ * @param {import('./label-service.ts').LabelService} labelService
+ */
 function initialize(configuration, labelService) {
   if (isNotEmpty(configuration.server.labelReloadCron)) {
     logger.info("Cache reload registered.")
@@ -20,6 +33,10 @@ function initialize(configuration, labelService) {
   }
 }
 
+/**
+ * @param {unknown} value
+ * @returns {boolean}
+ */
 function isNotEmpty(value) {
   return value !== undefined && value !== null && value !== "";
 }

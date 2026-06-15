@@ -1,11 +1,19 @@
 import { parseLabelResponse } from "./shared/couchdb-response.mjs";
 import { FOAF, SKOS } from "./shared/vocabulary.ts";
 
+/**
+ * @typedef {{
+ *   fetchLabel: (languages: string[], iri: string) => Promise<{[language: string]: string} | null>,
+ *   fetchInitialCache: (languages: string[]) => Promise<import('./couchdb-static.mjs').CacheItem[]>
+ * }} CouchDbSuggestionsService
+ */
+
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @returns {CouchDbSuggestionsService}
+ */
 export function createCouchDbSuggestions(couchDbConnector) {
   return {
-    /**
-     * Returns tuple [language, value].
-     */
     "fetchLabel": (languages, iri) =>
       fetchLabel(couchDbConnector, languages, iri),
     "fetchInitialCache": (languages) =>
@@ -15,18 +23,34 @@ export function createCouchDbSuggestions(couchDbConnector) {
 
 const COUCHDB_DATABASE_NAME = "suggestion";
 
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @param {string[]} languages
+ * @param {string} iri
+ * @returns {Promise<{[language: string]: string} | null>}
+ */
 async function fetchLabel(couchDbConnector, languages, iri) {
   const response = await couchDbConnector.fetch(
     COUCHDB_DATABASE_NAME, iri);
   return parseLabelResponse(languages, response, FOAF.name);
 }
 
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @param {string[]} languages
+ * @returns {Promise<import('./couchdb-static.mjs').CacheItem[]>}
+ */
 async function fetchInitialCache(couchDbConnector, languages) {
   const response = await couchDbConnector.fetch(
     COUCHDB_DATABASE_NAME, "initial_data_cache");
   return parseInitialDataCacheResponse(response, languages);
 }
 
+/**
+ * @param {any} response
+ * @param {string[]} languages
+ * @returns {import('./couchdb-static.mjs').CacheItem[]}
+ */
 function parseInitialDataCacheResponse(response, languages) {
   const result = [];
   for (const item of response?.jsonld ?? []) {

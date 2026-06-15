@@ -6,6 +6,26 @@ import * as querystring from "node:querystring";
  */
 const NOOP = (_, serverQuery) => serverQuery;
 
+/**
+ * @typedef {{
+ *   queryArgumentFromClient: (clientQuery: object, serverKey: string) => string | null,
+ *   queryArgumentArrayFromClient: (clientQuery: object, serverKey: string) => string[],
+ *   argumentFromServer: (serverKey: string) => string | null,
+ *   linkFromServer: (query: object) => string,
+ *   changeLanguage: (language: string) => IViewBoundNavigation,
+ *   changeView: (viewName: string) => IViewBoundNavigation,
+ *   setNavigationData: (serverToLocal: object) => IViewBoundNavigation,
+ *   setBeforeLink: (callback: Function) => IViewBoundNavigation,
+ * }} IViewBoundNavigation
+ *
+ * @typedef {{
+ *   view: (language: string, viewName: string) => IViewBoundNavigation,
+ * }} INavigationService
+ */
+
+/**
+ * @returns {NavigationService}
+ */
 export function createNavigationService() {
   return new NavigationService();
 }
@@ -134,6 +154,7 @@ class ViewBoundNavigation {
    * @returns {String}
    */
   queryFromServer(query) {
+    /** @type querystring.ParsedUrlQueryInput */
     const localized = {};
     for (const [key, value] of Object.entries(query)) {
       if (isEmpty(value)) {

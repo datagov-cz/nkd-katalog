@@ -3,6 +3,11 @@ const DEFAULT_PAGE = 1;
 
 const DEFAULT_DISTRIBUTION_PAGE_SIZE = 25;
 
+/**
+ * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {Record<string, string | string[]>} query
+ * @returns {{ iri: string | null, distributionPage: number, distributionPageSize: number }}
+ */
 export function parseClientQuery(navigation, query) {
   const distributionPage = navigation.queryArgumentFromClient(query, "distribution-page");
 
@@ -25,6 +30,11 @@ function asPositiveNumber(value, defaultValue) {
   }
 }
 
+/**
+ * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {any} serverQuery
+ * @returns {Record<string, any>}
+ */
 export function beforeLinkCallback(navigation, serverQuery) {
   const result = {
     "iri": serverQuery.iri,

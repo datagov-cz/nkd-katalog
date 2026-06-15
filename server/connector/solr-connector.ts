@@ -1,6 +1,7 @@
 import logger from "../logger.ts";
 import { hasRequestFailed, HttpConnector, HttpFailed } from "./http-connector.ts";
 import {
+  SolrResponse,
   SuccessSolrResponse,
   isErrorSolrResponse,
   isSuccessSolrResponse,
@@ -32,7 +33,7 @@ class DefaultSolrConnector implements SolrConnector {
     if (hasRequestFailed(response)) {
       throw new HttpFailed(response, "Failed to fetch data from Solr.");
     }
-    const payload = await response.json();
+    const payload = await response.json() as SolrResponse;
     if (isErrorSolrResponse(payload)) {
       logger.info({ query, url }, "Solr request failed.");
       throw new Error("Solr request failed.");

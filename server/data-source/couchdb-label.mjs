@@ -1,11 +1,18 @@
 import { parseLabelResponse } from "./shared/couchdb-response.mjs";
 import { SKOS, DCTERMS } from "./shared/vocabulary.ts";
 
+/**
+ * @typedef {{
+ *   fetchLabel: (languages: string[], iri: string) => Promise<{[language: string]: string} | null>
+ * }} CouchDbLabelService
+ */
+
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @returns {CouchDbLabelService}
+ */
 export function createCouchDbLabel(couchDbConnector) {
   return {
-    /**
-     * Returns tuple {language: value}.
-     */
     "fetchLabel": (languages, iri) =>
       fetchLabel(couchDbConnector, languages, iri),
   };
@@ -13,6 +20,12 @@ export function createCouchDbLabel(couchDbConnector) {
 
 const COUCHDB_DATABASE_NAME = "label";
 
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @param {string[]} languages
+ * @param {string} iri
+ * @returns {Promise<{[language: string]: string} | null>}
+ */
 async function fetchLabel(couchDbConnector, languages, iri) {
   const response = await couchDbConnector.fetch(COUCHDB_DATABASE_NAME, iri);
   return parseLabelResponse(languages, response, [SKOS.prefLabel, DCTERMS.title]);

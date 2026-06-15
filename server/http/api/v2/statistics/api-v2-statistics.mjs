@@ -1,3 +1,7 @@
+/**
+ * @param {import('../../../../service/service.mjs').Services} services
+ * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
+ */
 export default function createHandler(services) {
   // Create handler.
   return {

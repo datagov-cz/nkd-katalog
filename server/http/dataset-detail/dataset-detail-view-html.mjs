@@ -1,6 +1,59 @@
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 
+/**
+ * @typedef {{
+ *   configuration: import('../../configuration.ts').Configuration,
+ *   translation: import('../../service/translation-service.ts').TranslationService,
+ *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   link: import('../../service/link-service.mjs').LinkService,
+ *   template: import('../../service/template-service.ts').TemplateService,
+ *   http: any,
+ * }} DatasetDetailViewServices
+ *
+ * @typedef {{
+ *   head: import('../../component/head.ts').HeadData,
+ *   navigation: import('../../component/navigation.mjs').NavigationData,
+ *   footer: import('../../component/footer.mjs').FooterData,
+ *   dataset: {
+ *     iri: string,
+ *     heading: { title: string, openUrl: string, copyUrl: string, editUrl?: string, deleteDatasetUrl?: string, deleteCatalogUrl?: string },
+ *     publisher: { label: string, href: string },
+ *     description: string,
+ *     keywords: Array<{ label: string, href: string }>,
+ *     themesVisible: boolean,
+ *     themes: Array<{ iri: string, label: string, href: string }>,
+ *     euroVocThemesVisible: boolean,
+ *     euroVocThemes: Array<{ iri: string, label: string, href: string }>,
+ *     spatialVisible: boolean,
+ *     spatial: Array<any>,
+ *     spatialResolutionInMetersVisible: boolean,
+ *     spatialResolutionInMeters: number | null,
+ *     temporalResolutionVisible: boolean,
+ *     temporalResolution: string | null,
+ *     temporalVisible: boolean,
+ *     temporal: string | null,
+ *     documentationVisible: boolean,
+ *     documentation: string[],
+ *     contactVisible: boolean,
+ *     contact: Array<{ label: string, href: string }>,
+ *     conformsToVisible: boolean,
+ *     conformsTo: Array<{ href: string, label: string }>,
+ *     frequencyVisible: boolean,
+ *     frequency: { iri: string | undefined, label: string | undefined },
+ *     parentDataset: { href: string, label: string } | null,
+ *     hvdCategoryVisible: boolean,
+ *     hvdCategory: Array<{ iri: string, href: string, label: string }>,
+ *     applicableLegislationVisible: boolean,
+ *     applicableLegislation: Array<{ url: string, label: string, chip: { variant: string, label: string } | null }>,
+ *   },
+ *   distributions: { visible: boolean, pagination?: Record<string, any>, items?: Array<any> },
+ *   applications: { visible: boolean, items: Array<{ title: string, description: string, href: string }> },
+ *   datasetSeries: { visible: boolean, total: number, items: Array<{ title: string, description: string, href: string }>, showAllHref: string },
+ *   metadataAsString: string,
+ * }} DatasetDetailTemplateData
+ */
+
 const SPARQL_SCHEMA = "https://www.w3.org/TR/sparql11-protocol/";
 
 const PU_PREFIX = "https://data.gov.cz/podmínky-užití/";
@@ -25,7 +78,7 @@ const AUTHORSHIP_MAP = {
     "iconTitle": "ccby-authorship-comment",
     "author": author,
   }),
-  [null]: () => ({
+  null: () => ({
     "label": "missing-authorship",
     "icon": "exclamation-circle",
     "iconStyle": "danger",
@@ -56,7 +109,7 @@ const DATABASE_AUTHORSHIP_MAP = {
     "iconTitle": "ccby-database-authorship-comment",
     "author": author
   }),
-  [null]: () => ({
+  null: () => ({
     "label": "missing-database-authorship",
     "icon": "exclamation-circle",
     "iconStyle": "danger",
@@ -92,7 +145,7 @@ const PROTECTED_DATABASE_AUTHORSHIP_MAP = {
     "iconStyle": "warning",
     "iconTitle": "ccby-database-authorship-comment",
   }),
-  [null]: () => ({
+  null: () => ({
     "label": "missing-protected-database-authorship",
     "icon": "exclamation-circle",
     "iconStyle": "danger",
@@ -128,7 +181,7 @@ const PERSONAL_DATA_MAP = {
     "iconStyle": "warning",
     "iconTitle": "unspecified-personal-data-comment",
   }),
-  [null]: () => ({
+  null: () => ({
     "label": "missing-personal-data-information-label",
     "icon": "person-fill",
     "iconStyle": "danger",
@@ -140,6 +193,13 @@ const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
 
 const LEGISLATION_DYNAMIC_DATA = "https://www.e-sbirka.cz/eli/cz/sb/1999/106/2024-01-01/dokument/norma/cast_1/par_3a/odst_6";
 
+/**
+ * @param {DatasetDetailViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @param {any} reply
+ */
 export function renderHtml(services, languages, query, data, reply) {
   if (data == null) {
     services.http.handleNotFound(services, reply);
@@ -156,6 +216,16 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
+/**
+ * @param {import('../../configuration.ts').Configuration} configuration
+ * @param {import('../../service/translation-service.ts').TranslationService} translation
+ * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {import('../../service/link-service.mjs').LinkService} link
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @returns {DatasetDetailTemplateData}
+ */
 export function prepareTemplateData(configuration, translation, navigation, link, languages, query, data) {
   return {
     "head": components.createHeadData(configuration),

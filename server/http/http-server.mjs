@@ -2,10 +2,14 @@ import path from "node:path";
 
 import Fastify from "fastify";
 import cors from "@fastify/cors";
-import logger from "../logger";
+import logger from "../logger.ts";
 
 import { registerHttpRoutes } from "./route.mjs";
 
+/**
+ * @param {import('../configuration.ts').Configuration} configuration
+ * @returns {Promise<import('fastify').FastifyInstance>}
+ */
 export async function createHttpServer(configuration) {
   const application = Fastify({
     loggerInstance: logger,
@@ -21,6 +25,11 @@ export async function createHttpServer(configuration) {
   return application;
 }
 
+/**
+ * @param {import('../configuration.ts').Configuration} configuration
+ * @param {import('fastify').FastifyInstance} server
+ * @param {import('../service/service.mjs').Services} services
+ */
 export function registerRoutes(configuration, server, services) {
   if (configuration.server.serverAssets) {
     registerAssetsRoutes(configuration, server);
@@ -52,6 +61,10 @@ function registerAssetsRoutes(configuration, server) {
   }
 }
 
+/**
+ * @param {import('fastify').FastifyInstance} server
+ * @param {import('../configuration.ts').Configuration} configuration
+ */
 export function startServer(server, configuration) {
   server.listen({
     port: configuration.http.port,

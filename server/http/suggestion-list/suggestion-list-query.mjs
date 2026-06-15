@@ -10,6 +10,11 @@ const DEFAULT_SORT_DIRECTION = "asc";
 
 const DEFAULT_PAGE = 0;
 
+/**
+ * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {Record<string, string | string[]>} query
+ * @returns {any}
+ */
 export function parseClientQuery(navigation, query) {
   const clientSort = navigation.queryArgumentFromClient(query, "sort");
   const sort = selectArgumentFromClientQueryOrDefault(
@@ -67,6 +72,11 @@ function asPositiveNumber(value, defaultValue) {
   }
 }
 
+/**
+ * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {any} serverQuery
+ * @returns {Record<string, any>}
+ */
 export function beforeLinkCallback(navigation, serverQuery) {
   const result = {};
   setIfNotEmpty(result, "query", serverQuery.searchQuery);

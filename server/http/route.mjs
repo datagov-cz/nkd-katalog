@@ -11,9 +11,13 @@ import createLocalCatalogList from "./local-catalog-list/local-catalog-list-pres
 import createDatasetList from "./dataset-list/dataset-list-presenter.mjs";
 import createDatasetDetail from "./dataset-detail/dataset-detail-presenter.mjs";
 
-import { createTemplateService } from "../service/template-service.mjs";
+import { createTemplateService } from "../service/template-service.ts";
 import { registerComponents } from "../component/index.mjs";
 
+/**
+ * @param {import('fastify').FastifyInstance} server
+ * @param {import('../service/service.mjs').Services} services
+ */
 export function registerHttpRoutes(server, services) {
   const templateCs = createAndPreloadTemplateService("cs");
   const templateEn = createAndPreloadTemplateService("en");

@@ -1,10 +1,10 @@
 import { getString } from "./jsonld.mjs";
 
 /**
- * @param {*} languages Unused as we retrieve all data.
+ * @param {string[] | null | undefined} languages Unused as we retrieve all data.
  * @param {*} response Response object with "jsonld" field.
  * @param {string | string[]} predicate Single predicate or array.
- * @returns {language: string}
+ * @returns {{[language: string]: string}}
  */
 export function parseLabelResponse(languages, response, predicate) {
   if (response["error"] !== undefined) {
@@ -19,11 +19,12 @@ export function parseLabelResponse(languages, response, predicate) {
     return {};
   }
   if (Array.isArray(predicate)) {
+    /** @type {{ [language: string]: string }} */
     let result = {};
     for (const item of predicate) {
       result = {
         ...result,
-        ...getString(resource, item),
+        ...(getString(resource, item) ?? {}),
       };
     }
     return result;
@@ -38,7 +39,7 @@ export function parseLabelResponse(languages, response, predicate) {
  * @returns {string | null} Null only for null and undefined.
  */
 export function selectForLanguages(languages, values) {
-  if (values === null | values === undefined) {
+  if (values === null || values === undefined) {
     return null;
   }
   for (const language of languages) {

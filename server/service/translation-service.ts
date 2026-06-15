@@ -1,14 +1,17 @@
-export type Translations = Record<string, string | Function>;
-
-export interface TranslationService {
-  translate: (serverMessage: string, args: any) => string;
-}
 
 /**
  * Create translation service from pairs or server local strings.
  */
-export function createTranslationService(serverToLocal: Translations) {
+export function createTranslationService(
+  serverToLocal: Translations,
+): TranslationService {
   return new DefaultTranslationService(serverToLocal);
+}
+
+export type Translations = Record<string, string | Function | (string | number)[][]>;
+
+export interface TranslationService {
+  translate: (serverMessage: string, args?: any) => string;
 }
 
 class DefaultTranslationService implements TranslationService {

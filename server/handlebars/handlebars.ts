@@ -2,7 +2,7 @@ import Handlebars from "handlebars";
 
 type HandlebarsType = typeof Handlebars;
 
-export function createHandlebars() {
+export function createHandlebars(): HandlebarsType {
   const handlebars = Handlebars.create();
   registerHelpers(handlebars);
   return handlebars;

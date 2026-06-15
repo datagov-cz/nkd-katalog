@@ -1,4 +1,9 @@
 
+/**
+ * @param {import('../../service/service.mjs').Services} services
+ * @param {string[]} languages
+ * @returns {Promise<{ catalogs: import('../../data-source/couchdb-catalog.mjs').LocalCatalog[] | null }>}
+ */
 export async function prepareData(services, languages) {
   const catalogs = await services.couchDbLocalCatalog.fetchCatalogs(languages);
   // Collect all publisher objects into a temporary array and assign labels.

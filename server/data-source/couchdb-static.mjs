@@ -1,5 +1,15 @@
 import { FOAF, SKOS } from "./shared/vocabulary.ts";
 
+/**
+ * @typedef {{ iri: string, labels: Array<{ value: string, language: string }> }} CacheItem
+ *
+ * @typedef {{ fetchInitialCache: (languages: string[]) => Promise<CacheItem[]> }} CouchDbStaticService
+ */
+
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @returns {CouchDbStaticService}
+ */
 export function createCouchDbStatic(couchDbConnector) {
   return {
     "fetchInitialCache": (languages) =>
@@ -9,12 +19,22 @@ export function createCouchDbStatic(couchDbConnector) {
 
 const COUCHDB_DATABASE_NAME = "static";
 
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @param {string[]} languages
+ * @returns {Promise<CacheItem[]>}
+ */
 async function fetchInitialCache(couchDbConnector, languages) {
   const response = await couchDbConnector.fetch(
     COUCHDB_DATABASE_NAME, "initial_data_cache");
   return parseInitialDataCacheResponse(response, languages);
 }
 
+/**
+ * @param {any} response
+ * @param {string[]} languages
+ * @returns {CacheItem[]}
+ */
 function parseInitialDataCacheResponse(response, languages) {
   const result = [];
   for (const item of response?.jsonld ?? []) {

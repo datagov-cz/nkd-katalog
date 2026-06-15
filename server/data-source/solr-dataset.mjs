@@ -11,7 +11,10 @@
  * vdfPublicData: boolean | null,
  * vdfCodelist: boolean | null,
  * isPartOf: string[],
- * dataset_type: string[],
+ * dataset_type?: string[],
+ * hvdCategory: string[],
+ * applicableLegislation: string[],
+ * datasetType: string[],
  * sort: string,
  * sortDirection: "asc" | "desc",
  * offset: number,
@@ -33,13 +36,10 @@
  * facets: Record<string, number>
  * }} SolrDatasetResponse
  *
- * @typedef {{
- * iri: string,
- * count: number,
- * }} Facet[]
+ * @typedef {import('./shared/solr-response.ts').FacetItem[]} Facet
  *
  * @typedef {{
- * found: number,
+ * found: any,
  * documents: SolrDataset[],
  * facets: {
  *   keyword: Facet,
@@ -49,6 +49,7 @@
  *   theme: Facet,
  *   hvdCategory: Facet,
  *   datasetType: Facet,
+ *   isPartOf?: any[],
  * }}} DatasetsResponse
  *
  * @typedef {{
@@ -71,13 +72,13 @@
  *
  * @typedef {{
  * fetchStatistics: (language:string) => any,
- * fetchDatasets: (languages: string[], query: SolrDatasetQuery) => SolrDatasetResponse,
- * fetchDatasetsForDatasetsDetail: (languages: string[], query: SolrPartOfDatasetQuery) => SolrPartOfDatasetResponse,
+ * fetchDatasets: (languages: string[], query: SolrDatasetQuery) => Promise<DatasetsResponse>,
+ * fetchDatasetsForDatasetsDetail: (languages: string[], query: SolrPartOfDatasetQuery) => Promise<SolrPartOfDatasetResponse>,
  * }} SolrDatasetService
  */
 
-import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query";
-import { selectLanguage, parseFacet } from "./shared/solr-response";
+import { prepareFieldQuery, prepareTextQuery, prepareSort } from "./shared/solr-query.ts";
+import { selectLanguage, parseFacet } from "./shared/solr-response.ts";
 
 const SOLR_CORE_NAME = "dataset";
 
@@ -87,21 +88,21 @@ const SOLR_CORE_NAME = "dataset";
 export function createSolrDataset(solrConnector) {
   return {
     /**
-     * @param {string} languages
+     * @param {string} language
      */
     "fetchStatistics": (language) =>
       fetchStatistics(solrConnector, language),
     /**
      * @param {string[]} languages
      * @param {SolrDatasetQuery} query
-     * @returns {SolrDatasetResponse}
+     * @returns {Promise<DatasetsResponse>}
      */
     "fetchDatasets": (languages, query) =>
       fetchDatasets(solrConnector, languages, query),
     /**
      * @param {string[]} languages
      * @param {SolrPartOfDatasetQuery} query
-     * @returns {SolrPartOfDatasetResponse}
+     * @returns {Promise<SolrPartOfDatasetResponse>}
      */
     "fetchDatasetsForDatasetsDetail": (languages, query) =>
       fetchDatasetsForDatasetsDetail(solrConnector, languages, query),
@@ -133,7 +134,7 @@ async function fetchStatistics(solrConnector, language) {
  * @param {*} solrConnector
  * @param {string[]} languages
  * @param {SolrDatasetQuery} query
- * @returns {{found: number, documents: SolrDataset[], facets: Record<string, number>}}
+ * @returns {Promise<DatasetsResponse>}
  */
 async function fetchDatasets(solrConnector, languages, query) {
   const solrQuery = buildDatasetsQuery(languages[0], query);
@@ -142,7 +143,7 @@ async function fetchDatasets(solrConnector, languages, query) {
 }
 
 /**
- * @param {string[]} languages
+ * @param {string} language
  * @param {SolrDatasetQuery} query
  * @returns
  */
@@ -272,7 +273,7 @@ function parseDatasetResponseDocument(document, languages) {
  * @param {*} solrConnector
  * @param {string[]} languages
  * @param {SolrPartOfDatasetQuery} query
- * @returns {{found: number, documents: SolrPartOfDataset[]}}
+ * @returns {Promise<{found: number, documents: SolrPartOfDataset[]}>}
  */
 async function fetchDatasetsForDatasetsDetail(solrConnector, languages, query) {
   const solrQuery = buildDatasetsDetailQuery(languages[0], query);
@@ -281,7 +282,7 @@ async function fetchDatasetsForDatasetsDetail(solrConnector, languages, query) {
 }
 
 /**
- * @param {string[]} languages
+ * @param {string} language
  * @param {SolrPartOfDatasetQuery} query
  * @returns
  */

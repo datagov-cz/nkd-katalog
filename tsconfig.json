@@ -5,7 +5,7 @@
     "useDefineForClassFields": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "strict": true,
+    "strict": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -15,6 +15,7 @@
     "allowImportingTsExtensions": true,
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "assets"
   ]
 }

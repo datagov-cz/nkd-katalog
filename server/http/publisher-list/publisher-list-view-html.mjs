@@ -1,6 +1,39 @@
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 
+/**
+ * @typedef {{
+ *   configuration: import('../../configuration.ts').Configuration,
+ *   translation: import('../../service/translation-service.ts').TranslationService,
+ *   navigation: import('../../service/navigation-service.mjs').IViewBoundNavigation,
+ *   template: import('../../service/template-service.ts').TemplateService,
+ * }} PublisherListViewServices
+ *
+ * @typedef {{
+ *   head: import('../../component/head.ts').HeadData,
+ *   navigation: import('../../component/navigation.mjs').NavigationData,
+ *   footer: import('../../component/footer.mjs').FooterData,
+ *   message: string,
+ *   publishers: Array<{
+ *     iri: string,
+ *     label: string,
+ *     count: number,
+ *     href: string,
+ *     dashboardDaily: string,
+ *     dashboardMonthly: string,
+ *     message: string,
+ *     badges: { vdf: boolean, vdfOriginator: boolean, vdfPublisher: boolean },
+ *   }>,
+ * }} PublisherListTemplateData
+ */
+
+/**
+ * @param {PublisherListViewServices} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @param {any} reply
+ */
 export function renderHtml(services, languages, query, data, reply) {
   const templateData = prepareTemplateData(
     services.configuration, services.navigation,
@@ -12,6 +45,15 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
+/**
+ * @param {import('../../configuration.ts').Configuration} configuration
+ * @param {import('../../service/navigation-service.mjs').IViewBoundNavigation} navigation
+ * @param {import('../../service/translation-service.ts').TranslationService} translation
+ * @param {string[]} languages
+ * @param {any} query
+ * @param {any} data
+ * @returns {PublisherListTemplateData}
+ */
 export function prepareTemplateData(configuration, navigation, translation, languages, query, data) {
   preparePublishersInPlace(configuration, navigation, translation, data["publishers"])
   return {

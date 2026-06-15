@@ -1,4 +1,4 @@
-import logger from "../logger";
+import logger from "../logger.ts";
 
 const VDF_PREFIX = "https://data.gov.cz/slovník/nkod/role-poskytovatele-ve-vdf/";
 
@@ -6,6 +6,17 @@ const VDF_ORIGINATOR = VDF_PREFIX + "původce-vdf";
 
 const VDF_PUBLISHER = VDF_PREFIX + "poskytovatel-vdf";
 
+/**
+ * @typedef {{ iri: string, vdfOriginator: unknown, vdfPublisher: unknown }} VdfPublisher
+ *
+ * @typedef {{ fetchPublishersVdf: () => Promise<VdfPublisher[] | null> }} CouchDbVdfService
+ */
+
+/**
+ * Data source for Veřejný datový fond (VDF).
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @returns {CouchDbVdfService}
+ */
 export function createCouchDbVdf(couchDbConnector) {
   return {
     "fetchPublishersVdf": () =>
@@ -15,6 +26,10 @@ export function createCouchDbVdf(couchDbConnector) {
 
 const COUCHDB_DATABASE_NAME = "static";
 
+/**
+ * @param {import('../connector/couchdb.mjs').CouchDbConnector} couchDbConnector
+ * @returns {Promise<VdfPublisher[] | null>}
+ */
 async function fetchPublishersVdf(couchDbConnector) {
   const response = await couchDbConnector.fetch(
     COUCHDB_DATABASE_NAME, "publishers_vdf");
@@ -27,6 +42,10 @@ async function fetchPublishersVdf(couchDbConnector) {
   return parsePublishersVdf(jsonld);
 }
 
+/**
+ * @param {object[]} jsonld
+ * @returns {VdfPublisher[]}
+ */
 function parsePublishersVdf(jsonld) {
   const result = [];
   for (const entity of jsonld) {

@@ -1,4 +1,10 @@
 
+/**
+ * @param {import('../../service/service.mjs').Services} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @returns {Promise<any>}
+ */
 export async function prepareData(services, languages, query) {
   const data = await services.solrSuggestion.fetchSuggestions({
     "searchQuery": query.searchQuery,

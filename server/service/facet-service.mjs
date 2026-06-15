@@ -1,4 +1,19 @@
+/**
+ * @typedef {{
+ *   updateFacetInPlace: (
+ *     languages: string[],
+ *     items: Array<{ iri: string, count: number }>,
+ *     active: string[],
+ *     limit: number,
+ *     labelCallback?: Function | null
+ *   ) => Promise<void>
+ * }} FacetService
+ */
 
+/**
+ * @param {import('./label-service.ts').LabelService} labelService
+ * @returns {FacetService}
+ */
 export function createFacetService(labelService) {
   return {
     /**
@@ -7,8 +22,8 @@ export function createFacetService(labelService) {
      * @param {Object[]} items Items.
      * @param {String[]} active IRIs of active facets.
      * @param {Number} limit Number of facets to prepare.
-     * @param {} labelCallback
-     * @returns {}
+     * @param {*} labelCallback
+     * @returns
      */
     "updateFacetInPlace": (languages, items, active, limit, labelCallback = null) =>
       updateFacetInPlace(labelService, languages, items, active, limit, labelCallback),

@@ -1,8 +1,17 @@
 import { performance } from "perf_hooks";
 import jsonld from "jsonld";
 
-import logger from "../logger";
+import logger from "../logger.ts";
 
+/**
+ * @typedef {{ executeSparqlConstruct: (query: string) => Promise<object[]> }} SparqlConnector
+ */
+
+/**
+ * @param {string} sparqlUrl
+ * @param {any} http Raw HTTP client — needs to support passing request headers.
+ * @returns {SparqlConnector}
+ */
 export function createSparqlConnector(sparqlUrl, http) {
   return {
     "executeSparqlConstruct": (query) =>
@@ -12,9 +21,9 @@ export function createSparqlConnector(sparqlUrl, http) {
 
 /**
  * @param {string} sparqlUrl
- * @param {*} http
+ * @param {any} http
  * @param {string} query
- * @returns {object | array}
+ * @returns {Promise<object[]>}
  * @throws If there is any error loading the data.
  */
 async function executeSparqlConstruct(sparqlUrl, http, query) {
@@ -31,7 +40,7 @@ async function executeSparqlConstruct(sparqlUrl, http, query) {
   const endTime = performance.now();
   const durationMs = endTime - startTime;
   if (durationMs > 100) {
-    logger.warn("SPARQL query execution took %i ms.", durationMs);
+    logger.warn(`SPARQL query execution took ${durationMs} ms.`);
   }
   const content = await response.json();
   return await jsonld.flatten(content);

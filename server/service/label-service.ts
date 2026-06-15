@@ -54,7 +54,7 @@ export interface LabelService {
 
 }
 
-type Language = "en" | "cs";
+type Language = string;
 
 class DefaultLabelService implements LabelService {
 

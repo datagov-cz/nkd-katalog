@@ -1,10 +1,16 @@
 import { ROUTE } from "../route-name.mjs";
-import { createTranslationService } from "../../service/translation-service";
+import { createTranslationService } from "../../service/translation-service.ts";
 import { parseClientQuery } from "./application-detail-query.mjs";
 import { prepareData } from "./application-detail-model.mjs";
 import { renderHtml } from "./application-detail-view-html.mjs";
 import localization from "./application-detail-localization.mjs";
 
+/**
+ * @param {import('../../service/service.mjs').Services & {http: any}} services
+ * @param {import('../../service/template-service.ts').TemplateService} templates
+ * @param {string[]} languages
+ * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
+ */
 export default function createHandler(services, templates, languages) {
   const language = languages[0];
   // Navigation and translation.

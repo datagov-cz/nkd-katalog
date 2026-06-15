@@ -1,4 +1,9 @@
 
+/**
+ * @param {import('../../service/service.mjs').Services} services
+ * @param {string[]} languages
+ * @returns {Promise<{ publishers: any[] }>}
+ */
 export async function prepareData(services, languages) {
   let publishers = null;
   let vdf = null;

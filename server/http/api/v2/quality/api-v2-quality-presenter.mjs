@@ -1,7 +1,11 @@
-import { createTranslationService } from "../../../../service/translation-service";
+import { createTranslationService } from "../../../../service/translation-service.ts";
 import local from "./api-v2-quality-presenter-localization.mjs";
-import logger from "../../../../logger";
+import logger from "../../../../logger.ts";
 
+/**
+ * @param {import('../../../../service/service.mjs').Services} services
+ * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
+ */
 export default function createHandler(services) {
   // Handler services.
   const handlerServices = {

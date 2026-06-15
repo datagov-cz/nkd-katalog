@@ -1,10 +1,26 @@
 /**
  * @typedef {{
+ * couchDbDataset: import('../data-source/couchdb-dataset.mjs').CouchDbDatasetService,
+ * couchDbLabel: import('../data-source/couchdb-dataset.mjs').CouchDbDatasetService,
+ * couchDbStatic: import('../data-source/couchdb-static.mjs').CouchDbStaticService,
+ * couchDbSuggestions: import('../data-source/couchdb-suggestions.mjs').CouchDbSuggestionsService,
+ * couchDbLocalCatalog: import('../data-source/couchdb-catalog.mjs').CouchDbCatalogService,
+ * couchDbVdf: import('../data-source/couchdb-vdf.mjs').CouchDbVdfService,
+ * solrApplication: import('../data-source/solr-application.mjs').SolrApplicationService,
+ * solrSuggestion: import('../data-source/solr-suggestion.mjs').SolrSuggestionService,
+ * solrPublisher: import('../data-source/solr-publisher.mjs').SolrPublisherService,
  * solrDataset: import('../data-source/solr-dataset.mjs').SolrDatasetService,
+ * sparqlQuality: import('../data-source/sparql-quality.mjs').SparqlQualityService,
+ * navigation: import('./navigation-service.mjs').INavigationService,
+ * label: import('./label-service.ts').LabelService,
+ * facet: import('./facet-service.mjs').FacetService,
+ * dataset: import('./dataset-service.mjs').DatasetService,
+ * link: import('./link-service.mjs').LinkService,
+ * configuration: import('../configuration.ts').Configuration,
  * }} Services
  */
 
-import { createDefaultSolrConnector } from "../connector/solr-connector";
+import { createDefaultSolrConnector } from "../connector/solr-connector.ts";
 import { createCouchDbConnector } from "../connector/couchdb.mjs";
 import { createSparqlConnector } from "../connector/sparql.mjs";
 

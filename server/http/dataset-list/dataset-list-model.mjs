@@ -7,6 +7,12 @@ const DATASET_TYPE_OPEN_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-d
 
 const DATASET_TYPE_NON_PUBLIC_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/neveřejná-data";
 
+/**
+ * @param {import('../../service/service.mjs').Services} services
+ * @param {string[]} languages
+ * @param {any} query
+ * @returns {Promise<any>}
+ */
 export async function prepareData(services, languages, query) {
   const applicableLegislation = [];
   if (query.hvdDataset === true) {
