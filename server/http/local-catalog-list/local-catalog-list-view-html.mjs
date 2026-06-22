@@ -6,7 +6,7 @@ import * as components from "../../component/index.mjs";
  *   configuration: import('../../configuration.ts').Configuration,
  *   translation: import('../../service/translation-service.ts').TranslationService,
  *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
- *   link: import('../../service/link-service.mjs').LinkService,
+ *   link: import('../../service/link-service.ts').LinkService,
  *   template: import('../../handlebars/index.ts').HandlebarsService,
  * }} LocalCatalogListViewServices
  *

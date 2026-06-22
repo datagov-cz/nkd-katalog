@@ -1,3 +1,5 @@
+import { createLanguageSelector } from "./language-selector.ts";
+
 /**
  * @typedef {{
  * iri: string,
@@ -11,7 +13,7 @@
  */
 
 /**
- * @param {import('../data-source/couchdb-dataset.mjs').CouchDbDatasetService} couchDbDataset
+ * @param {import('../data-source/couchdb-dataset.ts').CouchDbDatasetSource} couchDbDataset
  * @returns {DatasetService}
  */
 export function createDatasetService(couchDbDataset) {
@@ -34,15 +36,21 @@ export function createDatasetService(couchDbDataset) {
  * @returns {Promise<DatasetPreview[]>}
  */
 async function fetchDatasetPreviews(couchDbDataset, languages, iris) {
+  const lang = createLanguageSelector(languages);
+
   /** @type DatasetPreview[] */
   const result = [];
   for (const iri of iris) {
-    const dataset = await couchDbDataset.fetchDatasetPreview(languages, iri);
-    result.push({
-      "iri": iri,
-      "title": dataset?.title ?? iri,
-      "description": dataset?.description ?? "",
-    });
+    const dataset = await couchDbDataset.fetchDatasetPreview(iri);
+    if (dataset === null) {
+      result.push({iri, title: iri, description: ""});
+    } else {
+      result.push({
+        "iri": iri,
+        "title": lang(dataset?.title) ?? iri,
+        "description": lang(dataset?.description) ?? "",
+      });
+    }
   }
   return result;
 }

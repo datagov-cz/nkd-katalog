@@ -1,8 +1,8 @@
 import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
 import { parseClientQuery, beforeLinkCallback } from "./dataset-detail-query.mjs";
-import { prepareData } from "./dataset-detail-model.mjs";
-import { renderHtml } from "./dataset-detail-view-html.mjs";
+import { prepareDatasetDetailViewModel } from "./dataset-detail-model.ts"
+import { renderHtml } from "./dataset-detail-view-html.ts";
 import localization from "./dataset-detail-localization.mjs";
 
 /**
@@ -39,6 +39,7 @@ export default function createHandler(services, templates, languages) {
 
 async function handleRequest(services, languages, request, reply) {
   const serverQuery = parseClientQuery(services.navigation, request.query);
-  const data = await prepareData(services, languages, serverQuery);
-  renderHtml(services, languages, serverQuery, data, reply);
+  const data = await prepareDatasetDetailViewModel(
+    services, languages, serverQuery);
+  renderHtml(services, languages, data, serverQuery, reply);
 }

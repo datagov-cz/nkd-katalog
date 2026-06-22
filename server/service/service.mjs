@@ -1,7 +1,7 @@
 /**
  * @typedef {{
- * couchDbDataset: import('../data-source/couchdb-dataset.mjs').CouchDbDatasetService,
- * couchDbLabel: import('../data-source/couchdb-dataset.mjs').CouchDbDatasetService,
+ * couchDbDataset: import('../data-source/couchdb-dataset.ts').CouchDbDatasetSource,
+ * couchDbLabel: import('../data-source/couchdb-label.mjs').CouchDbLabelService,
  * couchDbStatic: import('../data-source/couchdb-static.mjs').CouchDbStaticService,
  * couchDbSuggestions: import('../data-source/couchdb-suggestions.mjs').CouchDbSuggestionsService,
  * couchDbLocalCatalog: import('../data-source/couchdb-catalog.mjs').CouchDbCatalogService,
@@ -15,16 +15,16 @@
  * label: import('./label-service.ts').LabelService,
  * facet: import('./facet-service.mjs').FacetService,
  * dataset: import('./dataset-service.mjs').DatasetService,
- * link: import('./link-service.mjs').LinkService,
+ * link: import('./link-service.ts').LinkService,
  * configuration: import('../configuration.ts').Configuration,
  * }} Services
  */
 
 import { createDefaultSolrConnector } from "../connector/solr-connector.ts";
-import { createCouchDbConnector } from "../connector/couchdb.mjs";
+import { createCouchDbConnector } from "../connector/couchdb-connector.ts";
 import { createSparqlConnector } from "../connector/sparql.mjs";
 
-import { createCouchDbDataset } from "../data-source/couchdb-dataset.mjs";
+import { createCouchDbDatasetSource } from "../data-source/couchdb-dataset.ts";
 import { createCouchDbLabel } from "../data-source/couchdb-label.mjs";
 import { createCouchDbSuggestions } from "../data-source/couchdb-suggestions.mjs";
 import { createSolrApplication } from "../data-source/solr-application.mjs";
@@ -41,16 +41,16 @@ import { createLabelService } from "./label-service.ts";
 import { createFacetService } from "./facet-service.mjs";
 import { createDatasetService } from "./dataset-service.mjs";
 import { createCronService } from "./cron-service.mjs";
-import { createLinkService } from "./link-service.mjs";
+import { createLinkService } from "./link-service.ts";
 
 /**
  * @returns {Promise<Services>}
  */
 export async function createServices(configuration, http) {
   const solr = createDefaultSolrConnector(http, configuration.services.solrUrl);
-  const couchdb = createCouchDbConnector(configuration.services.couchDbUrl, http);
+  const couchdb = createCouchDbConnector(http, configuration.services.couchDbUrl);
 
-  const couchDbDataset = createCouchDbDataset(couchdb);
+  const couchDbDataset = createCouchDbDatasetSource(couchdb);
   const couchDbLabel = createCouchDbLabel(couchdb);
   const couchDbStatic = createCouchDbStatic(couchdb);
   const couchDbSuggestions = createCouchDbSuggestions(couchdb);
@@ -71,7 +71,7 @@ export async function createServices(configuration, http) {
     [couchDbStatic, couchDbSuggestions]);
   const facet = createFacetService(label);
   const dataset = createDatasetService(couchDbDataset);
-  const link = createLinkService(configuration);
+  const link = createLinkService(configuration.client.dereferenceTemplate);
 
   await loadLabelCache(label);
 

@@ -1,3 +1,4 @@
+import { createLanguageSelector } from "../../service/language-selector.ts";
 
 const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
 
@@ -57,15 +58,18 @@ export async function prepareData(services, languages, query) {
 
   await updateDatasetsInPlace(services, languages, data["documents"]);
 
+  const lang = createLanguageSelector(languages);
+
   // We create dataset series facet. As we use it as a filter,
   // it is not part of Solr response.
   facets.isPartOf = [];
   for (const iri of query.isPartOf) {
+    const dataset = await services.couchDbDataset.fetchDatasetPreview(iri);
     facets.isPartOf.push({
       "iri": iri,
       "count": data["found"]["documents"],
       "active": true,
-      "label": (await services.couchDbDataset.fetchDatasetPreview(languages, iri))?.title ?? iri,
+      "label": lang(dataset.title) ?? iri,
     });
   }
 

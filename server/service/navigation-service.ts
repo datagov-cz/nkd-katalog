@@ -81,7 +81,7 @@ export interface NavigationEntry {
   /**
    * Returns a relative link to this view with given query.
    */
-  linkFromServer(serverQuery: Record<string, string | string[]>): string;
+  linkFromServer(serverQuery: Record<string, string | number | string[]>): string;
 
 }
 

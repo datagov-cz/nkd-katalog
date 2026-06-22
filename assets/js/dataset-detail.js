@@ -1,5 +1,6 @@
 window.addEventListener("load", () => {
   initializeApplicableLegislation();
+  initializeFacilitatesSharing();
   initializeQuality();
 });
 
@@ -23,6 +24,28 @@ function initializeApplicableLegislation() {
   document
     .querySelectorAll(".applicable-legislation .legislation-list")
     .forEach((element) => element.addEventListener("gov-click", showModal));
+}
+
+function initializeFacilitatesSharing() {
+  const modalElement = document.getElementById("facilitates-sharing-modal");
+  let originalParent = null;
+  //
+  const showModal = (event) => {
+    if (originalParent !== null) {
+      // We need to move current content back.
+      originalParent.appendChild(
+        modalElement.querySelector(".gov-modal__content>*"),
+      );
+    }
+    // Move selected content into the dialog.
+    const content = event.currentTarget.parentElement.querySelector("table");
+    originalParent = content.parentElement;
+    modalElement.querySelector(".gov-modal__content").replaceChildren(content);
+    modalElement.setAttribute("open", "true");
+  };
+  document
+    .querySelectorAll(".facilitates-sharing>a")
+    .forEach((element) => element.addEventListener("click", showModal));
 }
 
 function initializeQuality() {

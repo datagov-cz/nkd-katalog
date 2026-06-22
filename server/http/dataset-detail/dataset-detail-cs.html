@@ -34,7 +34,7 @@
       </a>
     </div>
     {{/with}}
-    {{#if applicableLegislationVisible}}
+    {{#if applicableLegislation}}
     <div class="applicable-legislation chip-container mb-2">
       {{#each applicableLegislation}}
         {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
@@ -138,7 +138,7 @@
         {{/if}}
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
-        {{#if documentationVisible}}
+        {{#if documentation}}
         <dl>
           <dt>Dokumentace</dt>
           {{#each documentation}}
@@ -200,6 +200,36 @@
           {{/each}}
         </dl>
         {{/if}}
+        {{#if landingPage}}
+        <dl>
+          <dt>Vstupní stránka</dt>
+          <dd>
+            <a href="{{landingPage}}">
+              Zobrazit vstupní stránku
+            </a>
+          </dd>
+        </dl>
+        {{/if}}
+        {{#if publicInformationSystem}}
+        <dl>
+          <dt>ISVS</dt>
+          {{#each publicInformationSystem}}
+          <dd>
+            <a href="{{href}}">{{label}}</a>
+          </dd>
+          {{/each}}
+        </dl>
+        {{/if}}
+        {{#if concernTerm}}
+        <dl>
+          <dt>Pojmy</dt>
+          {{#each concernTerm}}
+          <dd>
+            <a href="{{href}}">{{label}}</a>
+          </dd>
+          {{/each}}
+        </dl>
+        {{/if}}
       </gov-grid-item>
     </gov-grid>
     {{#if parentDataset}}
@@ -218,11 +248,11 @@
     <br/>
     <gov-grid>
       {{#each items}}
-      <gov-grid-item size-sm="12/12" size-md="6/12" size-lg="4/12">
+      <gov-grid-item size-sm="12/12" size-md="{{sizeMd}}" size-lg="{{sizeLg}}">
         <div class="distribution-item-wrap m-1 p-2" data-iri="{{iri}}">
           <h3 class="gov-text--xl">{{title}}</h3>
           <h4 class="gov-text--xl gov-color--secondary-700 break-word-wrap">{{format}}</h4>
-          {{#if applicableLegislationVisible}}
+          {{#if applicableLegislation}}
           <div class="applicable-legislation chip-container mb-2">
             {{#each applicableLegislation}}
               {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
@@ -241,26 +271,25 @@
           </div>
           {{/if}}
           <div class="flex-row">
+            <!-- Terms of use -->
             {{#if missingLegal}}
             <div class="distribution-item-wrap-column">
               <div>
-                <h5 class="gov-text--l gov-color--secondary-700">Podmínky užití distribuce nejsou specifikovány</h5>
+                <h5 class="gov-text--l gov-color--secondary-700">Podmínky užití nejsou specifikovány</h5>
               </div>
             </div>
             {{/if}}
             {{#if dcatApLegal}}
             <div class="distribution-item-wrap-column">
               <div>
-                <a href="{{license}}" rel="nofollow noopener noreferrer" target="_blank">
-                  Podmínky užití distribuce
-                </a>
+                <a href="{{license}}" rel="nofollow noopener noreferrer" target="_blank">Podmínky užití distribuce</a>
               </div>
             </div>
             {{/if}}
             {{#if dcatApCzLegal}}{{#with dcatApCzLegal}}
             <div class="distribution-item-wrap-column">
               <div>
-                <h5 class="gov-text--l gov-color--secondary-700">Podmínky užití distribuce</h5>
+                <h5 class="gov-text--l gov-color--secondary-700">Podmínky užití</h5>
               </div>
               <ul>
                 <li class="authorship">
@@ -329,13 +358,14 @@
               </ul>
             </div>
             {{/with}}{{/if}}
+            <!-- Distribuce -->
             {{#if distribution}}{{#with distribution}}
             <div class="distribution-item-wrap-column">
               <div>
                 <h5 class="gov-text--l gov-color--secondary-700">Soubor ke stažení</h5>
               </div>
               <ul>
-                {{#if downloadSectionVisible}}
+                {{#if downloadArray}}
                 <li>
                   {{#each downloadArray}}
                   <div class="download">
@@ -359,21 +389,23 @@
                   {{/each}}
                 </li>
                 {{/if}}
+                {{#if mediaType}}
                 <li>
                   <div class="mediaType break-word-wrap">
                     {{mediaType.label}}
-                    <a href="{{mediaType.iri}}">
+                    <a href="{{mediaType.url}}">
                       <gov-icon name="box-arrow-up-right"></gov-icon>
                     </a>
                     <span class="quality"></span>
                   </div>
                   Typ média
                 </li>
+                {{/if}}
                 {{#if compressFormat}}
                 <li>
                   <div>
                     {{compressFormat.label}}
-                    <a href="{{compressFormat.iri}}">
+                    <a href="{{compressFormat.url}}">
                       <gov-icon name="box-arrow-up-right"></gov-icon>
                     </a>
                   </div>
@@ -384,7 +416,7 @@
                 <li>
                   <div>
                     {{packageFormat.label}}
-                    <a href="{{packageFormat.iri}}">
+                    <a href="{{packageFormat.url}}">
                       <gov-icon name="box-arrow-up-right"></gov-icon>
                     </a>
                   </div>
@@ -394,6 +426,7 @@
               </ul>
             </div>
             {{/with}}{{/if}}
+            <!-- Datová služba -->
             {{#if dataService}}{{#with dataService}}
             <div class="distribution-item-wrap-column data-service" data-iri="{{iri}}">
               <div>
@@ -420,10 +453,10 @@
                     <span class="quality"></span>
                   </div>
                   {{#if sparqlEditor}}
-                  <a href="{{sparqlEditor}}">SPARQL dotazování</a>
+                    <div><a href="{{sparqlEditor}}">SPARQL dotazování</a></div>
                   {{/if}}
                   {{#if classesAndProperties}}
-                  <a href="{{classesAndProperties}}">Třídy a vlastnosti</a>
+                    <div><a href="{{classesAndProperties}}">Třídy a vlastnosti</a></div>
                   {{/if}}
                 </li>
                 {{#if schemaArrayVisible}}
@@ -434,43 +467,100 @@
                   {{/each}}
                 </li>
                 {{/if}}
-                {{#if mediaType}}
-                <li>
-                  <div class="mediaType">
-                    {{mediaType.label}}
-                    <a href="{{mediaType.iri}}">
-                      <gov-icon name="box-arrow-up-right"></gov-icon>
-                    </a>
-                    <span class="quality"></span>
-                  </div>
-                  Typ média
-                </li>
-                {{/if}}
-                {{#if compressFormat}}
+                {{#if contact}}
                 <li>
                   <div>
-                    {{compressFormat.label}}
-                    <a href="{{compressFormat.iri}}">
-                      <gov-icon name="box-arrow-up-right"></gov-icon>
-                    </a>
+                  {{#each contact}}<a href="{{href}}">{{label}}</a>{{/each}}
                   </div>
-                  Formát komprese
+                  Kontaktní bod
                 </li>
                 {{/if}}
-                {{#if packageFormat}}
+                {{#if documentation}}
                 <li>
-                  <div>
-                    {{packageFormat.label}}
-                    <a href="{{packageFormat.iri}}">
-                      <gov-icon name="box-arrow-up-right"></gov-icon>
-                    </a>
-                  </div>
-                  Formát balíčku
+                  {{#each documentation}}<a href="{{this}}">Zobrazit dokumentaci</a>{{/each}}
                 </li>
                 {{/if}}
               </ul>
             </div>
             {{/with}}{{/if}}
+            <!-- Specifikace sdílení -->
+            {{#if showSharingSpecifications}}
+            <div class="distribution-item-wrap-column">
+              <div>
+                <h5 class="gov-text--l gov-color--secondary-700">Specifikace sdílení</h5>
+              </div>
+              <ul>
+                {{#if sharedInterfaceContentType}}
+                <li>
+                  <div>
+                    {{#each sharedInterfaceContentType}}
+                    <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+                    {{/each}}
+                  </div>
+                  Typ obsahu sdíleného rozhraním
+                </li>
+                {{/if}}
+                {{#if sharedInterfaceAccessType}}
+                <li>
+                  <div>
+                    {{#each sharedInterfaceAccessType}}
+                    <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+                    {{/each}}
+                  </div>
+                  Způsob získání dat
+                </li>
+                {{/if}}
+                {{#if sharedInterfaceKind}}
+                <li>
+                  <div>
+                    {{#each sharedInterfaceKind}}
+                    <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+                    {{/each}}
+                  </div>
+                  Způsob sdílení rozhraním
+                </li>
+                {{/if}}
+                {{#if facilitatesSharing}}
+                <li class="facilitates-sharing">
+                  Zprostředkovává sdílení {{facilitatesSharingCount}} údajů
+                  <a>
+                    <gov-icon name="info-circle"></gov-icon>
+                  </a>
+                  <div style="display: none;">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Odpovídající pojem</th>
+                          <th>Získán způsobem</th>
+                          <th>Sdílen jako</th>
+                          <th>Sdílen způsobem</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{#each facilitatesSharing}}
+                        <tr>
+                          {{#if correspondingTerm}}
+                            <td><a href="{{correspondingTerm.url}}" rel="nofollow noopener noreferrer" target="_blank">{{correspondingTerm.label}}</a></td>
+                          {{/if}}
+                          {{#if obtainedBy}}
+                            <td><a href="{{obtainedBy.url}}" rel="nofollow noopener noreferrer" target="_blank">{{obtainedBy.label}}</a></td>
+                          {{/if}}
+                          {{#if sharedAs}}
+                            <td><a href="{{sharedAs.url}}" rel="nofollow noopener noreferrer" target="_blank">{{sharedAs.label}}</a></td>
+                          {{/if}}
+                          {{#if sharedBy}}
+                            <td><a href="{{sharedBy.url}}" rel="nofollow noopener noreferrer" target="_blank">{{sharedBy.label}}</a></td>
+                          {{/if}}
+                        </tr>
+                        {{/each}}
+                      </tbody>
+                    </table>
+                  </div>
+                </li>
+                {{/if}}
+              </ul>
+            </div>
+            {{/if}}
           </div>
         </div>
       </gov-grid-item >
@@ -481,8 +571,7 @@
       <gov-pagination total="{{total}}" current="{{currentPage}}" page-size="{{pageSize}}"
         wcag-label="Stránkování pro sekci dokumenty"
         wcag-select-label="Vybrat stránku"
-        link="{{linkTemplate}}"
-        >
+        link="{{linkTemplate}}">
       </gov-pagination>
     </gov-grid-item>
     {{/if}} {{/with}}
@@ -536,6 +625,7 @@
   <script type="application/ld+json">{{{metadataAsString}}}</script>
   <!--  -->
   <gov-modal id="legislation-list-modal" label="Příslušné právní předpisy"></gov-modal>
+  <gov-modal id="facilitates-sharing-modal" label="Zprostředkovává sdílení údajů"></gov-modal>
 </body>
 
 </html>

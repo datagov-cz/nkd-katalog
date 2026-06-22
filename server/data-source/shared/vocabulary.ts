@@ -23,6 +23,7 @@ export const DCTERMS = {
   type: DCTERMS_PREFIX + "type",
   rights: DCTERMS_PREFIX + "rights",
   hasPart: DCTERMS_PREFIX + "hasPart",
+  creator: DCTERMS_PREFIX + "creator",
 };
 
 const DCELEMENTS_PREFIX = "http://purl.org/dc/elements/1.1/";
@@ -69,6 +70,7 @@ export const FOAF = {
   name: FOAF_PREFIX + "name",
   email: FOAF_PREFIX + "email",
   homepage: FOAF_PREFIX + "homepage",
+  primaryTopic: FOAF_PREFIX + "primaryTopic",
 };
 
 const ADMS_PREFIX = "http://www.w3.org/ns/adms#";
@@ -109,9 +111,11 @@ export const SCHEMA = {
 const SKOS_PREFIX = "http://www.w3.org/2004/02/skos/core#";
 
 export const SKOS = {
+  Concept: SKOS_PREFIX + "Concept",
   prefLabel: SKOS_PREFIX + "prefLabel",
   inScheme: SKOS_PREFIX + "inScheme",
   note: SKOS_PREFIX + "note",
+  notation: SKOS_PREFIX + "notation",
 };
 
 const RDF_PREFIX = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -158,7 +162,6 @@ export const NKOD = {
   DcatApLkod: NKOD_PREFIX + "DcatApLkod",
   Vdf: NKOD_PREFIX + "vdf/datová-sada-publikující-veřejné-údaje",
   CodeList: NKOD_PREFIX + "vdf/číselník",
-  originator: DCTERMS_PREFIX + "creator",
 };
 
 const DQV_PREFIX = "http://www.w3.org/ns/dqv#";
@@ -206,4 +209,22 @@ const EUROPE_PREFIX = "http://data.europa.eu/r5r/";
 export const EUROPE = {
   applicableLegislation: EUROPE_PREFIX + "applicableLegislation",
   hvdCategory: EUROPE_PREFIX + "hvdCategory",
+};
+
+const LEGISLATION_360_2023 = "https://slovník.gov.cz/legislativní/sbírka/360/2023/pojem/";
+
+const LEGISLATION_365_2000 = "https://slovník.gov.cz/legislativní/sbírka/365/2000/pojem/";
+
+export const LEGISLATION = {
+  sharedInterfaceContentType: LEGISLATION_360_2023 + "má-typ-obsahu-sdíleného-rozhraním",
+  sharedInterfaceKind: LEGISLATION_360_2023 + "má-způsob-sdílení-rozhraním",
+  sharedInterfaceAccessType: LEGISLATION_360_2023 + "má-způsob-získání-dat-sdílených-rozhraním",
+  facilitatesSharing: LEGISLATION_360_2023 + "zprostředkovává-sdílení",
+  sharedAs: LEGISLATION_360_2023 + "je-sdílen-jako",
+  sharedBy: LEGISLATION_360_2023 + "je-sdílen-způsobem",
+  obtainedBy: LEGISLATION_360_2023 + "je-získán-způsobem",
+  correspondingTerm: LEGISLATION_360_2023 + "odpovídající-pojem",
+  // TODO Move to other vocabulary.
+  concernTerm: "https://slovník.gov.cz/veřejný-sektor/pojem/týká-se-pojmu",
+  includes: LEGISLATION_365_2000 + "zahrnuje",
 };
