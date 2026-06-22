@@ -167,6 +167,7 @@ function buildDatasetsQuery(language, query) {
     hvdCategory,
     applicableLegislation,
     datasetType,
+    isvs,
   } = query;
   const fq = [
     ...prepareFieldQuery("publisher", publisher),
@@ -178,6 +179,7 @@ function buildDatasetsQuery(language, query) {
     ...prepareFieldQuery("hvd_category", hvdCategory),
     ...prepareFieldQuery("applicable_legislation", applicableLegislation),
     ...prepareFieldQuery("dataset_type", datasetType),
+    ...prepareFieldQuery("isvs", isvs),
   ];
   if (temporalStart !== null) {
     fq.push(`temporal_start:[* TO ${temporalStart}T00:00:00Z]`);
@@ -200,6 +202,7 @@ function buildDatasetsQuery(language, query) {
       "theme",
       "hvd_category",
       "dataset_type",
+      "isvs",
     ],
     "fl": [
       "iri",
@@ -244,6 +247,7 @@ function parseDatasetsResponse(languages, response) {
     "theme": parseFacet(facet_fields["theme"]),
     "hvdCategory": parseFacet(facet_fields["hvd_category"]),
     "datasetType": parseFacet(facet_fields["dataset_type"]),
+    "isvs": parseFacet(facet_fields["isvs"]),
   };
 
   return {
@@ -266,6 +270,7 @@ function parseDatasetResponseDocument(document, languages) {
     "file_type": document["file_type"] ?? [],
     "applicable_legislation": document["applicable_legislation"] ?? [],
     "dataset_type": document["dataset_type"] ?? [],
+    "isvs": document["isvs"] ?? [],
   }
 }
 
@@ -303,6 +308,7 @@ function buildDatasetsDetailQuery(language, query) {
       "description_cs",
       "description_en",
       "file_type",
+      "isvs",
     ],
     "fq": fq,
     "sort": prepareSort(language, sort, sortDirection),
@@ -321,6 +327,7 @@ function parseDatasetsDetailResponse(languages, response) {
     "title": selectLanguage(document, "title_", languages),
     "description": selectLanguage(document, "description_", languages),
     "file_type": document["file_type"] ?? [],
+    "isvs": document["isvs"] ?? [],
   }));
 
   return {

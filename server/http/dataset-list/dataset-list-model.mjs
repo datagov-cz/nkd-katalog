@@ -41,6 +41,7 @@ export async function prepareData(services, languages, query) {
     "hvdCategory": query.hvdCategory,
     "applicableLegislation": applicableLegislation,
     "datasetType": query.datasetType,
+    "isvs": query.isvs,
   });
 
   const facets = data["facets"];
@@ -54,6 +55,7 @@ export async function prepareData(services, languages, query) {
     "theme": facets["theme"].length,
     "hvdCategory": facets["hvdCategory"].length,
     "datasetType": facets["datasetType"].length,
+    "isvs": facets["isvs"].length,
   };
 
   await updateDatasetsInPlace(services, languages, data["documents"]);
@@ -90,6 +92,9 @@ export async function prepareData(services, languages, query) {
   await services.facet.updateFacetInPlace(
     languages, facets["datasetType"], query["datasetType"],
     query["datasetTypeLimit"]);
+  await services.facet.updateFacetInPlace(
+    languages, facets["isvs"], query["isvs"],
+    query["isvsLimit"]);
   return data;
 };
 

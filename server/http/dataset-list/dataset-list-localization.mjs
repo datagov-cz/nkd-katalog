@@ -26,7 +26,9 @@ export default {
       "hvd-category-limit": "počet-kategorie-hvd",
       "dynamic-data": "dynamická-data",
       "dataset-type": "druh-dat",
-      "dataset-type-limit": "počet-druh-dat"
+      "dataset-type-limit": "počet-druh-dat",
+      "isvs": "isvs",
+      "isvs-limit": "počet-isvs",
     },
     "argument": {
       "title": "název",
@@ -58,6 +60,8 @@ export default {
       "title": "Název",
       "asc": "vzestupně",
       "desc": "sestupně",
+      "isvs": "Informační Systémem Veřejné Správy",
+      "isvsTooltip": "Asociované s Informačním Systémem Veřejné Správy (ISVS)"
     },
   },
   "en": {
@@ -87,7 +91,9 @@ export default {
       "hvd-category-limit": "hvd-category-limit",
       "dynamic-data": "dynamic-data",
       "dataset-type": "dataset-kind",
-      "dataset-type-limit": "dataset-kind-limit"
+      "dataset-type-limit": "dataset-kind-limit",
+      "isvs": "isvs",
+      "isvs-limit": "isvs-limit",
     },
     "argument": {
       "title": "title",
@@ -118,6 +124,8 @@ export default {
       "title": "Title",
       "asc": "ascending",
       "desc": "descending",
+      "isvs": "Public Administration Information System",
+      "isvsTooltip": "Associated with a Public Administration Information System"
     },
   },
 };

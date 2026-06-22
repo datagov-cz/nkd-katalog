@@ -39,6 +39,9 @@ export function parseClientQuery(navigation, query) {
   const datasetType = navigation.queryArgumentArrayFromClient(query, "dataset-type");
   const datasetTypeLimit= navigation.queryArgumentFromClient(query, "dataset-type-limit");
 
+  const isvs = navigation.queryArgumentArrayFromClient(query, "isvs");
+  const isvsLimit= navigation.queryArgumentFromClient(query, "isvs-limit");
+
   const vdfPublicData = navigation.queryArgumentFromClient(query, "vdf-public-data") === "1";
   const vdfCodelist = navigation.queryArgumentFromClient(query, "vdf-codelist") === "1";
   const hvdDataset = navigation.queryArgumentFromClient(query, "hdf-dataset") === "1";
@@ -72,6 +75,8 @@ export function parseClientQuery(navigation, query) {
     "hvdCategory": navigation.queryArgumentArrayFromClient(query, "hvd-category"),
     "hvdCategoryLimit": asPositiveNumber(hvdCategoryLimit, DEFAULT_FACET_SIZE),
     "dynamicData": dynamicData,
+    "isvs": isvs,
+    "isvsLimit": asPositiveNumber(isvsLimit, DEFAULT_FACET_SIZE),
   };
 }
 
@@ -124,6 +129,8 @@ export function beforeLinkCallback(navigation, serverQuery) {
   setIfTrue(result, "hdf-dataset", serverQuery.hvdDataset);
   setIfNotEmpty(result, "dataset-type", serverQuery.datasetType);
   setIfNotDefault(result, "dataset-type-limit", serverQuery.datasetTypeLimit, DEFAULT_FACET_SIZE);
+  setIfNotEmpty(result, "isvs", serverQuery.isvs);
+  setIfNotDefault(result, "isvs-limit", serverQuery.isvsLimit, DEFAULT_FACET_SIZE);
   setIfNotEmpty(result, "hvd-category", serverQuery.hvdCategory);
   setIfNotDefault(result, "hvd-category-limit", serverQuery.hvdCategoryLimit, DEFAULT_FACET_SIZE);
   setIfTrue(result, "dynamic-data", serverQuery.dynamicData);

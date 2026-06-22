@@ -39,6 +39,7 @@ const FACETS = [
   { "name": "dataServiceType", "tooltip": "dataServiceTypeTooltip" },
   { "name": "format", "tooltip": "formatTooltip" },
   { "name": "keyword", "tooltip": "keywordTooltip" },
+  { "name": "isvs", "tooltip": "isvsTooltip"}
 ];
 
 const SORT_OPTIONS = [
@@ -104,6 +105,8 @@ export function prepareTemplateData(configuration, translation, navigation, lang
         "codelist": query.vdfCodelist,
         "hvdDataset": query.hvdDataset,
         "dynamicData": query.dynamicData,
+        "datasetType": query.datasetType,
+        "isvs": query.isvs,
       },
       "queryObjectAsString": JSON.stringify({
         "searchQuery": query.searchQuery,
@@ -113,6 +116,8 @@ export function prepareTemplateData(configuration, translation, navigation, lang
         "codelist": query.vdfCodelist,
         "hvdDataset": query.hvdDataset,
         "dynamicData": query.dynamicData,
+        "datasetType": query.datasetType,
+        "isvs": query.isvs,
       })
     },
     "result-bar": components.createResultBarData(translation, navigation, query, SORT_OPTIONS, count),
