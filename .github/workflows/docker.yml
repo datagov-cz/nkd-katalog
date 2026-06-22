@@ -24,7 +24,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: datagov-cz/nkd-catalog
+          images: ghcr.io/datagov-cz/nkd-catalog
           tags: |
             # On git tag push use sha
             type=sha,prefix={{tag}}-,enable=${{ github.ref_type == 'tag' }}
