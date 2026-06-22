@@ -381,9 +381,9 @@
                   {{/if}}
                 </li>
                 {{/if}}
-                {{#if schemaArrayVisible}}
+                {{#if conformsTo}}
                 <li class="schema">
-                  {{#each schemaArray}}
+                  {{#each conformsTo}}
                   <a href="{{this}}">Schema</a>
                   <span class="quality"></span>
                   {{/each}}
@@ -459,10 +459,10 @@
                     <a href="{{classesAndProperties}}">Classes and properties</a>
                   {{/if}}
                 </li>
-                {{#if schemaArrayVisible}}
+                {{#if conformsTo}}
                 <li class="schema">
-                  {{#each schemaArray}}
-                  <a href="{{this}}">Schema</a>
+                  {{#each conformsTo}}
+                  <a href="{{this}}">Standard</a>
                   <span class="quality"></span>
                   {{/each}}
                 </li>

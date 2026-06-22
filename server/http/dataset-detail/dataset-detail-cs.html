@@ -381,9 +381,9 @@
                   {{/if}}
                 </li>
                 {{/if}}
-                {{#if schemaArrayVisible}}
+                {{#if conformsTo}}
                 <li class="schema">
-                  {{#each schemaArray}}
+                  {{#each conformsTo}}
                   <a href="{{this}}">Schéma</a>
                   <span class="quality"></span>
                   {{/each}}
@@ -459,9 +459,9 @@
                     <div><a href="{{classesAndProperties}}">Třídy a vlastnosti</a></div>
                   {{/if}}
                 </li>
-                {{#if schemaArrayVisible}}
+                {{#if conformsTo}}
                 <li class="schema">
-                  {{#each schemaArray}}
+                  {{#each conformsTo}}
                   <a href="{{this}}">Standard</a>
                   <span class="quality"></span>
                   {{/each}}

@@ -458,8 +458,7 @@ interface IconLabelViewModel {
 interface FileDistribution {
   downloadArray: string[];
   access: string | null;
-  schemaArrayVisible: boolean;
-  schemaArray: string[];
+  conformsTo: string[];
   mediaType: HrefLabel | null;
   compressFormat: HrefLabel | null;
   packageFormat: HrefLabel | null;
@@ -474,8 +473,7 @@ interface DataService {
   sparqlEditor: string | null;
   /* Should be visible when set and data service conforms to https://www.w3.org/TR/sparql11-protocol/ */
   classesAndProperties: string | null;
-  schemaArrayVisible: boolean;
-  schemaArray: string[];
+  conformsTo: string[];
   documentation: string[];
   contact: HrefLabel[];
 }
@@ -681,8 +679,7 @@ function prepareDistribution(
         mediaType: firstAsHrefLabel(value.mediaType),
         compressFormat: firstAsHrefLabel(value.compressFormat),
         packageFormat: firstAsHrefLabel(value.packageFormat),
-        schemaArrayVisible: value.conformsTo.length > 0,
-        schemaArray: value.conformsTo,
+        conformsTo: value.conformsTo,
         downloadArray: value.downloadUrl === null ? [] : [value.downloadUrl],
         // We render access URL only when is is not part of download.
         access: value.downloadUrl === value.accessUrl ? null : value.accessUrl,
@@ -731,8 +728,7 @@ function prepareDistribution(
       //
       distribution: null,
       dataService: {
-        schemaArrayVisible: value.conformsTo.length > 0,
-        schemaArray: value.conformsTo,
+        conformsTo: value.conformsTo,
         iri: value.iri,
         endpointDescription: value.endpointDescription,
         endpointUrl: value.endpointUrl,
