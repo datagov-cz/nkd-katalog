@@ -18,6 +18,7 @@
     "fastify": "^5.8.5",
     "handlebars": "^4.7.9",
     "jsonld": "^9.0.0",
+    "n3": "^2.0.4",
     "node-cron": "^4.2.1",
     "pino": "^10.3.1",
     "pino-pretty": "^13.1.3",
