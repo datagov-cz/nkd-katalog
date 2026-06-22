@@ -191,6 +191,9 @@ export function prepareTemplateData(
       landingPage: dataset.landingPage[0]?.url ?? null,
       publicInformationSystem: dataset.publicInformationSystem.map(asHrefLabel),
       concernTerm: dataset.concernTerm.map(asHrefLabel),
+      //
+      isOpenData: dataset.type.includes(DATASET_TYPE_OPEN_DATA),
+      isNonPublicData: dataset.type.includes(DATASET_TYPE_NON_PUBLIC_DATA),
     },
     // ...query,
     distributions: {
@@ -321,6 +324,9 @@ export interface DatasetDetailTemplateModel {
     landingPage: string | null;
     publicInformationSystem: HrefLabel[];
     concernTerm: HrefLabel[];
+    //
+    isOpenData: boolean;
+    isNonPublicData: boolean;
   };
 
   distributions: Distributions;
@@ -606,9 +612,15 @@ function prepareApplicableLegislation(applicableLegislation: { url: string }[]) 
   return result;
 }
 
+// TODO Export to vocabulary file !
+
 const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
 
 const LEGISLATION_DYNAMIC_DATA = "https://www.e-sbirka.cz/eli/cz/sb/1999/106/2024-01-01/dokument/norma/cast_1/par_3a/odst_6";
+
+const DATASET_TYPE_OPEN_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/otevřená-data";
+
+const DATASET_TYPE_NON_PUBLIC_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/neveřejná-data";
 
 function createChipForApplicableLegislation(url: string) {
   switch (url) {

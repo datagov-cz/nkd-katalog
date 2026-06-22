@@ -34,24 +34,36 @@
       </a>
     </div>
     {{/with}}
-    {{#if applicableLegislation}}
     <div class="applicable-legislation chip-container mb-2">
+      {{#if isOpenData}}
+      <gov-chip variant="success" type="outlined" size="xs">
+        Otevřená data
+      </gov-chip>
+      {{/if}}
+      {{#if isNonPublicData}}
+      <gov-chip variant="warning" type="outlined" size="xs">
+        Neveřejná data
+      </gov-chip>
+      {{/if}}
       {{#each applicableLegislation}}
         {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
       {{/each}}
+      {{#if applicableLegislation}}
       <gov-chip variant="primary" type="outlined" size="s" class="legislation-list" tag="button">
         §
-        <ul>
-          {{#each applicableLegislation}}
-          <li>
-            {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
-            <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
-          </li>
-          {{/each}}
-        </ul>
+        <div style="display: none;">
+          <ul>
+            {{#each applicableLegislation}}
+            <li>
+              {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
+              <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
       </gov-chip>
+      {{/if}}
     </div>
-    {{/if}}
     <div class="chip-container mb-2"> <!-- TODO: Add visibility check. -->
       {{#each keywords}}
       <gov-chip variant="primary" type="outlined" size="s" href="{{href}}">
