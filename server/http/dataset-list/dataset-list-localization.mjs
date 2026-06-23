@@ -60,8 +60,8 @@ export default {
       "title": "Název",
       "asc": "vzestupně",
       "desc": "sestupně",
-      "isvs": "Informační Systémem Veřejné Správy",
-      "isvsTooltip": "Asociované s Informačním Systémem Veřejné Správy (ISVS)"
+      "isvs": "Informační systéme veřejné správy",
+      "isvsTooltip": "Datové sady zahrnuté v informačním systému veřejné správy (ISVS)"
     },
   },
   "en": {
@@ -124,8 +124,8 @@ export default {
       "title": "Title",
       "asc": "ascending",
       "desc": "descending",
-      "isvs": "Public Administration Information System",
-      "isvsTooltip": "Associated with a Public Administration Information System"
+      "isvs": "Public administration information system",
+      "isvsTooltip": "Dataset contained in a Public administration information system (PAIS)"
     },
   },
 };
