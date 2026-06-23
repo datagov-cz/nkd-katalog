@@ -57,11 +57,12 @@ export default {
       "dataServiceType": "Datová služba",
       "dataServiceTypeTooltip": "Datové sady poskytované pomocí datových služeb",
       "datasetType": "Druh datové sady",
+      "datasetTypeTooltip": "Druh datové sady dle příslušné legislativy",
       "title": "Název",
       "asc": "vzestupně",
       "desc": "sestupně",
-      "isvs": "Informační Systémem Veřejné Správy",
-      "isvsTooltip": "Asociované s Informačním Systémem Veřejné Správy (ISVS)"
+      "isvs": "Informační systém veřejné správy",
+      "isvsTooltip": "Datové sady zahrnuté v informačním systému veřejné správy (ISVS)"
     },
   },
   "en": {
@@ -121,11 +122,12 @@ export default {
       "dataServiceType": "Data service",
       "dataServiceTypeTooltip": "Datasets distributed via a data service",
       "datasetType": "Dataset kind",
+      "datasetTypeTooltip": "Dataset kind based on applicable legislation",
       "title": "Title",
       "asc": "ascending",
       "desc": "descending",
-      "isvs": "Public Administration Information System",
-      "isvsTooltip": "Associated with a Public Administration Information System"
+      "isvs": "Public administration information system",
+      "isvsTooltip": "Dataset contained in a Public administration information system (PAIS)"
     },
   },
 };
