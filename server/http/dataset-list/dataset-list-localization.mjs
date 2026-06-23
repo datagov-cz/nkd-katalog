@@ -60,7 +60,7 @@ export default {
       "title": "Název",
       "asc": "vzestupně",
       "desc": "sestupně",
-      "isvs": "Informační systéme veřejné správy",
+      "isvs": "Informační systém veřejné správy",
       "isvsTooltip": "Datové sady zahrnuté v informačním systému veřejné správy (ISVS)"
     },
   },
