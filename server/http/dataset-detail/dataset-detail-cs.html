@@ -497,38 +497,38 @@
             {{/with}}{{/if}}
             <!-- Specifikace sdílení -->
             {{#if showSharingSpecifications}}
-            <div class="distribution-item-wrap-column">
+            <div class="distribution-item-wrap-column share-specification">
               <div>
                 <h5 class="gov-text--l gov-color--secondary-700">Specifikace sdílení</h5>
               </div>
               <ul>
                 {{#if sharedInterfaceContentType}}
                 <li>
-                  <div>
+                  <ul>
                     {{#each sharedInterfaceContentType}}
-                    <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+                    <li>{{label}}</li>
                     {{/each}}
-                  </div>
+                  </ul>
                   Typ obsahu sdíleného rozhraním
                 </li>
                 {{/if}}
                 {{#if sharedInterfaceAccessType}}
                 <li>
-                  <div>
+                  <ul>
                     {{#each sharedInterfaceAccessType}}
-                    <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+                      <li>{{label}}</li>
                     {{/each}}
-                  </div>
+                  </ul>
                   Způsob získání dat
                 </li>
                 {{/if}}
                 {{#if sharedInterfaceKind}}
                 <li>
-                  <div>
+                  <ul>
                     {{#each sharedInterfaceKind}}
-                    <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+                      <li>{{label}}</li>
                     {{/each}}
-                  </div>
+                  </ul>
                   Způsob sdílení rozhraním
                 </li>
                 {{/if}}

@@ -62,23 +62,28 @@
   border-radius: .5em .5em 0 0;
 }
 
-.distribution-item-wrap-column ul {
+.distribution-item-wrap-column>ul {
   padding: 0;
   list-style-type: none;
 }
 
-.distribution-item-wrap-column ul li {
+.distribution-item-wrap-column>ul>li {
   padding: .25rem;
   border: 1px solid var(--gov-color-secondary-600);
   margin-top: -1px;
 }
 
-.distribution-item-wrap-column ul li:last-of-type {
+.distribution-item-wrap-column>ul>li:last-of-type {
   border-radius: 0 0 .5em .5em;
 }
 
 .distribution-container gov-grid gov-grid-item {
   margin-bottom: 1rem;
+}
+
+.share-specification>ul>li ul {
+  padding: 0;
+  list-style-type: none;
 }
 
 /* Section spacing. */
@@ -89,6 +94,6 @@
 
 /* Applicable legislation modal. */
 
-#legislation-list-modal ul li {
+#legislation-list-modal>ul>li {
   margin: .5rem 0;
 }
