@@ -16,12 +16,12 @@ import * as components from "../../component/index.mjs";
  *   search: {
  *     "clear-href": string,
  *     "base-url": string,
- *     query: { searchQuery: string | null, temporalFrom: string | null, temporalTo: string | null, publicData: boolean, codelist: boolean, hvdDataset: boolean, dynamicData: boolean },
+ *     query: { searchQuery: string | null, temporalFrom: string | null, temporalTo: string | null, publicData: boolean, codelist: boolean, hvdDataset: boolean },
  *     queryObjectAsString: string,
  *   },
  *   "result-bar": import('../../component/result-bar.mjs').ResultBarData,
  *   pagination: import('../../component/pagination.mjs').PaginationData,
- *   documents: Array<{ iri: string, title: string, description: string, href: string, isHvd: boolean, isOpenData: boolean, isNonPublicData: boolean, isDynamicData: boolean, format: Array<{ label: string }> }>,
+ *   documents: Array<{ iri: string, title: string, description: string, href: string, isHvd: boolean, isOpenData: boolean, isNonPublicData: boolean, format: Array<{ label: string }> }>,
  *   facets: import('../../component/facet.mjs').FacetData[],
  * }} DatasetListTemplateData
  */
@@ -95,7 +95,6 @@ export function prepareTemplateData(configuration, translation, navigation, lang
         "vdfPublicData": false,
         "vdfCodelist": false,
         "hvdDataset": false,
-        "dynamicData": false,
       }),
       "query": {
         "searchQuery": query.searchQuery,
@@ -104,7 +103,6 @@ export function prepareTemplateData(configuration, translation, navigation, lang
         "publicData": query.vdfPublicData,
         "codelist": query.vdfCodelist,
         "hvdDataset": query.hvdDataset,
-        "dynamicData": query.dynamicData,
         "datasetType": query.datasetType,
         "isvs": query.isvs,
       },
@@ -115,7 +113,6 @@ export function prepareTemplateData(configuration, translation, navigation, lang
         "publicData": query.vdfPublicData,
         "codelist": query.vdfCodelist,
         "hvdDataset": query.hvdDataset,
-        "dynamicData": query.dynamicData,
         "datasetType": query.datasetType,
         "isvs": query.isvs,
       })

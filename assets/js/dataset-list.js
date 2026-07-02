@@ -67,11 +67,6 @@ window.addEventListener("load", () => {
     );
     addToUrlQueryWhenTrue(urlQuery, localization.publicData, query.publicData);
     addToUrlQueryWhenTrue(urlQuery, localization.codelist, query.codelist);
-    addToUrlQueryWhenTrue(
-      urlQuery,
-      localization.dynamicData,
-      query.dynamicData,
-    );
 
     let url = searchElement.dataset.baseUrl;
     // Prepare URL for adding query.

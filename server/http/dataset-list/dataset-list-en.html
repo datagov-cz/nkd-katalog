@@ -45,20 +45,6 @@
                   <gov-button variant="primary" size="m" data-type="last-year">Last year</gov-button>
                 </div>
               </div>
-              <div class="flex-row flex-justify-end m-4">
-                <div class="flex-row align-items-center">
-                  <gov-form-switch data-type="dynamic-data" {{#if query.dynamicData}}checked{{/if}}>
-                    <gov-form-label slot="label">Dynamic data</gov-form-label>
-                  </gov-form-switch>
-                  &nbsp;
-                  <gov-tooltip>
-                    <gov-icon name="question-circle" type="bootstrap" class="larger"></gov-icon>
-                    <gov-tooltip-content>
-                      Dynamic data - data that is frequently updated, e.g. real-time data.
-                    </gov-tooltip-content>
-                  </gov-tooltip>
-                </div>
-              </div>
               <div class="flex-space-between">
                 <gov-button slot="button" variant="warning" size="m" href="{{clear-href}}" wcag-label="Clear filters">
                   Clear filters
@@ -78,7 +64,6 @@
               "temporalTo": "temporal-end",
               "publicData": "vdf-public-data",
               "codelist": "vdf-codelist",
-              "dynamicData": "dynamic-data",
             },
             "query": {{{queryObjectAsString}}},
           };

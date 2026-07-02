@@ -45,20 +45,6 @@
                   <gov-button variant="primary" size="m" data-type="last-year">Minulý rok</gov-button>
                 </div>
               </div>
-              <div class="flex-row flex-justify-end m-4">
-                <div class="flex-row">
-                  <gov-form-switch data-type="dynamic-data" {{#if query.dynamicData}}checked{{/if}}>
-                    <gov-form-label slot="label">Dynamická data</gov-form-label>
-                  </gov-form-switch>
-                  &nbsp;
-                  <gov-tooltip>
-                    <gov-icon name="question-circle" type="bootstrap" class="larger"></gov-icon>
-                    <gov-tooltip-content>
-                      Dynamická data - data měnící se nepravidelně, či velmi rychle, například v reálném čase.
-                    </gov-tooltip-content>
-                  </gov-tooltip>
-                </div>
-              </div>
               <div class="flex-space-between">
                 <gov-button variant="warning" size="m" href="{{clear-href}}" wcag-label="Smaž filtry">
                   Smaž filtry
@@ -78,7 +64,6 @@
               "temporalTo": "časové-období-konec",
               "publicData": "vdf-veřejné-údaje",
               "codelist": "vdf-číselník",
-              "dynamicData": "dynamická-data",
             },
             "query": {{{queryObjectAsString}}},
           };

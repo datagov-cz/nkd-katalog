@@ -10,8 +10,6 @@ const DEFAULT_SORT_DIRECTION = "asc";
 
 const DEFAULT_PAGE = 0;
 
-const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
-
 /**
  * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
  * @param {Record<string, string | string[]>} query
@@ -45,7 +43,14 @@ export function parseClientQuery(navigation, query) {
   const vdfPublicData = navigation.queryArgumentFromClient(query, "vdf-public-data") === "1";
   const vdfCodelist = navigation.queryArgumentFromClient(query, "vdf-codelist") === "1";
   const hvdDataset = navigation.queryArgumentFromClient(query, "hdf-dataset") === "1";
-  const dynamicData = navigation.queryArgumentFromClient(query, "dynamic-data") === "1";
+
+  // We keep this for backward compatibility.
+  // There use to be a separate setting option for dynamic-data.
+  const dynamicData =
+    query["dynamická-data"] === "1" || query["dynamic-data"] === "1";
+  if (dynamicData) {
+    datasetType.push("https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/dynamická-data");
+  }
 
   return {
     "searchQuery": navigation.queryArgumentFromClient(query, "query"),
@@ -74,7 +79,6 @@ export function parseClientQuery(navigation, query) {
     "datasetTypeLimit": asPositiveNumber(datasetTypeLimit, DEFAULT_FACET_SIZE),
     "hvdCategory": navigation.queryArgumentArrayFromClient(query, "hvd-category"),
     "hvdCategoryLimit": asPositiveNumber(hvdCategoryLimit, DEFAULT_FACET_SIZE),
-    "dynamicData": dynamicData,
     "isvs": isvs,
     "isvsLimit": asPositiveNumber(isvsLimit, DEFAULT_FACET_SIZE),
   };
@@ -133,7 +137,6 @@ export function beforeLinkCallback(navigation, serverQuery) {
   setIfNotDefault(result, "isvs-limit", serverQuery.isvsLimit, DEFAULT_FACET_SIZE);
   setIfNotEmpty(result, "hvd-category", serverQuery.hvdCategory);
   setIfNotDefault(result, "hvd-category-limit", serverQuery.hvdCategoryLimit, DEFAULT_FACET_SIZE);
-  setIfTrue(result, "dynamic-data", serverQuery.dynamicData);
 
   if (serverQuery.sort !== DEFAULT_SORT) {
     result["sort"] = navigation.argumentFromServer(serverQuery.sort);

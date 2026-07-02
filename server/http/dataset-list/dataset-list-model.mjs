@@ -19,9 +19,6 @@ export async function prepareData(services, languages, query) {
   if (query.hvdDataset === true) {
     applicableLegislation.push(LEGISLATION_HVD);
   }
-  if (query.dynamicData === true) {
-    applicableLegislation.push(LEGISLATION_DYNAMIC_DATA);
-  }
   const data = await services.solrDataset.fetchDatasets(languages, {
     "searchQuery": query.searchQuery,
     "publisher": query.publisher,
