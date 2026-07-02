@@ -1,7 +1,9 @@
-import { describe, it, expect } from "vitest";
+import assert from "node:assert";
+import { describe, it } from "node:test"
+
 import { createLabelService } from "./label-service.ts";
 
-describe("createLabelService", () => {
+describe("Label service", () => {
 
   it("Default implementation test.", async () => {
     let callCounter = 0;
@@ -14,19 +16,19 @@ describe("createLabelService", () => {
     }], []);
 
     const first = await service.fetchLabel(["cs"], "");
-    expect(first).toBeNullable();
+    assert.strictEqual(first, null);
 
     const second = await service.fetchLabel(["cs"], "");
-    expect(second).toBeNullable();
+    assert.strictEqual(second, null);
 
     const en = await service.fetchLabel(["en"], "");
-    expect(en).toBe("JSON-LD");
+    assert.strictEqual(en, "JSON-LD");
 
     const fallback = await service.fetchLabel(["cs", "en"], "");
-    expect(fallback).toBe("JSON-LD");
+    assert.strictEqual(fallback, "JSON-LD");
 
     // We should have called the service only once.
-    expect(callCounter).toBe(1);
+    assert.strictEqual(callCounter, 1);
   });
 
   it("Use empty language as fallback.", async () => {
@@ -38,7 +40,7 @@ describe("createLabelService", () => {
     }], []);
 
     const value = await service.fetchLabel(["en"], "");
-    expect(value).toBe("JSON-LD");
+    assert.strictEqual(value, "JSON-LD");
 
   });
 
@@ -71,13 +73,13 @@ describe("createLabelService", () => {
     await service.reloadCache(["cs", "en"]);
 
     const cs = await service.fetchLabel(["cs"], "");
-    expect(cs).toBe("Příklad");
+    assert.strictEqual(cs, "Příklad");
 
     const en = await service.fetchLabel(["en"], "");
-    expect(en).toBe("Example");
+    assert.strictEqual(en, "Example");
 
     const json = await service.fetchLabel(["en"], ":json");
-    expect(json).toBe("json");
+    assert.strictEqual(json, "json");
 
   });
 

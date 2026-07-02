@@ -3,7 +3,7 @@ import { describe, it } from "node:test"
 
 import { createTranslationService } from "./translation-service.ts";
 
-describe("Translation service.", () => {
+describe("Translation service", () => {
 
   const data = {
     "count": [
