@@ -11,6 +11,12 @@ window.addEventListener("load", () => {
   // On key down we need to detect enter to perform submit.
   function onKeyDown(event) {
     if (event.detail.originalEvent.code === "Enter") {
+      // Read the value directly from the native input instead of relying
+      // on the "gov-input" event having already updated "value", as that
+      // event is not always fired before this handler, e.g. after a paste,
+      // which would make onSubmit() see a stale value and silently do
+      // nothing.
+      value = event.detail.originalEvent.target.value;
       onSubmit();
     }
   }
