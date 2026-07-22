@@ -191,7 +191,14 @@ export function prepareTemplateData(
       //
       landingPage: dataset.landingPage[0]?.url ?? null,
       publicInformationSystem: dataset.publicInformationSystem.map(asHrefLabel),
-      concernTerm: dataset.concernTerm.map(asHrefLabel),
+      concernTerm: dataset.concernTerm.map(item => {
+        const viewer = configuration.client.conceptTemplate.replace(
+          "{}", encodeURIComponent(item.url));
+        return {
+          ...asHrefLabel(item),
+          viewer
+        };
+      }),
       //
       isOpenData: dataset.type.includes(DATASET_TYPE_OPEN_DATA),
       isNonPublicData: dataset.type.includes(DATASET_TYPE_NON_PUBLIC_DATA),
@@ -324,7 +331,11 @@ export interface DatasetDetailTemplateModel {
     parentDataset: HrefLabel | null;
     landingPage: string | null;
     publicInformationSystem: HrefLabel[];
-    concernTerm: HrefLabel[];
+    concernTerm: {
+      href: string;
+      label: string;
+      viewer: string;
+    }[];
     //
     isOpenData: boolean;
     isNonPublicData: boolean;
