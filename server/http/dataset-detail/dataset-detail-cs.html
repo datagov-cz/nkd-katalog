@@ -551,18 +551,29 @@
                       <tbody>
                         {{#each facilitatesSharing}}
                         <tr>
-                          {{#if correspondingTerm}}
-                            <td><a href="{{correspondingTerm.url}}" rel="nofollow noopener noreferrer" target="_blank">{{correspondingTerm.label}}</a></td>
-                          {{/if}}
-                          {{#if obtainedBy}}
-                            <td><a href="{{obtainedBy.url}}" rel="nofollow noopener noreferrer" target="_blank">{{obtainedBy.label}}</a></td>
-                          {{/if}}
-                          {{#if sharedAs}}
-                            <td><a href="{{sharedAs.url}}" rel="nofollow noopener noreferrer" target="_blank">{{sharedAs.label}}</a></td>
-                          {{/if}}
-                          {{#if sharedBy}}
-                            <td><a href="{{sharedBy.url}}" rel="nofollow noopener noreferrer" target="_blank">{{sharedBy.label}}</a></td>
-                          {{/if}}
+                          <td>
+                            {{#if correspondingTerm}}
+                              {{#if correspondingTermViewer}}
+                              <a href="{{correspondingTermViewer}}" rel="nofollow noopener noreferrer" target="_blank">{{correspondingTerm.label}}</a>
+                              {{/if}}
+                              <a href="{{correspondingTerm.href}}"><gov-icon name="box-arrow-up-right" title="Přejít na pojem"></gov-icon></a>
+                            {{/if}}
+                          </td>
+                          <td>
+                            {{#if obtainedBy}}
+                            <a href="{{obtainedBy.href}}" rel="nofollow noopener noreferrer" target="_blank">{{obtainedBy.label}}</a>
+                            {{/if}}
+                          </td>
+                          <td>
+                            {{#if sharedAs}}
+                            <a href="{{sharedAs.href}}" rel="nofollow noopener noreferrer" target="_blank">{{sharedAs.label}}</a>
+                            {{/if}}
+                          </td>
+                          <td>
+                            {{#if sharedBy}}
+                            <a href="{{sharedBy.href}}" rel="nofollow noopener noreferrer" target="_blank">{{sharedBy.label}}</a>
+                            {{/if}}
+                          </td>
                         </tr>
                         {{/each}}
                       </tbody>

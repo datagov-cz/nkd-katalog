@@ -350,7 +350,7 @@ type TermsOfUse = {
 
 };
 
-interface FacilitatesSharing {
+export interface FacilitatesSharing {
 
   sharedAs: Link | null;
 

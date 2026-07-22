@@ -5,13 +5,14 @@ import {
   Distributable,
   isDataService,
   isFileDistribution,
+  FacilitatesSharing,
 } from "./dataset-detail-model.ts";
 import {
   createHeadData,
   createFooterData,
   createNavigationData,
 } from "../../component/index.mjs";
-import { Configuration } from "../../configuration.ts";
+import configuration, { Configuration } from "../../configuration.ts";
 import { NavigationEntry } from "../../service/navigation-service.ts";
 import { LinkService } from "../../service/link-service.ts";
 import { TranslationService } from "../../service/translation-service.ts";
@@ -421,17 +422,7 @@ interface DistributionItem {
   sharedInterfaceKind: HrefLabel[];
   sharedInterfaceAccessType: HrefLabel[];
   facilitatesSharingCount: number;
-  facilitatesSharing: {
-
-    sharedAs: HrefLabel | null;
-
-    sharedBy: HrefLabel | null;
-
-    obtainedBy: HrefLabel | null;
-
-    correspondingTerm: HrefLabel | null;
-
-  }[];
+  facilitatesSharing: FacilitatesSharingItem[];
   // Type specific.
   distribution: FileDistribution | null;
   dataService: DataService | null;
@@ -459,6 +450,20 @@ interface IconLabelViewModel {
   icon: string;
   iconStyle: string;
   iconTitle: string;
+}
+
+interface FacilitatesSharingItem {
+
+  sharedAs: HrefLabel | null;
+
+  sharedBy: HrefLabel | null;
+
+  obtainedBy: HrefLabel | null;
+
+  correspondingTerm: HrefLabel | null;
+
+  correspondingTermViewer: string | null;
+
 }
 
 interface FileDistribution {
@@ -680,12 +685,8 @@ function prepareDistribution(
       sharedInterfaceKind: value.sharedInterfaceKind
         .map(item => ({ href: item.url, label: item.label })),
       facilitatesSharingCount: value.facilitatesSharing.length,
-      facilitatesSharing: value.facilitatesSharing.map(item => ({
-        correspondingTerm: asNullableHrefLabel(item.correspondingTerm),
-        obtainedBy: asNullableHrefLabel(item.obtainedBy),
-        sharedAs: asNullableHrefLabel(item.sharedAs),
-        sharedBy: asNullableHrefLabel(item.sharedBy),
-      })),
+      facilitatesSharing: value.facilitatesSharing
+        .map(prepareFacilitatesSharing),
       //
       distribution: {
         mediaType: firstAsHrefLabel(value.mediaType),
@@ -731,12 +732,8 @@ function prepareDistribution(
       sharedInterfaceKind: value.sharedInterfaceKind
         .map(item => ({ href: item.url, label: item.label })),
       facilitatesSharingCount: value.facilitatesSharing.length,
-      facilitatesSharing: value.facilitatesSharing.map(item => ({
-        correspondingTerm: asNullableHrefLabel(item.correspondingTerm),
-        obtainedBy: asNullableHrefLabel(item.obtainedBy),
-        sharedAs: asNullableHrefLabel(item.sharedAs),
-        sharedBy: asNullableHrefLabel(item.sharedBy),
-      })),
+      facilitatesSharing: value.facilitatesSharing
+        .map(prepareFacilitatesSharing),
       //
       distribution: null,
       dataService: {
@@ -761,6 +758,20 @@ function prepareDistribution(
   }
   else {
     return null;
+  }
+}
+
+function prepareFacilitatesSharing(
+  item: FacilitatesSharing,
+): FacilitatesSharingItem {
+  const viewer = configuration.client.conceptTemplate.replace(
+    "{}", encodeURIComponent(item.correspondingTerm.url));
+  return {
+    correspondingTermViewer: item.correspondingTerm.url === null ? null : viewer,
+    correspondingTerm: asNullableHrefLabel(item.correspondingTerm),
+    obtainedBy: asNullableHrefLabel(item.obtainedBy),
+    sharedAs: asNullableHrefLabel(item.sharedAs),
+    sharedBy: asNullableHrefLabel(item.sharedBy),
   }
 }
 

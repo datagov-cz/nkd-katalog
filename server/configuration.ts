@@ -78,6 +78,10 @@ const ConfigurationZod = z.object({
      * Replace {} with catalog endpoint.
      */
     catalogValidatorTemplate: z.string(),
+    /**
+     * Replace {} with the concept.
+     */
+    conceptTemplate: z.string(),
   }),
 });
 
@@ -121,6 +125,7 @@ const createConfiguration = (): Configuration => {
       matomoSiteId: process.env.CLIENT_MATOMO_SITE_ID ?? null,
       catalogValidator: process.env.CLIENT_CATALOG_VALIDATOR_LANDING_PAGE ?? null,
       catalogValidatorTemplate : process.env.CLIENT_CATALOG_VALIDATOR_RUN_VALIDATION ?? null,
+      conceptTemplate: process.env.CONCEPT_VIEWER_URL_TEMPLATE ?? null,
     },
   });
 };
