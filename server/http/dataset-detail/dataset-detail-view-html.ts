@@ -109,6 +109,7 @@ export function prepareTemplateData(
 
   return {
     head: createHeadData(configuration),
+    labelEndpoint: configuration.client.conceptSparql,
     navigation: createNavigationData(navigation, languages, query) as any,
     footer: createFooterData(),
     dataset: {
@@ -195,7 +196,7 @@ export function prepareTemplateData(
         const viewer = configuration.client.conceptTemplate.replace(
           "{}", encodeURIComponent(item.url));
         return {
-          ...asHrefLabel(item),
+          url: item.url,
           viewer
         };
       }),
@@ -289,6 +290,8 @@ export interface DatasetDetailTemplateModel {
     catalogValidator: string;
   };
 
+  labelEndpoint: string;
+
   metadataAsString: string;
 
   applications: {
@@ -332,8 +335,7 @@ export interface DatasetDetailTemplateModel {
     landingPage: string | null;
     publicInformationSystem: HrefLabel[];
     concernTerm: {
-      href: string;
-      label: string;
+      url: string;
       viewer: string;
     }[];
     //
@@ -471,7 +473,7 @@ interface FacilitatesSharingItem {
 
   obtainedBy: HrefLabel | null;
 
-  correspondingTerm: HrefLabel | null;
+  correspondingTerm: string | null;
 
   correspondingTermViewer: string | null;
 
@@ -779,7 +781,7 @@ function prepareFacilitatesSharing(
     "{}", encodeURIComponent(item.correspondingTerm.url));
   return {
     correspondingTermViewer: item.correspondingTerm.url === null ? null : viewer,
-    correspondingTerm: asNullableHrefLabel(item.correspondingTerm),
+    correspondingTerm: item.correspondingTerm.url,
     obtainedBy: asNullableHrefLabel(item.obtainedBy),
     sharedAs: asNullableHrefLabel(item.sharedAs),
     sharedBy: asNullableHrefLabel(item.sharedBy),

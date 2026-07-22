@@ -82,6 +82,10 @@ const ConfigurationZod = z.object({
      * Replace {} with the concept.
      */
     conceptTemplate: z.string(),
+    /**
+     * URL of SPARQL endpoint with concepts.
+     */
+    conceptSparql: z.string(),
   }),
 });
 
@@ -126,6 +130,7 @@ const createConfiguration = (): Configuration => {
       catalogValidator: process.env.CLIENT_CATALOG_VALIDATOR_LANDING_PAGE ?? null,
       catalogValidatorTemplate : process.env.CLIENT_CATALOG_VALIDATOR_RUN_VALIDATION ?? null,
       conceptTemplate: process.env.CONCEPT_VIEWER_URL_TEMPLATE ?? null,
+      conceptSparql: process.env.CONCEPT_SPARQL,
     },
   });
 };

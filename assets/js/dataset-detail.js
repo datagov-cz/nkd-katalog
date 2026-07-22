@@ -2,6 +2,7 @@ window.addEventListener("load", () => {
   initializeApplicableLegislation();
   initializeFacilitatesSharing();
   initializeQuality();
+  processDataLabel();
 });
 
 function initializeApplicableLegislation() {
@@ -237,4 +238,40 @@ function renderDataServiceQuality(element, response) {
   const conformsToElement = element.querySelector(".conformsTo .quality");
   const conformsTo = response.conformsTo;
   renderQualityMeasure(conformsToElement, conformsTo, "award", "bug");
+}
+
+/**
+ * Find all elements with data-label tag and try to replace the content with
+ * translation from SPARQL endpoint.
+ */
+function processDataLabel() {
+  const language = document.documentElement.lang;
+  // For each specified endpoint.
+  document.querySelectorAll("[data-sparql-endpoint]").forEach(element => {
+    const endpoint = element.dataset.sparqlEndpoint;
+    // Find all labels.
+    Array.from(element.querySelectorAll("[data-label]")).map((el) => {
+      const url = el.innerText;
+      const predicate = el.dataset.label;
+      const query = `SELECT ?label WHERE { <${url}> <${predicate}> ?label }`
+      executeSparqlQuery(endpoint, query).then(response => {
+        // Construct language string object.
+        const labels = {};
+        response.results.bindings
+          .map(item => item.label)
+          .forEach(item => labels[item["xml:lang"]] = item.value);
+        // Set a new label.
+        el.innerHTML = labels[language] ?? labels["cs"] ?? labels["en"] ?? url;
+      });
+    });
+  });
+}
+
+/**
+ * @param {string} endpoint
+ * @param {string} query
+ */
+function executeSparqlQuery(endpoint, query) {
+  const url = `${endpoint}?query=${encodeURIComponent(query)}&format=application%2Fsparql-results%2Bjson`;
+  return fetch(url).then(response => response.json());
 }

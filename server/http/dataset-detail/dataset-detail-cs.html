@@ -13,7 +13,7 @@
   <script src="/assets/catalog/js/dataset-detail.js"></script>
 </head>
 
-<body class="dataset-detail">
+<body class="dataset-detail" data-sparql-endpoint="{{labelEndpoint}}">
   {{#with navigation}} {{> navigation }} {{/with}}
   {{#with dataset}}
   <gov-container class="dataset-container" data-iri="{{iri}}">
@@ -237,8 +237,10 @@
           <dt>Pojmy</dt>
           {{#each concernTerm}}
           <dd>
-            <a href="{{viewer}}">{{label}}</a>
-            <a href="{{href}}"><gov-icon name="box-arrow-up-right" title="Přejít na pojem"></gov-icon></a>
+            <a href="{{viewer}}">
+              <span data-label="http://www.w3.org/2004/02/skos/core#prefLabel">{{url}}</span>
+            </a>
+            <a href="{{url}}"><gov-icon name="box-arrow-up-right" title="Přejít na pojem"></gov-icon></a>
           </dd>
           {{/each}}
         </dl>
@@ -555,9 +557,11 @@
                           <td>
                             {{#if correspondingTerm}}
                               {{#if correspondingTermViewer}}
-                              <a href="{{correspondingTermViewer}}" rel="nofollow noopener noreferrer" target="_blank">{{correspondingTerm.label}}</a>
+                              <a href="{{correspondingTermViewer}}" rel="nofollow noopener noreferrer" target="_blank">
+                                <span data-label="http://www.w3.org/2004/02/skos/core#prefLabel">{{correspondingTerm}}</span>
+                              </a>
                               {{/if}}
-                              <a href="{{correspondingTerm.href}}"><gov-icon name="box-arrow-up-right" title="Přejít na pojem"></gov-icon></a>
+                              <a href="{{correspondingTerm}}"><gov-icon name="box-arrow-up-right" title="Přejít na pojem"></gov-icon></a>
                             {{/if}}
                           </td>
                           <td>
