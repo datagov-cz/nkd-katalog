@@ -1,32 +1,20 @@
+import { FastifyReply } from "fastify";
+
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 import {headerHtml} from "../../component/header.ts";
 import {footerHtml} from "../../component/footer.ts";
-
-/**
- * @typedef {{
- *   configuration: import('../../configuration.ts').Configuration,
- *   translation: import('../../service/translation-service.ts').TranslationService,
- *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
- *   template: import('../../handlebars/index.ts').HandlebarsService,
- * }} DatasetListViewServices
- *
- * @typedef {{
- *   head: import('../../component/head.ts').HeadData,
- *   navigation: import('../../component/header.ts').NavigationData,
- *   footer: import('../../component/footer.ts').FooterData,
- *   search: {
- *     "clear-href": string,
- *     "base-url": string,
- *     query: { searchQuery: string | null, temporalFrom: string | null, temporalTo: string | null, publicData: boolean, codelist: boolean, hvdDataset: boolean },
- *     queryObjectAsString: string,
- *   },
- *   "result-bar": import('../../component/result-bar.mjs').ResultBarData,
- *   pagination: import('../../component/pagination.mjs').PaginationData,
- *   documents: Array<{ iri: string, title: string, description: string, href: string, isHvd: boolean, isOpenData: boolean, isNonPublicData: boolean, format: Array<{ label: string }> }>,
- *   facets: import('../../component/facet.mjs').FacetData[],
- * }} DatasetListTemplateData
- */
+import type { Configuration } from "../../configuration.ts";
+import type { TranslationService } from "../../service/translation-service.ts";
+import type { NavigationEntry } from "../../service/navigation-service.ts";
+import type { Language } from "../../localization/index.ts";
+import type { QuerySectionState } from "../../component/query-section/index.ts";
+import type {
+  DatasetListData,
+  DatasetListQuery,
+  DatasetListState,
+  DatasetListViewServices,
+} from "./dataset-list-state.ts";
 
 const FACET_SERIES = {
   "name": "datasetSeries",
@@ -49,14 +37,13 @@ const SORT_OPTIONS = [
   ["title", "desc"],
 ];
 
-/**
- * @param {DatasetListViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @param {any} reply
- */
-export function renderHtml(services, languages, query, data, reply) {
+export function renderHtml(
+  services: DatasetListViewServices,
+  languages: Language[],
+  query: DatasetListQuery,
+  data: DatasetListData,
+  reply: FastifyReply,
+): void {
   const templateData = prepareTemplateData(
     services.configuration, services.translation, services.navigation, languages, query, data);
   const template = services.template.view(ROUTE.DATASET_LIST);
@@ -66,16 +53,14 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
-/**
- * @param {import('../../configuration.ts').Configuration} configuration
- * @param {import('../../service/translation-service.ts').TranslationService} translation
- * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @returns {DatasetListTemplateData}
- */
-export function prepareTemplateData(configuration, translation, navigation, languages, query, data) {
+export function prepareTemplateData(
+  configuration: Configuration,
+  translation: TranslationService,
+  navigation: NavigationEntry,
+  languages: Language[],
+  query: DatasetListQuery,
+  data: DatasetListData,
+): DatasetListState {
   const documents = data["documents"];
   prepareDocumentsInPlace(navigation, documents);
   const count = data["found"]["documents"];
@@ -85,8 +70,7 @@ export function prepareTemplateData(configuration, translation, navigation, lang
   //
   //
 
-  /** @type {import('../../component/query-section/query-section.ts').QuerySectionState} */
-  const querySection = {
+  const querySection: QuerySectionState = {
     temporalStart: null,
     temporalEnd: null,
     publishers: [],

@@ -8,7 +8,7 @@ export {createFacetData} from "./facet.mjs";
 export {createHeadData} from "./head.ts";
 export {createPaginationData} from "./pagination.mjs";
 export {createResultBarData} from "./result-bar.mjs";
-export * from "./query-section";
+export * from "./query-section/index.ts";
 
 /**
  * @param {import('../handlebars/index.ts').HandlebarsService} templateService
