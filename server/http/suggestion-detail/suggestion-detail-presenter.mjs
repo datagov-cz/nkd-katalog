@@ -2,7 +2,7 @@ import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
 import { parseClientQuery } from "./suggestion-detail-query.mjs";
 import { prepareData } from "./suggestion-detail-model.mjs";
-import { renderHtml } from "./suggestion-detail-view-html.mjs";
+import { renderHtml } from "./suggestion-detail-view-html.ts";
 import localization from "./suggestion-detail-localization.mjs";
 
 /**

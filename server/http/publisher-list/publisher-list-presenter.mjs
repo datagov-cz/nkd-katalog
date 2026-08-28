@@ -1,7 +1,7 @@
 import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
 import { prepareData } from "./publisher-list-model.mjs";
-import { renderHtml } from "./publisher-list-view-html.mjs";
+import { renderHtml } from "./publisher-list-view-html.ts";
 import localization from "./publisher-list-localization.mjs";
 
 /**

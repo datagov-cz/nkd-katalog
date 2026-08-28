@@ -1,46 +1,26 @@
+import { FastifyReply } from "fastify";
+
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 import {headerHtml} from "../../component/header.ts";
 import {footerHtml} from "../../component/footer.ts";
+import type { NavigationEntry } from "../../service/navigation-service.ts";
+import type { Language } from "../../localization/index.ts";
+import type {
+  SuggestionDetailData,
+  SuggestionDetailQuery,
+  SuggestionDetailState,
+  SuggestionDetailSuggestion,
+  SuggestionDetailViewServices,
+} from "./suggestion-detail-state.ts";
 
-/**
- * @typedef {{
- *   configuration: import('../../configuration.ts').Configuration,
- *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
- *   template: import('../../handlebars/index.ts').HandlebarsService,
- *   http: any,
- * }} SuggestionDetailViewServices
- *
- * @typedef {{
- *   head: import('../../component/head.ts').HeadData,
- *   navigation: import('../../component/header.ts').NavigationData,
- *   footer: import('../../component/footer.ts').FooterData,
- *   suggestion: {
- *     iri: string,
- *     title: string,
- *     description: string,
- *     themes: Array<{ iri: string, label: string, href: string }>,
- *     state: any,
- *     created: string,
- *     mandatory_106: any,
- *     obstacle_special_regulation: any,
- *     obstacle_106: any,
- *     publisher: { iri: string | null, title: string | null },
- *     publication_plan: string | null,
- *     publication_plan_visible: boolean,
- *   },
- *   datasets: { visible: boolean, items: Array<{ iri: string, title: string, description: string, href: string }> },
- * }} SuggestionDetailTemplateData
- */
-
-/**
- * @param {SuggestionDetailViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @param {any} reply
- */
-export function renderHtml(services, languages, query, data, reply) {
+export function renderHtml(
+  services: SuggestionDetailViewServices,
+  languages: Language[],
+  query: SuggestionDetailQuery,
+  data: SuggestionDetailData | null,
+  reply: FastifyReply,
+): void {
   if (data == null) {
     services.http.handleNotFound(services, reply);
     return;
@@ -53,14 +33,12 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
-/**
- * @param {SuggestionDetailViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @returns {SuggestionDetailTemplateData}
- */
-export function prepareTemplateData(services, languages, query, data) {
+export function prepareTemplateData(
+  services: SuggestionDetailViewServices,
+  languages: Language[],
+  query: SuggestionDetailQuery,
+  data: SuggestionDetailData,
+): SuggestionDetailState {
   const language = languages[0];
   const datasets = data["datasets"];
   prepareDatasetsInPlace(services, data["datasets"]);
@@ -84,7 +62,11 @@ function prepareDatasetsInPlace(services, datasets) {
   }
 }
 
-function prepareSuggestion(navigation, language, suggestion) {
+function prepareSuggestion(
+  navigation: NavigationEntry,
+  language: Language,
+  suggestion: SuggestionDetailData,
+): SuggestionDetailSuggestion {
   updateCodelistInPlace(navigation, suggestion["themes"], "theme");
   return {
     "iri": suggestion["iri"],
@@ -105,20 +87,24 @@ function prepareSuggestion(navigation, language, suggestion) {
   }
 }
 
-function formatDate(language, value) {
+function formatDate(language: Language, value: Date | null): string {
   if (value === null) {
     return "-";
   }
   return value.toLocaleDateString(language);
 }
 
-function updateCodelistInPlace(navigation, items, name) {
+function updateCodelistInPlace(
+  navigation: NavigationEntry,
+  items: { iri: string; href?: string }[],
+  name: string,
+) {
   const listNavigation = navigation.changeView(ROUTE.SUGGESTION_LIST);
   for (const item of items) {
     item["href"] = listNavigation.linkFromServer({ [name]: item["iri"] });
   }
 }
 
-function isNotEmpty(value) {
+function isNotEmpty(value: string | null | undefined): boolean {
   return value !== undefined && value !== null && value !== "";
 }

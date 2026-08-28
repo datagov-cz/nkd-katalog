@@ -1,43 +1,25 @@
+import { FastifyReply } from "fastify";
+
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 import {headerHtml} from "../../component/header.ts";
 import {footerHtml} from "../../component/footer.ts";
+import type { Language } from "../../localization/index.ts";
+import type {
+  LocalCatalogListData,
+  LocalCatalogListState,
+  LocalCatalogListViewServices,
+} from "./local-catalog-list-state.ts";
 
-/**
- * @typedef {{
- *   configuration: import('../../configuration.ts').Configuration,
- *   translation: import('../../service/translation-service.ts').TranslationService,
- *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
- *   link: import('../../service/link-service.ts').LinkService,
- *   template: import('../../handlebars/index.ts').HandlebarsService,
- * }} LocalCatalogListViewServices
- *
- * @typedef {{
- *   head: import('../../component/head.ts').HeadData,
- *   navigation: import('../../component/header.ts').NavigationData,
- *   footer: import('../../component/footer.ts').FooterData,
- *   message: string,
- *   catalogs: Array<{
- *     iri: string,
- *     title: string,
- *     url: string,
- *     publisher: { iri: string, label: string },
- *     homepageUrl: string,
- *     endpointUrl: string,
- *     deleteUrl: string,
- *     validateUrl: string,
- *   }>,
- * }} LocalCatalogListTemplateData
- */
+type ServerQuery = Record<string, string | string[]>;
 
-/**
- * @param {LocalCatalogListViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @param {any} reply
- */
-export function renderHtml(services, languages, query, data, reply) {
+export function renderHtml(
+  services: LocalCatalogListViewServices,
+  languages: Language[],
+  query: ServerQuery,
+  data: LocalCatalogListData,
+  reply: FastifyReply,
+): void {
   const templateData = prepareTemplateData(services, languages, query, data);
   const template = services.template.view(ROUTE.LOCAL_CATALOG_LIST);
   reply
@@ -46,14 +28,12 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
-/**
- * @param {LocalCatalogListViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @returns {LocalCatalogListTemplateData}
- */
-export function prepareTemplateData(services, languages, query, data) {
+export function prepareTemplateData(
+  services: LocalCatalogListViewServices,
+  languages: Language[],
+  query: ServerQuery,
+  data: LocalCatalogListData,
+): LocalCatalogListState {
   prepareCatalogsInPlace(services.configuration, services.link, services.translation, data["catalogs"])
   return {
     "head": components.createHeadData(services.configuration),

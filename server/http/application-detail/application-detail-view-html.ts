@@ -1,44 +1,27 @@
+import { FastifyReply } from "fastify";
+
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 import { footerHtml } from "../../component/footer.ts";
 import { headerHtml } from "../../component/header.ts";
+import type { NavigationEntry } from "../../service/navigation-service.ts";
+import type { Language } from "../../localization/index.ts";
+import type {
+  ApplicationDetailApplication,
+  ApplicationDetailData,
+  ApplicationDetailQuery,
+  ApplicationDetailState,
+  ApplicationDetailViewServices,
+  CodelistItem,
+} from "./application-detail-state.ts";
 
-/**
- * @typedef {{
- *   configuration: import('../../configuration.ts').Configuration,
- *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
- *   template: import('../../handlebars/index.ts').HandlebarsService,
- *   http: any,
- * }} ApplicationDetailViewServices
- *
- * @typedef {{
- *   head: import('../../component/head.ts').HeadData,
- *   navigation: import('../../component/header.ts').NavigationData,
- *   footer: import('../../component/footer.ts').FooterData,
- *   application: {
- *     author: { title: string | null, titleVisible: boolean, iri: string | null, iriVisible: boolean },
- *     title: string,
- *     description: string,
- *     states: Array<{ iri: string, label: string, href: string }>,
- *     themes: Array<{ iri: string, label: string, href: string }>,
- *     platforms: Array<{ iri: string, label: string, href: string }>,
- *     types: Array<{ iri: string, label: string, href: string }>,
- *     published: string,
- *     modified: string,
- *     link: string,
- *   },
- *   datasets: { visible: boolean, items: Array<{ iri: string, title: string, description: string, href: string }> },
- * }} ApplicationDetailTemplateData
- */
-
-/**
- * @param {ApplicationDetailViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @param {any} reply
- */
-export function renderHtml(services, languages, query, data, reply) {
+export function renderHtml(
+  services: ApplicationDetailViewServices,
+  languages: Language[],
+  query: ApplicationDetailQuery,
+  data: ApplicationDetailData | null,
+  reply: FastifyReply,
+): void {
   if (data == null) {
     services.http.handleNotFound(services, reply);
     return;
@@ -51,14 +34,12 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
-/**
- * @param {ApplicationDetailViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @returns {ApplicationDetailTemplateData}
- */
-export function prepareTemplateData(services, languages, query, data) {
+export function prepareTemplateData(
+  services: ApplicationDetailViewServices,
+  languages: Language[],
+  query: ApplicationDetailQuery,
+  data: ApplicationDetailData,
+): ApplicationDetailState {
   const language = languages[0];
   const datasets = data["datasets"];
   prepareDatasetsInPlace(services.navigation, data["datasets"]);
@@ -75,14 +56,21 @@ export function prepareTemplateData(services, languages, query, data) {
   };
 }
 
-function prepareDatasetsInPlace(navigation, datasets) {
+function prepareDatasetsInPlace(
+  navigation: NavigationEntry,
+  datasets: ApplicationDetailData["datasets"],
+) {
   const listNavigation = navigation.changeView(ROUTE.DATASET_DETAIL);
   for (const dataset of datasets) {
     dataset["href"] = listNavigation.linkFromServer({ "iri": dataset["iri"] });
   }
 }
 
-function prepareApplication(navigation, language, application) {
+function prepareApplication(
+  navigation: NavigationEntry,
+  language: Language,
+  application: ApplicationDetailData,
+): ApplicationDetailApplication {
   const authorTitle = application["author"]["title"];
   const authorIri = application["author"]["iri"];
 
@@ -110,14 +98,18 @@ function prepareApplication(navigation, language, application) {
   }
 }
 
-function formatDate(language, value) {
+function formatDate(language: Language, value: Date | null): string {
   if (value === null) {
     return "-";
   }
   return value.toLocaleDateString(language);
 }
 
-function updateCodelistInPlace(navigation, items, name) {
+function updateCodelistInPlace(
+  navigation: NavigationEntry,
+  items: CodelistItem[],
+  name: string,
+) {
   const listNavigation = navigation.changeView(ROUTE.APPLICATION_LIST);
   for (const item of items) {
     item["href"] = listNavigation.linkFromServer({ [name]: item["iri"] });

@@ -1,27 +1,19 @@
+import { FastifyReply } from "fastify";
+
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 import {headerHtml} from "../../component/header.ts";
 import {footerHtml} from "../../component/footer.ts";
-
-/**
- * @typedef {{
- *   configuration: import('../../configuration.ts').Configuration,
- *   translation: import('../../service/translation-service.ts').TranslationService,
- *   navigation: import('../../service/navigation-service.ts').NavigationEntry,
- *   template: import('../../handlebars/index.ts').HandlebarsService,
- * }} ApplicationListViewServices
- *
- * @typedef {{
- *   head: import('../../component/head.ts').HeadData,
- *   navigation: import('../../component/header.ts').NavigationData,
- *   footer: import('../../component/footer.ts').FooterData,
- *   search: { value: string | null, "clear-href": string, "search-href": string },
- *   "result-bar": import('../../component/result-bar.mjs').ResultBarData,
- *   pagination: import('../../component/pagination.mjs').PaginationData,
- *   documents: Array<{ iri: string, title: string, description: string, href: string, themes: Array<{ iri: string, label: string, href: string }> }>,
- *   facets: import('../../component/facet.mjs').FacetData[],
- * }} ApplicationListTemplateData
- */
+import type { Configuration } from "../../configuration.ts";
+import type { TranslationService } from "../../service/translation-service.ts";
+import type { NavigationEntry } from "../../service/navigation-service.ts";
+import type { Language } from "../../localization/index.ts";
+import type {
+  ApplicationListData,
+  ApplicationListQuery,
+  ApplicationListState,
+  ApplicationListViewServices,
+} from "./application-list-state.ts";
 
 const FACETS = [
   { "name": "theme", "tooltip": "themeTooltip" },
@@ -37,14 +29,13 @@ const SORT_OPTIONS = [
   ["modified", "desc"],
 ];
 
-/**
- * @param {ApplicationListViewServices} services
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @param {any} reply
- */
-export function renderHtml(services, languages, query, data, reply) {
+export function renderHtml(
+  services: ApplicationListViewServices,
+  languages: Language[],
+  query: ApplicationListQuery,
+  data: ApplicationListData,
+  reply: FastifyReply,
+): void {
   const templateData = prepareTemplateData(
     services.configuration, services.translation, services.navigation, languages, query, data);
   const template = services.template.view(ROUTE.APPLICATION_LIST);
@@ -54,16 +45,14 @@ export function renderHtml(services, languages, query, data, reply) {
     .send(template(templateData));
 }
 
-/**
- * @param {import('../../configuration.ts').Configuration} configuration
- * @param {import('../../service/translation-service.ts').TranslationService} translation
- * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
- * @param {('cs' | 'en')[]} languages
- * @param {any} query
- * @param {any} data
- * @returns {ApplicationListTemplateData}
- */
-export function prepareTemplateData(configuration, translation, navigation, languages, query, data) {
+export function prepareTemplateData(
+  configuration: Configuration,
+  translation: TranslationService,
+  navigation: NavigationEntry,
+  languages: Language[],
+  query: ApplicationListQuery,
+  data: ApplicationListData,
+): ApplicationListState {
   const documents = data["documents"];
   prepareDocumentsInPlace(navigation, documents);
   const applicationCount = data["found"]["documents"];
