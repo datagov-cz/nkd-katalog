@@ -39,6 +39,7 @@ export function prepareTemplateData(
     "head": components.createHeadData(services.configuration),
     "headerHtml": headerHtml(services.navigation, languages[0], query),
     "footerHtml": footerHtml(languages[0]),
+    "translation": services.translation.dictionary,
     "message": services.translation.translate("items-found", data["catalogs"].length),
     "catalogs": data["catalogs"],
   };

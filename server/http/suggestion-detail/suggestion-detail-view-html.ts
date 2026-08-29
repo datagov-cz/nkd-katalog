@@ -47,6 +47,7 @@ export function prepareTemplateData(
     "head": components.createHeadData(services.configuration),
     "headerHtml": headerHtml(services.navigation, language, query),
     "footerHtml": footerHtml(language),
+    "translation": services.translation.dictionary,
     "suggestion": suggestion,
     "datasets": {
       "visible": datasets.length > 0,

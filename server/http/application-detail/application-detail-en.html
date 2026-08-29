@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Applications - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/application">
   <link rel="alternate" href="/detail-aplikace" hreflang="cs">
   <link rel="alternate" href="/application" hreflang="en">
@@ -26,7 +26,7 @@
       <h1 class="inline">{{title}}</h1>
       {{/if}}
       {{#if author.iriVisible}}
-      <a href="{{author.iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+      <a href="{{author.iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
         <gov-icon name="box-arrow-up-right"></gov-icon>
       </a>
       {{/if}}
@@ -38,14 +38,14 @@
     <gov-grid>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>State</dt>
+          <dt>{{t "dt-state"}}</dt>
           {{#each states}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -54,14 +54,14 @@
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Theme</dt>
+          <dt>{{t "dt-theme"}}</dt>
           {{#each themes}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -70,14 +70,14 @@
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Platform</dt>
+          <dt>{{t "dt-platform"}}</dt>
           {{#each platforms}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -86,14 +86,14 @@
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Type</dt>
+          <dt>{{t "dt-type"}}</dt>
           {{#each types}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -104,27 +104,27 @@
     <gov-grid>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Publication date</dt>
+          <dt>{{t "dt-published"}}</dt>
           <dd>{{published}}</dd>
         </dl>
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Date last modified</dt>
+          <dt>{{t "dt-modified"}}</dt>
           <dd>{{modified}}</dd>
         </dl>
       </gov-grid-item>
     </gov-grid>
     <div>
       <gov-button variant="primary" type="outlined" href="{{link}}" expanded="true" rel="nofollow noopener noreferrer">
-        Navigate to application
+        {{t "open-application"}}
       </gov-button>
     </div>
     {{/with}}
     <br/>
     {{#with datasets}}
     {{#if visible}}
-    <h2>Used datasets</h2>
+    <h2>{{t "used-datasets"}}</h2>
     <br/>
     <div class="resource-list">
       {{#each items}}

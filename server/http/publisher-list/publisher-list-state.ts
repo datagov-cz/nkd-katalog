@@ -5,6 +5,7 @@ import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { HandlebarsService } from "../../handlebars/index.ts";
+import type { TranslationDictionary } from "../../service/translation-service.ts";
 import type { HeadData } from "../../component/head.ts";
 
 export interface PublisherListViewServices {
@@ -37,6 +38,7 @@ export interface PublisherListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
+  translation: TranslationDictionary;
   message: string;
   publishers: PublisherListPublisher[];
 }

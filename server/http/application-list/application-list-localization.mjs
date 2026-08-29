@@ -23,6 +23,16 @@ export default {
       "desc": "sestupně",
     },
     "translation": {
+      "page-title": "Aplikace - Národní katalog dat (NKD)",
+      "page-description": "Portál o datech a Národní katalog dat České republiky",
+      "search-placeholder": "Co hledáte",
+      "search-input-label": "vyhledávání",
+      "search-button-label": "hledat",
+      "search-button": "Hledat",
+      "extended-search": "Rozšířené vyhledávání",
+      "clear-filters-label": "Smaž filtry",
+      "clear-filters": "Smaž filtry",
+      "theme-tooltip": "Datová sada náleží k tématu {}.",
       "items-found": [
         [0, "Nebyla nalezena žádná aplikace."],
         [1, "Nalezena jedna aplikace."],
@@ -68,6 +78,16 @@ export default {
       "desc": "descending",
     },
     "translation": {
+      "page-title": "Application - National Data Catalog (NKD)",
+      "page-description": "Data portal and National Data Catalog of the Czech Republic",
+      "search-placeholder": "What you're looking for",
+      "search-input-label": "search",
+      "search-button-label": "search",
+      "search-button": "Search",
+      "extended-search": "Extended search",
+      "clear-filters-label": "Clear filters",
+      "clear-filters": "Clear filters",
+      "theme-tooltip": "The dataset belongs to the topic {}.",
       "items-found": [
         [0, "No application found."],
         [1, "One application found."],

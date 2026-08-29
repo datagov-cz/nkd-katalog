@@ -20,4 +20,15 @@ function registerHelpers(handlebars: HandlebarsType): void {
     const result = escapedText.replace(/(\r\n|\n|\r)/gm, "<br>");
     return new Handlebars.SafeString(result);
   });
+
+  // {{t "key"}} or {{t "key" value}} — localized string from the route's
+  // `translation` dictionary, with optional "{}" substitution. Reading a key
+  // that is absent throws (the dictionary is a throwing Proxy).
+  handlebars.registerHelper("t", function (...args) {
+    const options = args.pop();
+    const [key, value] = args;
+    const dictionary = options?.data?.root?.translation ?? {};
+    const localized = dictionary[key];
+    return value === undefined ? localized : String(localized).replace("{}", String(value));
+  });
 }

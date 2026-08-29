@@ -79,8 +79,9 @@ export interface NavigationEntry {
   argumentFromServer(serverKey: string): string | null;
 
   /**
-   * Returns a relative link to this view with given query. Empty values
-   * (`null`, `undefined`, `""`, `[]`) are dropped by `queryFromServer`.
+   * Returns a relative link to this view with given query.
+   * Empty values (`null`, `undefined`, `""`, `[]`) are dropped by
+   * `queryFromServer`.
    */
   linkFromServer(
     serverQuery: Record<

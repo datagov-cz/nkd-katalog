@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Application - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/applications">
   <link rel="alternate" href="/aplikace" hreflang="cs">
   <link rel="alternate" href="/applications" hreflang="en">
@@ -23,17 +23,17 @@
         <!-- Search. -->
         {{#with search}}
         <gov-form-search variant="primary" id="search" href="{{search-href}}">
-          <gov-form-input slot="input"size="m" placeholder="What you're looking for" wcag-label="search" value="{{value}}"></gov-form-input>
-          <gov-button slot="button" variant="primary" size="s" wcag-label="search">
-            Search
+          <gov-form-input slot="input"size="m" placeholder="{{t "search-placeholder"}}" wcag-label="{{t "search-input-label"}}" value="{{value}}"></gov-form-input>
+          <gov-button slot="button" variant="primary" size="s" wcag-label="{{t "search-button-label"}}">
+            {{t "search-button"}}
           </gov-button>
         </gov-form-search>
         <gov-accordion size="xs">
           <gov-accordion-item>
-            <h3 slot="label">Extended search</h3>
+            <h3 slot="label">{{t "extended-search"}}</h3>
             <div class="extended-search">
-              <gov-button slot="button" variant="warning" size="m" href="{{clear-href}}" wcag-label="Clear filters">
-                Clear filters
+              <gov-button slot="button" variant="warning" size="m" href="{{clear-href}}" wcag-label="{{t "clear-filters-label"}}">
+                {{t "clear-filters"}}
               </gov-button>
             </div>
           </gov-accordion-item>
@@ -62,7 +62,7 @@
                   {{label}}
                 </gov-chip>
                 <gov-tooltip-content>
-                  The dataset belongs to the topic {{label}}.
+                  {{t "theme-tooltip" label}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/each}}

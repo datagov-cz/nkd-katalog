@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Datové sady - Národní katalog dat (NKD)</title>
-  <meta name="description" content="Portál o datech a Národní katalog dat České republiky" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/datasets">
   <link rel="alternate" href="/datové-sady" hreflang="cs">
   <link rel="alternate" href="/datasets" hreflang="en">
@@ -24,33 +24,33 @@
         <!-- Search. -->
         {{#with search}}
         <gov-form-search variant="primary" id="search" data-query="dotaz" data-base-url="{{base-url}}">
-          <gov-form-input slot="input" size="m" placeholder="Co hledáte" wcag-label="vyhledávání" value="{{query.searchQuery}}" data-type="query"></gov-form-input>
-          <gov-button slot="button" variant="primary" size="s" wcag-label="hledat" data-type="submit">
-            Hledat
+          <gov-form-input slot="input" size="m" placeholder="{{t "search-placeholder"}}" wcag-label="{{t "search-input-label"}}" value="{{query.searchQuery}}" data-type="query"></gov-form-input>
+          <gov-button slot="button" variant="primary" size="s" wcag-label="{{t "wcag-search"}}" data-type="submit">
+            {{t "search-button"}}
           </gov-button>
         </gov-form-search>
-        <gov-accordion size="xs" wcag-label="Rozšířené vyhledávání">
+        <gov-accordion size="xs" wcag-label="{{t "extended-search"}}">
           <gov-accordion-item>
-            <h3 slot="label">Rozšířené vyhledávání</h3>
+            <h3 slot="label">{{t "extended-search"}}</h3>
             <div class="extended-search">
               <div class="time-coverage mb-2">
                 <div class="time-inputs">
-                  Časové pokrytí od
+                  {{t "temporal-from"}}
                   <gov-form-input input-type="date" data-type="time-from" value="{{query.temporalFrom}}"></gov-form-input>
-                  do
+                  {{t "temporal-to"}}
                   <gov-form-input input-type="date" data-type="time-to" value="{{query.temporalTo}}"></gov-form-input>
                 </div>
                 <div class="flex-justify-end time-buttons">
-                  <gov-button variant="primary" size="m" data-type="this-year">Tento rok</gov-button>
-                  <gov-button variant="primary" size="m" data-type="last-year">Minulý rok</gov-button>
+                  <gov-button variant="primary" size="m" data-type="this-year">{{t "this-year"}}</gov-button>
+                  <gov-button variant="primary" size="m" data-type="last-year">{{t "last-year"}}</gov-button>
                 </div>
               </div>
               <div class="flex-space-between">
-                <gov-button variant="warning" size="m" href="{{clear-href}}" wcag-label="Smaž filtry">
-                  Smaž filtry
+                <gov-button variant="warning" size="m" href="{{clear-href}}" wcag-label="{{t "clear-filters-label"}}">
+                  {{t "clear-filters"}}
                 </gov-button>
-                <gov-button variant="primary" size="m" wcag-label="Hledat" data-type="submit">
-                  Hledat
+                <gov-button variant="primary" size="m" wcag-label="{{t "search-button"}}" data-type="submit">
+                  {{t "search-button"}}
                 </gov-button>
               </div>
             </div>
@@ -59,11 +59,11 @@
         <script>
           window.search = {
             "localization": {
-              "searchQuery": "dotaz",
-              "temporalFrom": "časové-období-začátek",
-              "temporalTo": "časové-období-konec",
-              "publicData": "vdf-veřejné-údaje",
-              "codelist": "vdf-číselník",
+              "searchQuery": "{{t "js-searchQuery"}}",
+              "temporalFrom": "{{t "js-temporalFrom"}}",
+              "temporalTo": "{{t "js-temporalTo"}}",
+              "publicData": "{{t "js-publicData"}}",
+              "codelist": "{{t "js-codelist"}}",
             },
             "query": {{{queryObjectAsString}}},
           };
@@ -94,27 +94,27 @@
                   HVD
                 </gov-chip>
                 <gov-tooltip-content>
-                  Datová sada s vysokou socioekonomickou hodnotou.
+                  {{t "hvd-tooltip"}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/if}}
               {{#if isOpenData}}
               <gov-chip variant="success" type="outlined" size="xs">
-                Otevřená data
+                {{t "open-data"}}
               </gov-chip>
               {{/if}}
               {{#if isNonPublicData}}
               <gov-chip variant="warning" type="outlined" size="xs">
-                Neveřejná data
+                {{t "non-public-data"}}
               </gov-chip>
               {{/if}}
               {{#if isDynamicData}}
               <gov-tooltip>
                 <gov-chip variant="warning" type="outlined" size="xs">
-                  Dynamická
+                  {{t "dynamic-chip"}}
                 </gov-chip>
                 <gov-tooltip-content>
-                  Datová sada obsahuje dynamická data.
+                  {{t "dynamic-tooltip"}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/if}}
@@ -124,7 +124,7 @@
                   {{label}}
                 </gov-chip>
                 <gov-tooltip-content>
-                  Datová sada je distribuovaná ve formátu {{label}}.
+                  {{t "format-tooltip" label}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/each}}

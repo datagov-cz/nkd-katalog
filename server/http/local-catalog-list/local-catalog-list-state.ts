@@ -6,6 +6,7 @@ import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { LinkService } from "../../service/link-service.ts";
 import type { HandlebarsService } from "../../handlebars/index.ts";
+import type { TranslationDictionary } from "../../service/translation-service.ts";
 import type { HeadData } from "../../component/head.ts";
 
 export interface LocalCatalogListViewServices {
@@ -41,6 +42,7 @@ export interface LocalCatalogListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
+  translation: TranslationDictionary;
   message: string;
   catalogs: LocalCatalogListCatalog[];
 }

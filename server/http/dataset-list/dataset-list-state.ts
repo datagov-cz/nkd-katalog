@@ -10,6 +10,7 @@ import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { HandlebarsService } from "../../handlebars/index.ts";
+import type { TranslationDictionary } from "../../service/translation-service.ts";
 import type { HeadData } from "../../component/head.ts";
 import type { ResultBarData } from "../../component/result-bar.mjs";
 import type { PaginationData } from "../../component/pagination.mjs";
@@ -83,6 +84,7 @@ export interface DatasetListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
+  translation: TranslationDictionary;
   search: {
     "clear-href": string;
     "base-url": string;

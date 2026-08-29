@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Lokální katalogy - Národní katalog dat (NKD)</title>
-  <meta name="description" content="Portál o datech a Národní katalog dat České republiky" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/local-catalogs">
   <link rel="alternate" href="/lokální-katalogy" hreflang="cs">
   <link rel="alternate" href="/local-catalogs" hreflang="en">
@@ -15,7 +15,7 @@
   {{{headerHtml}}}
   <gov-container class="catalogs-container">
     <br/>
-    <h1>Lokální katalogy</h1>
+    <h1>{{t "heading"}}</h1>
     <p>
       {{message}}
     </p>
@@ -45,10 +45,10 @@
               </div>
             </div>
             <div class="gov-card__footer flex-space-evenly" style="font-size: x-large;">
-              <a href="{{homepageUrl}}" title="Domovská stránka katalogu"><gov-icon name="house-door-fill"></gov-icon></a>
-              <a href="{{endpointUrl}}" title="Endpoint"><gov-icon name="link-45deg"></gov-icon></a>
-              <a href="{{deleteUrl}}" title="Odstranění katalogu"><gov-icon name="trash"></gov-icon></a>
-              <a href="{{validateUrl}}" title="Validace katalogu"><gov-icon name="communication" type="complex"></gov-icon></a>
+              <a href="{{homepageUrl}}" title="{{t "homepage-link"}}"><gov-icon name="house-door-fill"></gov-icon></a>
+              <a href="{{endpointUrl}}" title="{{t "endpoint-link"}}"><gov-icon name="link-45deg"></gov-icon></a>
+              <a href="{{deleteUrl}}" title="{{t "delete-link"}}"><gov-icon name="trash"></gov-icon></a>
+              <a href="{{validateUrl}}" title="{{t "validate-link"}}"><gov-icon name="communication" type="complex"></gov-icon></a>
             </div>
           </div>
         </gov-card>

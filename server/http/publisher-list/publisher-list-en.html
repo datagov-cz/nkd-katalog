@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Publishers - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/publishers">
   <link rel="alternate" href="/poskytovatelé" hreflang="cs">
   <link rel="alternate" href="/publishers" hreflang="en">
@@ -15,7 +15,7 @@
   {{{headerHtml}}}
   <gov-container class="publishers-container">
     <br/>
-    <h1>Publishers</h1>
+    <h1>{{t "heading"}}</h1>
     <p>
       {{message}}
     </p>
@@ -34,10 +34,10 @@
           <div class="gov-card__inner grow">
             <div class="gov-card__main">
               <div class="flex-row x-large gap-4">
-                <a href="{{dashboardMonthly}}" title="Dashboard - monthly averages">
+                <a href="{{dashboardMonthly}}" title="{{t "dashboard-monthly"}}">
                   <gov-icon name="clipboard2-data" type="bootstrap" ></gov-icon>
                 </a>
-                <a href="{{dashboardDaily}}" title="Dashboard - daily measures">
+                <a href="{{dashboardDaily}}" title="{{t "dashboard-daily"}}">
                   <gov-icon name="clipboard2-pulse" type="bootstrap"></gov-icon>
                 </a>
               </div>
@@ -50,12 +50,12 @@
                 {{/if}}
                 {{#if vdfOriginator}}
                 <gov-chip variant="primary" type="outlined" size="xs">
-                  VDF Originator
+                  {{t "vdf-originator"}}
                 </gov-chip>
                 {{/if}}
                 {{#if vdfPublisher}}
                 <gov-chip variant="primary" type="outlined" size="xs">
-                  VDF Publisher
+                  {{t "vdf-publisher"}}
                 </gov-chip>
                 {{/if}}
                 {{/with}}

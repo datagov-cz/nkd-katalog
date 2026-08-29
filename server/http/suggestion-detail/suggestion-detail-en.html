@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Suggestion - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/suggestion-for-dataset-to-be-opened">
   <link rel="alternate" href="/návrh-na-datovou-sadu-k-otevření" hreflang="cs">
   <link rel="alternate" href="/suggestion-for-dataset-to-be-opened" hreflang="en">
@@ -21,7 +21,7 @@
       <h2 class="inline">
         {{publisher.title}}
       </h2>
-      <a href="{{publisher.iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+      <a href="{{publisher.iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
         <gov-icon name="box-arrow-up-right"></gov-icon>
       </a>
     </div>
@@ -32,14 +32,14 @@
     <gov-grid>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Theme</dt>
+          <dt>{{t "dt-theme"}}</dt>
           {{#each themes}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -48,20 +48,20 @@
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Created</dt>
+          <dt>{{t "dt-created"}}</dt>
           <dd>{{created}}</dd>
         </dl>
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>State</dt>
+          <dt>{{t "dt-state"}}</dt>
           <dd>{{state.label}}</dd>
         </dl>
       </gov-grid-item>
       {{#if publication_plan_visible}}
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Publication plan</dt>
+          <dt>{{t "dt-publication-plan"}}</dt>
           <dd>{{publication_plan}}</dd>
         </dl>
       </gov-grid-item>
@@ -70,20 +70,20 @@
     <gov-grid>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>Obliged entity according to law number 106/1999</dt>
-          <dd>{{#if mandatory_106}}Yes{{else}}No{{/if}}</dd>
+          <dt>{{t "dt-mandatory-106"}}</dt>
+          <dd>{{#if mandatory_106}}{{t "yes"}}{{else}}{{t "no"}}{{/if}}</dd>
         </dl>
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>According to special regulation an impediment exists</dt>
-          <dd>{{#if obstacle_special_regulation}}Yes{{else}}No{{/if}}</dd>
+          <dt>{{t "dt-obstacle-special"}}</dt>
+          <dd>{{#if obstacle_special_regulation}}{{t "yes"}}{{else}}{{t "no"}}{{/if}}</dd>
         </dl>
       </gov-grid-item>
       <gov-grid-item size-sm="6/12" size-md="3/12">
         <dl>
-          <dt>According to law number 106/1999 an impediment exists</dt>
-          <dd>{{#if obstacle_106}}Yes{{else}}No{{/if}}</dd>
+          <dt>{{t "dt-obstacle-106"}}</dt>
+          <dd>{{#if obstacle_106}}{{t "yes"}}{{else}}{{t "no"}}{{/if}}</dd>
         </dl>
       </gov-grid-item>
     </gov-grid>
@@ -91,7 +91,7 @@
     <br />
     {{#with datasets}}
     {{#if visible}}
-    <h2>Datasets</h2>
+    <h2>{{t "h2-datasets"}}</h2>
     <br/>
     <div class="p-2 resource-list">
       {{#each items}}

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="cs">
+<html dir="ltr" lang="en">
 
 <head>
   {{> head }}
-  <title>Local catalogs - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/local-catalogs">
   <link rel="alternate" href="/lokální-katalogy" hreflang="cs">
   <link rel="alternate" href="/local-catalogs" hreflang="en">
@@ -15,7 +15,7 @@
   {{{headerHtml}}}
   <gov-container class="catalogs-container">
     <br/>
-    <h1>Local catalogs</h1>
+    <h1>{{t "heading"}}</h1>
     <p>
       {{message}}
     </p>
@@ -44,11 +44,11 @@
                 </a>
               </div>
             </div>
-            <div class="gov-card__footer" style="font-size: x-large;">
-              <a href="{{homepageUrl}}" title="Home page of the catalog"><gov-icon name="house-door-fill"></gov-icon></a>
-              <a href="{{endpointUrl}}" title="Endpoint"><gov-icon name="link-45deg"></gov-icon></a>
-              <a href="{{deleteUrl}}" title="Delete the catalog"><gov-icon name="trash"></gov-icon></a>
-              <a href="{{validateUrl}}" title="Catalog validation"><gov-icon name="communication" type="complex"></gov-icon></a>
+            <div class="gov-card__footer flex-space-evenly" style="font-size: x-large;">
+              <a href="{{homepageUrl}}" title="{{t "homepage-link"}}"><gov-icon name="house-door-fill"></gov-icon></a>
+              <a href="{{endpointUrl}}" title="{{t "endpoint-link"}}"><gov-icon name="link-45deg"></gov-icon></a>
+              <a href="{{deleteUrl}}" title="{{t "delete-link"}}"><gov-icon name="trash"></gov-icon></a>
+              <a href="{{validateUrl}}" title="{{t "validate-link"}}"><gov-icon name="communication" type="complex"></gov-icon></a>
             </div>
           </div>
         </gov-card>

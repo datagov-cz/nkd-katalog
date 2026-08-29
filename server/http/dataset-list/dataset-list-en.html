@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>Datasets - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{t "page-title"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/datasets">
   <link rel="alternate" href="/datové-sady" hreflang="cs">
   <link rel="alternate" href="/datasets" hreflang="en">
@@ -24,33 +24,33 @@
         <!-- Search. -->
         {{#with search}}
         <gov-form-search variant="primary" id="search" data-query="dotaz" data-base-url="{{base-url}}">
-          <gov-form-input slot="input" size="m" placeholder="What you're looking for" wcag-label="search" value="{{query.searchQuery}}" data-type="query"></gov-form-input>
-          <gov-button slot="button" variant="primary" size="s" wcag-label="hledat" data-type="submit">
-            Search
+          <gov-form-input slot="input" size="m" placeholder="{{t "search-placeholder"}}" wcag-label="{{t "search-input-label"}}" value="{{query.searchQuery}}" data-type="query"></gov-form-input>
+          <gov-button slot="button" variant="primary" size="s" wcag-label="{{t "wcag-search"}}" data-type="submit">
+            {{t "search-button"}}
           </gov-button>
         </gov-form-search>
-        <gov-accordion size="xs" wcag-label="Rozšířené vyhledávání">
+        <gov-accordion size="xs" wcag-label="{{t "extended-search"}}">
           <gov-accordion-item>
-            <h3 slot="label">Extended search</h3>
+            <h3 slot="label">{{t "extended-search"}}</h3>
             <div class="extended-search">
               <div class="time-coverage mb-2">
                 <div class="time-inputs">
-                  Temporal coverage from
+                  {{t "temporal-from"}}
                   <gov-form-input input-type="date" data-type="time-from" value="{{query.temporalFrom}}"></gov-form-input>
-                  to
+                  {{t "temporal-to"}}
                   <gov-form-input input-type="date" data-type="time-to" value="{{query.temporalTo}}"></gov-form-input>
                 </div>
                 <div class="flex-justify-end time-buttons">
-                  <gov-button variant="primary" size="m" data-type="this-year">This year</gov-button>
-                  <gov-button variant="primary" size="m" data-type="last-year">Last year</gov-button>
+                  <gov-button variant="primary" size="m" data-type="this-year">{{t "this-year"}}</gov-button>
+                  <gov-button variant="primary" size="m" data-type="last-year">{{t "last-year"}}</gov-button>
                 </div>
               </div>
               <div class="flex-space-between">
-                <gov-button slot="button" variant="warning" size="m" href="{{clear-href}}" wcag-label="Clear filters">
-                  Clear filters
+                <gov-button variant="warning" size="m" href="{{clear-href}}" wcag-label="{{t "clear-filters-label"}}">
+                  {{t "clear-filters"}}
                 </gov-button>
-                <gov-button variant="primary" size="m" wcag-label="Search" data-type="submit">
-                  Search
+                <gov-button variant="primary" size="m" wcag-label="{{t "search-button"}}" data-type="submit">
+                  {{t "search-button"}}
                 </gov-button>
               </div>
             </div>
@@ -59,11 +59,11 @@
         <script>
           window.search = {
             "localization": {
-              "searchQuery": "query",
-              "temporalFrom": "temporal-start",
-              "temporalTo": "temporal-end",
-              "publicData": "vdf-public-data",
-              "codelist": "vdf-codelist",
+              "searchQuery": "{{t "js-searchQuery"}}",
+              "temporalFrom": "{{t "js-temporalFrom"}}",
+              "temporalTo": "{{t "js-temporalTo"}}",
+              "publicData": "{{t "js-publicData"}}",
+              "codelist": "{{t "js-codelist"}}",
             },
             "query": {{{queryObjectAsString}}},
           };
@@ -94,37 +94,27 @@
                   HVD
                 </gov-chip>
                 <gov-tooltip-content>
-                  High value dataset
+                  {{t "hvd-tooltip"}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/if}}
               {{#if isOpenData}}
               <gov-chip variant="success" type="outlined" size="xs">
-                Open Data
+                {{t "open-data"}}
               </gov-chip>
               {{/if}}
               {{#if isNonPublicData}}
               <gov-chip variant="warning" type="outlined" size="xs">
-                Non-Public Data
+                {{t "non-public-data"}}
               </gov-chip>
               {{/if}}
               {{#if isDynamicData}}
               <gov-tooltip>
                 <gov-chip variant="warning" type="outlined" size="xs">
-                  Dynamická
+                  {{t "dynamic-chip"}}
                 </gov-chip>
                 <gov-tooltip-content>
-                  Datová sada obsahuje dynamická data.
-                </gov-tooltip-content>
-              </gov-tooltip>
-              {{/if}}
-              {{#if dynamicData}}
-              <gov-tooltip>
-                <gov-chip variant="warning" type="outlined" size="xs">
-                  Dynamic
-                </gov-chip>
-                <gov-tooltip-content>
-                  Dataset with dynamic data.
+                  {{t "dynamic-tooltip"}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/if}}
@@ -134,7 +124,7 @@
                   {{label}}
                 </gov-chip>
                 <gov-tooltip-content>
-                  Dataset is distributed using {{label}}.
+                  {{t "format-tooltip" label}}
                 </gov-tooltip-content>
               </gov-tooltip>
               {{/each}}

@@ -60,6 +60,7 @@ export function prepareTemplateData(
     "head": components.createHeadData(configuration),
     "headerHtml": headerHtml(navigation, languages[0], query),
     "footerHtml": footerHtml(languages[0]),
+    "translation": translation.dictionary,
     "search": {
       "value": query.searchQuery,
       "clear-href": navigation.linkFromServer({}),

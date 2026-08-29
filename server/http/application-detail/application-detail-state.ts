@@ -4,11 +4,16 @@
 import type { Configuration } from "../../configuration.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { HandlebarsService } from "../../handlebars/index.ts";
+import type {
+  TranslationDictionary,
+  TranslationService,
+} from "../../service/translation-service.ts";
 import type { HeadData } from "../../component/head.ts";
 
 export interface ApplicationDetailViewServices {
   configuration: Configuration;
   navigation: NavigationEntry;
+  translation: TranslationService;
   template: HandlebarsService;
   http: any;
 }
@@ -69,6 +74,7 @@ export interface ApplicationDetailState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
+  translation: TranslationDictionary;
   application: ApplicationDetailApplication;
   datasets: { visible: boolean; items: ApplicationDetailDataset[] };
 }
