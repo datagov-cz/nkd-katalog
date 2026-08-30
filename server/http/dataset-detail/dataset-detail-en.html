@@ -3,8 +3,8 @@
 
 <head>
   {{> head }}
-  <title>{{dataset.heading.title}} - National Data Catalog (NKD)</title>
-  <meta name="description" content="Data portal and National Data Catalog of the Czech Republic" />
+  <title>{{dataset.heading.title}} - {{t "title-suffix"}}</title>
+  <meta name="description" content="{{t "page-description"}}" />
   <link rel="canonical" href="/dataset">
   <link rel="alternate" href="/datová-sada" hreflang="cs">
   <link rel="alternate" href="/dataset" hreflang="en">
@@ -21,11 +21,11 @@
     <div>
       <h1 class="inline">{{title}}</h1>
       <span class="x-large">
-        <a href="{{openUrl}}"><gov-icon name="box-arrow-up-right" title="Dereference link"></gov-icon></a>
-        {{#if editUrl}}<a href="{{editUrl}}"><gov-icon name="pencil" type="bootstrap" title="Edit dataset"></gov-icon></a>{{/if}}
-        {{#if copyUrl}}<a href="{{copyUrl}}"><gov-icon name="copy" title="Copy as new dataset"></gov-icon></a>{{/if}}
-        {{#if deleteDatasetUrl}}<a href="{{deleteDatasetUrl}}"><gov-icon name="trash" title="Delete catalog"></gov-icon></a>{{/if}}
-        {{#if deleteCatalogUrl}}<a href="{{deleteCatalogUrl}}"><gov-icon name="trash" title="Delete catalog"></gov-icon></a>{{/if}}
+        <a href="{{openUrl}}"><gov-icon name="box-arrow-up-right" title="{{t "open-link-title"}}"></gov-icon></a>
+        {{#if editUrl}}<a href="{{editUrl}}"><gov-icon name="pencil" type="bootstrap" title="{{t "edit-dataset-title"}}"></gov-icon></a>{{/if}}
+        {{#if copyUrl}}<a href="{{copyUrl}}"><gov-icon name="copy" title="{{t "copy-dataset-title"}}"></gov-icon></a>{{/if}}
+        {{#if deleteDatasetUrl}}<a href="{{deleteDatasetUrl}}"><gov-icon name="trash" title="{{t "delete-dataset-title"}}"></gov-icon></a>{{/if}}
+        {{#if deleteCatalogUrl}}<a href="{{deleteCatalogUrl}}"><gov-icon name="trash" title="{{t "delete-catalog-title"}}"></gov-icon></a>{{/if}}
       </span>
       {{/with}}
       {{#with publisher}}
@@ -37,12 +37,12 @@
     <div class="applicable-legislation chip-container mb-2">
       {{#if isOpenData}}
       <gov-chip variant="success" type="outlined" size="xs">
-        Open Data
+        {{t "open-data"}}
       </gov-chip>
       {{/if}}
       {{#if isNonPublicData}}
       <gov-chip variant="warning" type="outlined" size="xs">
-        Non-Public Data
+        {{t "non-public-data"}}
       </gov-chip>
       {{/if}}
       {{#each applicableLegislation}}
@@ -51,14 +51,16 @@
       {{#if applicableLegislation}}
       <gov-chip variant="primary" type="outlined" size="s" class="legislation-list" tag="button">
         §
-        <ul>
-          {{#each applicableLegislation}}
-          <li>
-            {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
-            <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
-          </li>
-          {{/each}}
-        </ul>
+        <div style="display: none;">
+          <ul>
+            {{#each applicableLegislation}}
+            <li>
+              {{#if chip}}<gov-chip variant="{{chip.variant}}" type="outlined" size="s">{{chip.label}}</gov-chip>{{/if}}
+              <a href="{{url}}" rel="nofollow noopener noreferrer" target="_blank">{{label}}</a>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
       </gov-chip>
       {{/if}}
     </div>
@@ -76,14 +78,14 @@
       <gov-grid-item size-sm="6/12" size-md="3/12">
         {{#if themesVisible}}
         <dl>
-          <dt>Dataset theme</dt>
+          <dt>{{t "dt-theme"}}</dt>
           {{#each themes}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -92,14 +94,14 @@
         {{/if}}
         {{#if euroVocThemesVisible}}
         <dl>
-          <dt>EuroVoc theme</dt>
+          <dt>{{t "dt-eurovoc"}}</dt>
           {{#each euroVocThemes}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -110,12 +112,12 @@
       <gov-grid-item size-sm="6/12" size-md="3/12">
         {{#if spatialVisible}}
         <dl>
-          <dt>Spatial coverage</dt>
+          <dt>{{t "dt-spatial"}}</dt>
           {{#each spatial}}
           <dd>
             {{label}}
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -124,7 +126,7 @@
         {{/if}}
         {{#if spatialResolutionInMetersVisible}}
         <dl>
-          <dt>Spatial resolution in meters</dt>
+          <dt>{{t "dt-spatial-resolution"}}</dt>
           <dd>
             {{spatialResolutionInMeters}}
           </dd>
@@ -132,7 +134,7 @@
         {{/if}}
         {{#if temporalVisible}}
         <dl>
-          <dt>Temporal coverage</dt>
+          <dt>{{t "dt-temporal"}}</dt>
           <dd>
             {{temporal}}
           </dd>
@@ -140,7 +142,7 @@
         {{/if}}
         {{#if temporalResolutionVisible}}
         <dl>
-          <dt>Temporal resolution</dt>
+          <dt>{{t "dt-temporal-resolution"}}</dt>
           <dd>
             {{temporalResolution}}
           </dd>
@@ -150,10 +152,10 @@
       <gov-grid-item size-sm="6/12" size-md="3/12">
         {{#if documentation}}
         <dl>
-          <dt>Documentation</dt>
+          <dt>{{t "dt-documentation"}}</dt>
           {{#each documentation}}
           <dd class="documentation">
-            <a href="{{this}}">Show documentation</a>
+            <a href="{{this}}">{{t "show-documentation"}}</a>
             <span class="quality"></span>
           </dd>
           {{/each}}
@@ -161,7 +163,7 @@
         {{/if}}
         {{#if contactVisible}}
         <dl>
-          <dt>Contact point</dt>
+          <dt>{{t "dt-contact"}}</dt>
           {{#each contact}}
           <dd>
             <a href="{{href}}">{{label}}</a>
@@ -171,7 +173,7 @@
         {{/if}}
         {{#if conformsToVisible}}
         <dl>
-          <dt>Specification</dt>
+          <dt>{{t "dt-specification"}}</dt>
           {{#each conformsTo}}
           <dd class="specification">
             <a href="{{href}}">{{label}}</a>
@@ -184,11 +186,11 @@
       <gov-grid-item size-sm="6/12" size-md="3/12">
         {{#if frequencyVisible}}
         <dl>
-          <dt>Frequency</dt>
+          <dt>{{t "dt-frequency"}}</dt>
           <dd>
             {{frequency.label}}
             &nbsp;
-            <a href="{{frequency.iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{frequency.iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -196,14 +198,14 @@
         {{/if}}
         {{#if hvdCategoryVisible}}
         <dl>
-          <dt>HVD categories</dt>
+          <dt>{{t "dt-hvd-category"}}</dt>
           {{#each hvdCategory}}
           <dd>
             <a href="{{href}}">
               {{label}}
             </a>
             &nbsp;
-            <a href="{{iri}}" title="Go to link" rel="nofollow noopener noreferrer" target="_blank">
+            <a href="{{iri}}" title="{{t "go-to-link"}}" rel="nofollow noopener noreferrer" target="_blank">
               <gov-icon name="box-arrow-up-right"></gov-icon>
             </a>
           </dd>
@@ -212,10 +214,10 @@
         {{/if}}
         {{#if landingPage}}
         <dl>
-          <dt>Landing page</dt>
+          <dt>{{t "dt-landing-page"}}</dt>
           <dd>
             <a href="{{landingPage}}">
-              Show landing page
+              {{t "show-landing-page"}}
             </a>
           </dd>
         </dl>
@@ -232,13 +234,13 @@
         {{/if}}
         {{#if concernTerm}}
         <dl>
-          <dt>Concepts</dt>
+          <dt>{{t "dt-concepts"}}</dt>
           {{#each concernTerm}}
           <dd>
             <a href="{{viewer}}">
               <span data-label="http://www.w3.org/2004/02/skos/core#prefLabel">{{url}}</span>
             </a>
-            <a href="{{url}}"><gov-icon name="box-arrow-up-right" title="Dereference link"></gov-icon></a>
+            <a href="{{url}}"><gov-icon name="box-arrow-up-right" title="{{t "concept-link-title"}}"></gov-icon></a>
           </dd>
           {{/each}}
         </dl>
@@ -247,8 +249,8 @@
     </gov-grid>
     {{#if parentDataset}}
     <p>
-      This dataset is part of the dataset series
-      <a href="{{parentDataset.href}}" title="Go to data series">{{parentDataset.label}}</a>.
+      {{t "part-of-series"}}
+      <a href="{{parentDataset.href}}" title="{{t "series-link-title"}}">{{parentDataset.label}}</a>.
     </p>
     {{/if}}
     <br />
@@ -257,7 +259,7 @@
   {{#with distributions}}
   {{#if visible}}
   <gov-container class="distribution-container">
-    <h2>Distributions of the dataset</h2>
+    <h2>{{t "h2-distributions"}}</h2>
     <br/>
     <gov-grid>
       {{#each items}}
@@ -288,21 +290,21 @@
             {{#if missingLegal}}
             <div class="distribution-item-wrap-column">
               <div>
-                <h5 class="gov-text--l gov-color--secondary-700">The terms of use are not specified</h5>
+                <h5 class="gov-text--l gov-color--secondary-700">{{t "terms-unspecified"}}</h5>
               </div>
             </div>
             {{/if}}
             {{#if dcatApLegal}}
             <div class="distribution-item-wrap-column">
               <div>
-                <a href="{{license}}" rel="nofollow noopener noreferrer" target="_blank">Terms of use</a>
+                <a href="{{license}}" rel="nofollow noopener noreferrer" target="_blank">{{t "terms-of-use-link"}}</a>
               </div>
             </div>
             {{/if}}
             {{#if dcatApCzLegal}}{{#with dcatApCzLegal}}
             <div class="distribution-item-wrap-column">
               <div>
-                <h5 class="gov-text--l gov-color--secondary-700">Terms of use</h5>
+                <h5 class="gov-text--l gov-color--secondary-700">{{t "terms-of-use"}}</h5>
               </div>
               <ul>
                 <li class="authorship">
@@ -320,7 +322,7 @@
                   {{#if authorship.author}}
                     {{authorship.author}}
                   {{else}}
-                    Copyrighted work
+                    {{t "copyrighted-work"}}
                   {{/if}}
                 </li>
                 <li class="databaseAuthorship">
@@ -338,7 +340,7 @@
                   {{#if databaseAuthorship.author}}
                     {{databaseAuthorship.author}}
                   {{else}}
-                    Copyrighted database
+                    {{t "copyrighted-database"}}
                   {{/if}}
                 </li>
                 <li class="protectedDatabaseAuthorship">
@@ -356,7 +358,7 @@
                   {{#if protectedDatabaseAuthorship.author}}
                     {{protectedDatabaseAuthorship.author}}
                   {{else}}
-                  Sui generis db rights
+                    {{t "sui-generis"}}
                   {{/if}}
                 </li>
                 <li>
@@ -366,29 +368,29 @@
                     <gov-icon name="{{icon}}" class="{{iconStyle}}" title="{{iconTitle}}" type="bootstrap"></gov-icon>
                   </div>
                   {{/with}}
-                  Personal data
+                  {{t "personal-data"}}
                 </li>
               </ul>
             </div>
             {{/with}}{{/if}}
-            <!-- Distribution -->
+            <!-- {{t "comment-distribution"}} -->
             {{#if distribution}}{{#with distribution}}
             <div class="distribution-item-wrap-column">
               <div>
-                <h5 class="gov-text--l gov-color--secondary-700">Downloadable file</h5>
+                <h5 class="gov-text--l gov-color--secondary-700">{{t "h5-downloadable-file"}}</h5>
               </div>
               <ul>
                 {{#if downloadArray}}
                 <li>
                   {{#each downloadArray}}
                   <div class="download">
-                    <a href="{{this}}">Download</a>
+                    <a href="{{this}}">{{t "download"}}</a>
                     <span class="quality"></span>
                   </div>
                   {{/each}}
                   {{#if access}}
                   <div class="access">
-                    <a href="{{access}}">Access information</a>
+                    <a href="{{access}}">{{t "access-information"}}</a>
                     <span class="quality"></span>
                   </div>
                   {{/if}}
@@ -397,7 +399,7 @@
                 {{#if conformsTo}}
                 <li class="schema">
                   {{#each conformsTo}}
-                  <a href="{{this}}">Schema</a>
+                  <a href="{{this}}">{{t "schema"}}</a>
                   <span class="quality"></span>
                   {{/each}}
                 </li>
@@ -406,12 +408,12 @@
                 <li>
                   <div class="mediaType break-word-wrap">
                     {{mediaType.label}}
-                    <a href="{{mediaType.iri}}">
+                    <a href="{{mediaType.href}}">
                       <gov-icon name="box-arrow-up-right"></gov-icon>
                     </a>
                     <span class="quality"></span>
                   </div>
-                  Media type
+                  {{t "media-type"}}
                 </li>
                 {{/if}}
                 {{#if compressFormat}}
@@ -422,7 +424,7 @@
                       <gov-icon name="box-arrow-up-right"></gov-icon>
                     </a>
                   </div>
-                  Compress format
+                  {{t "compress-format"}}
                 </li>
                 {{/if}}
                 {{#if packageFormat}}
@@ -433,29 +435,29 @@
                       <gov-icon name="box-arrow-up-right"></gov-icon>
                     </a>
                   </div>
-                  Package format
+                  {{t "package-format"}}
                 </li>
                 {{/if}}
               </ul>
             </div>
             {{/with}}{{/if}}
-            <!-- Data service -->
+            <!-- {{t "comment-data-service"}} -->
             {{#if dataService}}{{#with dataService}}
             <div class="distribution-item-wrap-column data-service" data-iri="{{iri}}">
               <div>
                 <h5 class="gov-text--l gov-color--secondary-700">
-                  Data service
+                  {{t "h5-data-service"}}
                 </h5>
               </div>
               <ul>
                 <li>
                   <div class="endpointDescription">
-                    <a href="{{endpointDescription}}">Endpoint description</a>
+                    <a href="{{endpointDescription}}">{{t "endpoint-description"}}</a>
                     <span class="quality"></span>
                   </div>
                   {{#if access}}
                   <div class="access">
-                    <a href="{{access}}">Access information</a>
+                    <a href="{{access}}">{{t "access-information"}}</a>
                     <span class="quality"></span>
                   </div>
                   {{/if}}
@@ -466,10 +468,10 @@
                     <span class="quality"></span>
                   </div>
                   {{#if sparqlEditor}}
-                    <a href="{{sparqlEditor}}">SPARQL query</a>
+                    <div><a href="{{sparqlEditor}}">{{t "sparql-query"}}</a></div>
                   {{/if}}
                   {{#if classesAndProperties}}
-                    <a href="{{classesAndProperties}}">Classes and properties</a>
+                    <div><a href="{{classesAndProperties}}">{{t "classes-and-properties"}}</a></div>
                   {{/if}}
                 </li>
                 {{#if conformsTo}}
@@ -485,32 +487,32 @@
                   <div>
                   {{#each contact}}<a href="{{href}}">{{label}}</a>{{/each}}
                   </div>
-                  Contact
+                  {{t "label-contact"}}
                 </li>
                 {{/if}}
                 {{#if documentation}}
                 <li>
-                  {{#each documentation}}<a href="{{this}}">Show  documentation</a>{{/each}}
+                  {{#each documentation}}<a href="{{this}}">{{t "show-documentation"}}</a>{{/each}}
                 </li>
                 {{/if}}
               </ul>
             </div>
             {{/with}}{{/if}}
-            <!-- Sharing specification -->
-             {{#if showSharingSpecifications}}
+            <!-- {{t "comment-sharing-specification"}} -->
+            {{#if showSharingSpecifications}}
             <div class="distribution-item-wrap-column share-specification">
               <div>
-                <h5 class="gov-text--l gov-color--secondary-700">Sharing specification</h5>
+                <h5 class="gov-text--l gov-color--secondary-700">{{t "h5-sharing-specification"}}</h5>
               </div>
               <ul>
                 {{#if sharedInterfaceContentType}}
                 <li>
                   <ul>
                     {{#each sharedInterfaceContentType}}
-                      <li>{{label}}</li>
+                    <li>{{label}}</li>
                     {{/each}}
                   </ul>
-                  Content type of the shared interface
+                  {{t "shared-content-type"}}
                 </li>
                 {{/if}}
                 {{#if sharedInterfaceAccessType}}
@@ -520,7 +522,7 @@
                       <li>{{label}}</li>
                     {{/each}}
                   </ul>
-                  Method of obtaining data
+                  {{t "shared-access-type"}}
                 </li>
                 {{/if}}
                 {{#if sharedInterfaceKind}}
@@ -530,12 +532,12 @@
                       <li>{{label}}</li>
                     {{/each}}
                   </ul>
-                  Method of sharing via the interface
+                  {{t "shared-kind"}}
                 </li>
                 {{/if}}
                 {{#if facilitatesSharing}}
                 <li class="facilitates-sharing">
-                  Facilitates sharing of {{facilitatesSharingCount}} data items
+                  {{t "facilitates-sharing" facilitatesSharingCount}}
                   <a>
                     <gov-icon name="info-circle"></gov-icon>
                   </a>
@@ -543,10 +545,10 @@
                     <table>
                       <thead>
                         <tr>
-                          <th>Corresponding term</th>
-                          <th>Obtained by method</th>
-                          <th>Shared as</th>
-                          <th>Shared by method</th>
+                          <th>{{t "th-corresponding-term"}}</th>
+                          <th>{{t "th-obtained-by"}}</th>
+                          <th>{{t "th-shared-as"}}</th>
+                          <th>{{t "th-shared-by"}}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -559,7 +561,7 @@
                                 <span data-label="http://www.w3.org/2004/02/skos/core#prefLabel">{{correspondingTerm}}</span>
                               </a>
                               {{/if}}
-                              <a href="{{correspondingTerm}}"><gov-icon name="box-arrow-up-right" title="Dereference link"></gov-icon></a>
+                              <a href="{{correspondingTerm}}"><gov-icon name="box-arrow-up-right" title="{{t "concept-link-title"}}"></gov-icon></a>
                             {{/if}}
                           </td>
                           <td>
@@ -595,8 +597,8 @@
     {{#with pagination}} {{#if visible}}
     <gov-grid-item size-sm="12/12" size-md="10/12">
       <gov-pagination total="{{total}}" current="{{currentPage}}" page-size="{{pageSize}}"
-        wcag-label="Pagination for the documents section"
-        wcag-select-label="Select page"
+        wcag-label="{{t "pagination-label"}}"
+        wcag-select-label="{{t "pagination-select-label"}}"
         link="{{linkTemplate}}">
       </gov-pagination>
     </gov-grid-item>
@@ -607,7 +609,7 @@
   {{#with datasetSeries}}
   {{#if visible}}
   <gov-container class="dataset-list-container">
-    <h2>Datasets of this dataset series</h2>
+    <h2>{{t "h2-series"}}</h2>
     <br />
     <div class="resource-list">
       {{#each items}}
@@ -622,7 +624,7 @@
       {{/each}}
     </div>
     <a href="{{showAllHref}}">
-      See all datasets of the dataset series in the dataset list view
+      {{t "show-all-series"}}
     </a>
   </gov-container>
   {{/if}}
@@ -630,7 +632,7 @@
   {{#with applications}}
   {{#if visible}}
   <gov-container class="application-list-container">
-    <h2>Applications using this dataset</h2>
+    <h2>{{t "h2-applications"}}</h2>
     <br />
     <div class="document-list">
       {{#each items}}
@@ -650,8 +652,8 @@
   {{{footerHtml}}}
   <script type="application/ld+json">{{{metadataAsString}}}</script>
   <!--  -->
-  <gov-modal id="legislation-list-modal" label="Relevant legislation"></gov-modal>
-  <gov-modal id="facilitates-sharing-modal" label="Facilitates data sharing"></gov-modal>
+  <gov-modal id="legislation-list-modal" label="{{t "modal-legislation"}}"></gov-modal>
+  <gov-modal id="facilitates-sharing-modal" label="{{t "modal-facilitates-sharing"}}"></gov-modal>
 </body>
 
 </html>

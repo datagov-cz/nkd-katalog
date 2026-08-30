@@ -12,7 +12,10 @@ import {
 import configuration, { Configuration } from "../../configuration.ts";
 import { NavigationEntry } from "../../service/navigation-service.ts";
 import { LinkService } from "../../service/link-service.ts";
-import { TranslationService } from "../../service/translation-service.ts";
+import {
+  TranslationDictionary,
+  TranslationService,
+} from "../../service/translation-service.ts";
 import { NKOD } from "../../data-source/shared/vocabulary.ts";
 import { ROUTE } from "../route-name.mjs";
 import { HandlebarsService } from "../../handlebars/index.ts";
@@ -110,6 +113,7 @@ export function prepareTemplateData(
 
   return {
     head: createHeadData(configuration),
+    translation: translation.dictionary,
     labelEndpoint: configuration.client.conceptSparql,
     headerHtml: headerHtml(navigation, languages[0], query),
     footerHtml: footerHtml(languages[0]),
@@ -274,6 +278,8 @@ export interface DatasetDetailTemplateModel {
     matomoUrl: string;
     matomoSiteId: string;
   };
+
+  translation: TranslationDictionary;
 
   headerHtml: string;
 
