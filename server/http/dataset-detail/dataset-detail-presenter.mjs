@@ -2,32 +2,28 @@ import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
 import { parseClientQuery, beforeLinkCallback } from "./dataset-detail-query.mjs";
 import { prepareDatasetDetailViewModel } from "./dataset-detail-model.ts"
-import { renderHtml } from "./dataset-detail-view-html.ts";
+import { renderHtml } from "./dataset-detail-view-html.tsx";
 import localization from "./dataset-detail-localization.mjs";
 
 /**
  * @param {import('../../service/service.mjs').Services & {http: any}} services
- * @param {import('../../handlebars/index.ts').HandlebarsService} templates
  * @param {('cs' | 'en')[]} languages
  * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
  */
-export default function createHandler(services, templates, languages) {
+export default function createHandler(services, languages) {
   const language = languages[0];
   // Navigation and translation.
   const local = localization[language];
   const navigation = services.navigation.view(language, ROUTE.DATASET_DETAIL)
     .setNavigationData(local)
     .setBeforeLink(beforeLinkCallback);
-  // Load templates.
-  templates.syncAddView(
-    ROUTE.DATASET_DETAIL,
-    "/dataset-detail/dataset-detail-" + language + ".html");
+  // The view is JSX (`dataset-detail-view-html.tsx`); no Handlebars template to
+  // register.
   // Handler services.
   const handlerServices = {
     ...services,
     "translation": createTranslationService(local.translation),
     "navigation": navigation,
-    "template": templates,
   };
   // Create handler.
   return {

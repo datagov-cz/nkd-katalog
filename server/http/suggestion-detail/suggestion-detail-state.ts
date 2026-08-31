@@ -3,18 +3,13 @@
  */
 import type { Configuration } from "../../configuration.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
-import type { HandlebarsService } from "../../handlebars/index.ts";
-import type {
-  TranslationDictionary,
-  TranslationService,
-} from "../../service/translation-service.ts";
-import type { HeadData } from "../../component/head.ts";
+import type { TranslationService } from "../../service/translation-service.ts";
+import type { HeadData } from "../../component/head.tsx";
 
 export interface SuggestionDetailViewServices {
   configuration: Configuration;
   navigation: NavigationEntry;
   translation: TranslationService;
-  template: HandlebarsService;
   http: any;
 }
 
@@ -72,7 +67,20 @@ export interface SuggestionDetailState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
-  translation: TranslationDictionary;
+  /** Localized strings, resolved by `prepareTemplateData`. */
+  pageTitle: string;
+  pageDescription: string;
+  goToLink: string;
+  dtTheme: string;
+  dtCreated: string;
+  dtState: string;
+  dtPublicationPlan: string;
+  dtMandatory106: string;
+  dtObstacleSpecial: string;
+  dtObstacle106: string;
+  yes: string;
+  no: string;
+  h2Datasets: string;
   suggestion: SuggestionDetailSuggestion;
   datasets: { visible: boolean; items: SuggestionDetailDataset[] };
 }

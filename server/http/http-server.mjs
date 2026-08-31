@@ -29,12 +29,13 @@ export async function createHttpServer(configuration) {
  * @param {import('../configuration.ts').Configuration} configuration
  * @param {import('fastify').FastifyInstance} server
  * @param {import('../service/service.mjs').Services} services
+ * @param {*} wrapHandler
  */
-export function registerRoutes(configuration, server, services) {
+export function registerRoutes(configuration, server, services, wrapHandler) {
   if (configuration.server.serverAssets) {
     registerAssetsRoutes(server);
   }
-  registerHttpRoutes(server, services);
+  registerHttpRoutes(server, services, wrapHandler);
 }
 
 function registerAssetsRoutes(server) {

@@ -1,5 +1,7 @@
 export {
-  registerQuerySection,
-  prepareStateForHandlebars,
+  QuerySection,
+  createQuerySectionData,
+  type Action,
   type QuerySectionState,
-} from "./query-section.ts";
+  type QuerySectionViewModel,
+} from "./query-section.tsx";

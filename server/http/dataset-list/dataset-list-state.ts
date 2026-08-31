@@ -9,21 +9,18 @@
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
-import type { HandlebarsService } from "../../handlebars/index.ts";
-import type { TranslationDictionary } from "../../service/translation-service.ts";
-import type { HeadData } from "../../component/head.ts";
-import type { ResultBarData } from "../../component/result-bar.mjs";
-import type { PaginationData } from "../../component/pagination.mjs";
-import type { FacetData, FacetItemData } from "../../component/facet.mjs";
-import type { prepareStateForHandlebars } from "../../component/query-section/index.ts";
+import type { HeadData } from "../../component/head.tsx";
+import type { ResultBarState } from "../../component/result-bar.tsx";
+import type { PaginationState } from "../../component/pagination.tsx";
+import type { FacetData, FacetItemData } from "../../component/facet.tsx";
+import type { createQuerySectionData } from "../../component/query-section/index.ts";
 
-export type QuerySectionViewState = ReturnType<typeof prepareStateForHandlebars>;
+export type QuerySectionViewState = ReturnType<typeof createQuerySectionData>;
 
 export interface DatasetListViewServices {
   configuration: Configuration;
   translation: TranslationService;
   navigation: NavigationEntry;
-  template: HandlebarsService;
 }
 
 /** Parsed client query, as produced by `parseClientQuery`. */
@@ -55,6 +52,7 @@ export interface DatasetListQuery {
   hvdCategoryLimit: number;
   isvs: string[];
   isvsLimit: number;
+  [key: string]: string | number | boolean | string[] | null | undefined;
 }
 
 /** A dataset card, after `updateDatasetsInPlace` and `prepareDocumentsInPlace`. */
@@ -68,7 +66,12 @@ export interface DatasetListDocument {
   isDynamicData: boolean;
   isOpenData: boolean;
   isNonPublicData: boolean;
-  format: { iri: string; label: string }[];
+  format: {
+    iri: string;
+    label: string;
+    /** `format-tooltip` with the label substituted, resolved in the mapper. */
+    tooltip: string;
+  }[];
 }
 
 /** Model output the view consumes. */
@@ -84,7 +87,30 @@ export interface DatasetListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
-  translation: TranslationDictionary;
+  /** Localized strings, resolved by `prepareTemplateData`. */
+  pageTitle: string;
+  pageDescription: string;
+  searchPlaceholder: string;
+  searchInputLabel: string;
+  wcagSearch: string;
+  searchButton: string;
+  extendedSearch: string;
+  temporalFrom: string;
+  temporalTo: string;
+  thisYear: string;
+  lastYear: string;
+  clearFiltersLabel: string;
+  clearFilters: string;
+  hvdTooltip: string;
+  openData: string;
+  nonPublicData: string;
+  dynamicChip: string;
+  dynamicTooltip: string;
+  jsSearchQuery: string;
+  jsTemporalFrom: string;
+  jsTemporalTo: string;
+  jsPublicData: string;
+  jsCodelist: string;
   search: {
     "clear-href": string;
     "base-url": string;
@@ -101,8 +127,8 @@ export interface DatasetListState {
     queryObjectAsString: string;
   };
   "query-section": QuerySectionViewState;
-  "result-bar": ResultBarData;
-  pagination: PaginationData;
+  "result-bar": ResultBarState;
+  pagination: PaginationState;
   documents: DatasetListDocument[];
   facets: FacetData[];
 }

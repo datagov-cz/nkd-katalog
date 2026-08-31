@@ -4,15 +4,12 @@
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
-import type { HandlebarsService } from "../../handlebars/index.ts";
-import type { TranslationDictionary } from "../../service/translation-service.ts";
-import type { HeadData } from "../../component/head.ts";
+import type { HeadData } from "../../component/head.tsx";
 
 export interface PublisherListViewServices {
   configuration: Configuration;
   translation: TranslationService;
   navigation: NavigationEntry;
-  template: HandlebarsService;
 }
 
 export interface PublisherListPublisher {
@@ -38,7 +35,14 @@ export interface PublisherListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
-  translation: TranslationDictionary;
+  /** Localized strings, resolved by `prepareTemplateData`. */
+  pageTitle: string;
+  pageDescription: string;
+  heading: string;
+  dashboardMonthlyLabel: string;
+  dashboardDailyLabel: string;
+  vdfOriginatorLabel: string;
+  vdfPublisherLabel: string;
   message: string;
   publishers: PublisherListPublisher[];
 }

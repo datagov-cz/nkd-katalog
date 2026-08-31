@@ -5,16 +5,13 @@ import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { LinkService } from "../../service/link-service.ts";
-import type { HandlebarsService } from "../../handlebars/index.ts";
-import type { TranslationDictionary } from "../../service/translation-service.ts";
-import type { HeadData } from "../../component/head.ts";
+import type { HeadData } from "../../component/head.tsx";
 
 export interface LocalCatalogListViewServices {
   configuration: Configuration;
   translation: TranslationService;
   navigation: NavigationEntry;
   link: LinkService;
-  template: HandlebarsService;
 }
 
 export interface LocalCatalogListCatalog {
@@ -42,7 +39,14 @@ export interface LocalCatalogListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
-  translation: TranslationDictionary;
+  /** Localized strings, resolved by `prepareTemplateData`. */
+  pageTitle: string;
+  pageDescription: string;
+  heading: string;
+  homepageLink: string;
+  endpointLink: string;
+  deleteLink: string;
+  validateLink: string;
   message: string;
   catalogs: LocalCatalogListCatalog[];
 }

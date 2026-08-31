@@ -13,6 +13,8 @@
     "skipLibCheck": true,
     "allowJs": true,
     "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
   },
   "exclude": [
     "node_modules",

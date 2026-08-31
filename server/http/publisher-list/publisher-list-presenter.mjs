@@ -1,31 +1,27 @@
 import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
 import { prepareData } from "./publisher-list-model.mjs";
-import { renderHtml } from "./publisher-list-view-html.ts";
+import { renderHtml } from "./publisher-list-view-html.tsx";
 import localization from "./publisher-list-localization.mjs";
 
 /**
  * @param {import('../../service/service.mjs').Services & {http: any}} services
- * @param {import('../../handlebars/index.ts').HandlebarsService} templates
  * @param {('cs' | 'en')[]} languages
  * @returns {{ path: string, handler: (request: any, reply: any) => Promise<void> }}
  */
-export default function createHandler(services, templates, languages) {
+export default function createHandler(services, languages) {
   const language = languages[0];
   // Navigation and translation.
   const local = localization[language];
   const navigation = services.navigation.view(language, ROUTE.PUBLISHER_LIST)
     .setNavigationData(local);
-  // Load templates.
-  templates.syncAddView(
-    ROUTE.PUBLISHER_LIST,
-    "/publisher-list/publisher-list-" + language + ".html");
+  // The view is JSX (`publisher-list-view-html.tsx`); no Handlebars template
+  // to register.
   // Handler services.
   const handlerServices = {
     ...services,
     "translation": createTranslationService(local.translation),
     "navigation": navigation,
-    "template": templates,
   };
   // Create handler.
   return {

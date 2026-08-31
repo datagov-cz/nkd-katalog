@@ -4,18 +4,15 @@
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
-import type { HandlebarsService } from "../../handlebars/index.ts";
-import type { TranslationDictionary } from "../../service/translation-service.ts";
-import type { HeadData } from "../../component/head.ts";
-import type { ResultBarData } from "../../component/result-bar.mjs";
-import type { PaginationData } from "../../component/pagination.mjs";
-import type { FacetData, FacetItemData } from "../../component/facet.mjs";
+import type { HeadData } from "../../component/head.tsx";
+import type { ResultBarState } from "../../component/result-bar.tsx";
+import type { PaginationState } from "../../component/pagination.tsx";
+import type { FacetData, FacetItemData } from "../../component/facet.tsx";
 
 export interface SuggestionListViewServices {
   configuration: Configuration;
   translation: TranslationService;
   navigation: NavigationEntry;
-  template: HandlebarsService;
 }
 
 /**
@@ -24,6 +21,8 @@ export interface SuggestionListViewServices {
  */
 export interface SuggestionListQuery {
   searchQuery: string | null;
+  page: number;
+  pageSize: number;
   [key: string]: string | number | boolean | string[] | null | undefined;
 }
 
@@ -33,7 +32,13 @@ export interface SuggestionListDocument {
   description: string;
   /** Filled by `prepareDocumentsInPlace`. */
   href: string;
-  themes: { iri: string; label: string; href: string }[];
+  themes: {
+    iri: string;
+    label: string;
+    href: string;
+    /** `theme-tooltip` with the label substituted, resolved in the mapper. */
+    tooltip: string;
+  }[];
 }
 
 /** Model output the view consumes. */
@@ -47,10 +52,19 @@ export interface SuggestionListState {
   head: HeadData;
   headerHtml: string;
   footerHtml: string;
-  translation: TranslationDictionary;
+  /** Localized strings, resolved by `prepareTemplateData`. */
+  pageTitle: string;
+  pageDescription: string;
+  searchPlaceholder: string;
+  searchInputLabel: string;
+  searchButtonLabel: string;
+  searchButton: string;
+  extendedSearch: string;
+  clearFiltersLabel: string;
+  clearFilters: string;
   search: { value: string | null; "clear-href": string; "search-href": string };
-  "result-bar": ResultBarData;
-  pagination: PaginationData;
+  "result-bar": ResultBarState;
+  pagination: PaginationState;
   documents: SuggestionListDocument[];
   facets: FacetData[];
 }

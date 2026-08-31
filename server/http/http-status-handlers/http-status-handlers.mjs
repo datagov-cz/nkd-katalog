@@ -8,10 +8,9 @@
  */
 
 /**
- * @param {import('../../handlebars/index.ts').HandlebarsService[]} templates
  * @returns {HttpStatusHandlers}
  */
-export default function createHandlers(templates) {
+export default function createHandlers() {
   return {
     "handlerError": (reply) =>
       handler(reply),

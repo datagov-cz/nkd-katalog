@@ -9,7 +9,8 @@ import {
 import {
   createHeadData,
 } from "../../component/index.mjs";
-import configuration, { Configuration } from "../../configuration.ts";
+import { Head, type HeadData } from "../../component/head.tsx";
+import type { Configuration } from "../../configuration.ts";
 import { NavigationEntry } from "../../service/navigation-service.ts";
 import { LinkService } from "../../service/link-service.ts";
 import {
@@ -18,9 +19,11 @@ import {
 } from "../../service/translation-service.ts";
 import { NKOD } from "../../data-source/shared/vocabulary.ts";
 import { ROUTE } from "../route-name.mjs";
-import { HandlebarsService } from "../../handlebars/index.ts";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
+import { renderToHtml } from "../../html/render-html.ts";
+import { breakLines, escapeExpression } from "../../html/escape.ts";
+import { capture } from "../../capture/capture-manager.ts";
 
 type Language = "cs" | "en";
 
@@ -30,7 +33,6 @@ export function renderHtml(
     configuration: Configuration,
     navigation: NavigationEntry,
     translation: TranslationService,
-    template: HandlebarsService,
     link: LinkService,
   },
   languages: Language[],
@@ -48,21 +50,17 @@ export function renderHtml(
     return;
   }
 
-  const templateData = prepareTemplateData(
+  const state = prepareTemplateData(
     services.configuration, services.translation, services.navigation,
     services.link, languages, data, query);
 
-  // reply
-  //   .code(200)
-  //   .header("Content-Type", "text/json; charset=utf-8")
-  //   .send({data, template: templateData});
-
-  const template = services.template.view(ROUTE.DATASET_DETAIL);
+  const html = renderDatasetDetailHtml(state, languages[0]);
+  capture.captureViewRender(ROUTE.DATASET_DETAIL, state, html);
 
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")
-    .send(template(templateData));
+    .send(html);
 
 }
 
@@ -273,11 +271,7 @@ export function prepareTemplateData(
  */
 export interface DatasetDetailTemplateModel {
 
-  head: {
-    matomoIsActive: boolean;
-    matomoUrl: string;
-    matomoSiteId: string;
-  };
+  head: HeadData;
 
   translation: TranslationDictionary;
 
@@ -430,6 +424,8 @@ interface DistributionItem {
   sharedInterfaceKind: HrefLabel[];
   sharedInterfaceAccessType: HrefLabel[];
   facilitatesSharingCount: number;
+  /** `{{t "facilitates-sharing" count}}`, resolved in the mapper. */
+  facilitatesSharingText: string;
   facilitatesSharing: FacilitatesSharingItem[];
   // Type specific.
   distribution: FileDistribution | null;
@@ -659,6 +655,7 @@ function prepareDistribution(
     sparqlEditorUrl: string | null,
     sparqlDefaultQuery: string | null,
     sparqlClassAndPropertiesTemplate: string | null,
+    conceptTemplate: string,
   },
   translation: TranslationService,
   value: Distributable,
@@ -693,8 +690,9 @@ function prepareDistribution(
       sharedInterfaceKind: value.sharedInterfaceKind
         .map(item => ({ href: item.url, label: item.label })),
       facilitatesSharingCount: value.facilitatesSharing.length,
+      facilitatesSharingText: translation.translate("facilitates-sharing", value.facilitatesSharing.length),
       facilitatesSharing: value.facilitatesSharing
-        .map(prepareFacilitatesSharing),
+        .map((item) => prepareFacilitatesSharing(item, configuration.conceptTemplate)),
       //
       distribution: {
         mediaType: firstAsHrefLabel(value.mediaType),
@@ -740,8 +738,9 @@ function prepareDistribution(
       sharedInterfaceKind: value.sharedInterfaceKind
         .map(item => ({ href: item.url, label: item.label })),
       facilitatesSharingCount: value.facilitatesSharing.length,
+      facilitatesSharingText: translation.translate("facilitates-sharing", value.facilitatesSharing.length),
       facilitatesSharing: value.facilitatesSharing
-        .map(prepareFacilitatesSharing),
+        .map((item) => prepareFacilitatesSharing(item, configuration.conceptTemplate)),
       //
       distribution: null,
       dataService: {
@@ -771,8 +770,9 @@ function prepareDistribution(
 
 function prepareFacilitatesSharing(
   item: FacilitatesSharing,
+  conceptTemplate: string,
 ): FacilitatesSharingItem {
-  const viewer = configuration.client.conceptTemplate.replace(
+  const viewer = conceptTemplate.replace(
     "{}", encodeURIComponent(item.correspondingTerm.url));
   return {
     correspondingTermViewer: item.correspondingTerm.url === null ? null : viewer,
@@ -1015,4 +1015,964 @@ function prepareDcatApCzTermsOfUse(
     protectedDatabaseAuthorship,
     personalData
   };
+}
+
+// -- View -----------------------------------------------------------------
+
+type Dict = TranslationDictionary;
+
+export function renderDatasetDetailHtml(
+  state: DatasetDetailTemplateModel,
+  language: "cs" | "en",
+): string {
+  const t = state.translation;
+  const head = renderToHtml(<DatasetDetailHead state={state} />);
+  const datasetSection = renderToHtml(<DatasetSection state={state} />);
+  const distributionsSection = state.distributions.visible
+    ? renderToHtml(<DistributionsSection state={state} />)
+    : "";
+  const seriesSection = state.datasetSeries.visible
+    ? renderToHtml(<SeriesSection state={state} />)
+    : "";
+  const applicationsSection = state.applications.visible
+    ? renderToHtml(<ApplicationsSection state={state} />)
+    : "";
+  return (
+    "<!DOCTYPE html>\n" +
+    `<html dir="ltr" lang="${language}">\n` +
+    `<head>\n${head}\n</head>\n` +
+    `<body class="dataset-detail" data-sparql-endpoint="${escapeExpression(state.labelEndpoint)}">\n` +
+    `${state.headerHtml}\n` +
+    `${datasetSection}\n${distributionsSection}\n${seriesSection}\n${applicationsSection}\n` +
+    `${state.footerHtml}\n` +
+    `<script type="application/ld+json">${state.metadataAsString}</script>\n` +
+    `<gov-modal id="legislation-list-modal" label="${escapeExpression(t["modal-legislation"])}"></gov-modal>\n` +
+    `<gov-modal id="facilitates-sharing-modal" label="${escapeExpression(t["modal-facilitates-sharing"])}"></gov-modal>\n` +
+    "</body>\n</html>\n"
+  );
+}
+
+function DatasetDetailHead({ state }: { state: DatasetDetailTemplateModel }) {
+  const t = state.translation;
+  return (
+    <>
+      <Head state={state.head} />
+      <title>
+        {state.dataset.heading.title} - {t["title-suffix"]}
+      </title>
+      <meta name="description" content={t["page-description"]} />
+      <link rel="canonical" href="/dataset" />
+      <link rel="alternate" href="/datová-sada" hreflang="cs" />
+      <link rel="alternate" href="/dataset" hreflang="en" />
+      <link
+        type="text/css"
+        rel="stylesheet"
+        href="/assets/catalog/css/dataset-detail.css"
+      />
+      <link
+        type="text/css"
+        rel="stylesheet"
+        href="/assets/catalog/css/resource-detail.css"
+      />
+      <script src="/assets/catalog/js/dataset-detail.js"></script>
+    </>
+  );
+}
+
+function Dl({ term, children }: { term: string; children: any }) {
+  return (
+    <dl>
+      <dt>{term}</dt>
+      {children}
+    </dl>
+  );
+}
+
+function Chip({ chip }: { chip: { variant: string; label: string } | null }) {
+  if (!chip) {
+    return null;
+  }
+  return (
+    <gov-chip variant={chip.variant} type="outlined" size="s">
+      {chip.label}
+    </gov-chip>
+  );
+}
+
+function LegislationChip({
+  items,
+  wrapInHiddenDiv,
+}: {
+  items: ApplicableLegislationItem[];
+  wrapInHiddenDiv: boolean;
+}) {
+  if (items.length === 0) {
+    return null;
+  }
+  const list = (
+    <ul>
+      {items.map((item) => (
+        <li>
+          <Chip chip={item.chip} />
+          <a href={item.url} rel="nofollow noopener noreferrer" target="_blank">
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <gov-chip
+      variant="primary"
+      type="outlined"
+      size="s"
+      class="legislation-list"
+      tag="button"
+    >
+      {" "}
+      §{" "}
+      {wrapInHiddenDiv ? <div style="display: none;">{list}</div> : list}
+    </gov-chip>
+  );
+}
+
+function CodelistDd({
+  item,
+  goToLink,
+}: {
+  item: HrefLabelIri;
+  goToLink: string;
+}) {
+  return (
+    <dd>
+      <a href={item.href ?? ""}>
+        {" "}
+        {item.label}{" "}
+      </a>
+      <a
+        href={item.iri ?? ""}
+        title={goToLink}
+        rel="nofollow noopener noreferrer"
+        target="_blank"
+      >
+        <gov-icon name="box-arrow-up-right"></gov-icon>
+      </a>
+    </dd>
+  );
+}
+
+function DatasetSection({ state }: { state: DatasetDetailTemplateModel }) {
+  const t = state.translation;
+  const d = state.dataset;
+  const h = d.heading;
+  return (
+    <gov-container class="dataset-container" data-iri={d.iri}>
+      <div>
+        <h1 class="inline">{h.title}</h1>
+        <span class="x-large">
+          <a href={h.openUrl ?? ""}>
+            <gov-icon
+              name="box-arrow-up-right"
+              title={t["open-link-title"]}
+            ></gov-icon>
+          </a>
+          {h.editUrl ? (
+            <a href={h.editUrl}>
+              <gov-icon
+                name="pencil"
+                type="bootstrap"
+                title={t["edit-dataset-title"]}
+              ></gov-icon>
+            </a>
+          ) : null}
+          {h.copyUrl ? (
+            <a href={h.copyUrl}>
+              <gov-icon name="copy" title={t["copy-dataset-title"]}></gov-icon>
+            </a>
+          ) : null}
+          {h.deleteDatasetUrl ? (
+            <a href={h.deleteDatasetUrl}>
+              <gov-icon
+                name="trash"
+                title={t["delete-dataset-title"]}
+              ></gov-icon>
+            </a>
+          ) : null}
+          {h.deleteCatalogUrl ? (
+            <a href={h.deleteCatalogUrl}>
+              <gov-icon
+                name="trash"
+                title={t["delete-catalog-title"]}
+              ></gov-icon>
+            </a>
+          ) : null}
+        </span>
+        {d.publisher ? (
+          <a href={d.publisher.href}>
+            <h2>{d.publisher.label}</h2>
+          </a>
+        ) : null}
+      </div>
+      <div class="applicable-legislation chip-container mb-2">
+        {d.isOpenData ? (
+          <gov-chip variant="success" type="outlined" size="xs">
+            {" "}
+            {t["open-data"]}{" "}
+          </gov-chip>
+        ) : null}
+        {d.isNonPublicData ? (
+          <gov-chip variant="warning" type="outlined" size="xs">
+            {" "}
+            {t["non-public-data"]}{" "}
+          </gov-chip>
+        ) : null}
+        {d.applicableLegislation.map((item) => (
+          <Chip chip={item.chip} />
+        ))}
+        <LegislationChip items={d.applicableLegislation} wrapInHiddenDiv={true} />
+      </div>
+      <div class="chip-container mb-2">
+        {d.keywords.map((keyword) => (
+          <gov-chip
+            variant="primary"
+            type="outlined"
+            size="s"
+            href={keyword.href}
+          >
+            {" "}
+            {keyword.label}{" "}
+          </gov-chip>
+        ))}
+      </div>
+      <p
+        dangerouslySetInnerHTML={{
+          __html: " " + breakLines(d.description) + " ",
+        }}
+      ></p>
+      <gov-grid>
+        <gov-grid-item size-sm="6/12" size-md="3/12">
+          {d.themesVisible ? (
+            <Dl term={t["dt-theme"]}>
+              {d.themes.map((item) => (
+                <CodelistDd item={item} goToLink={t["go-to-link"]} />
+              ))}
+            </Dl>
+          ) : null}
+          {d.euroVocThemesVisible ? (
+            <Dl term={t["dt-eurovoc"]}>
+              {d.euroVocThemes.map((item) => (
+                <CodelistDd item={item} goToLink={t["go-to-link"]} />
+              ))}
+            </Dl>
+          ) : null}
+        </gov-grid-item>
+        <gov-grid-item size-sm="6/12" size-md="3/12">
+          {d.spatialVisible ? (
+            <Dl term={t["dt-spatial"]}>
+              {d.spatial.map((item) => (
+                <dd>
+                  {" "}
+                  {item.label}{" "}
+                  <a
+                    href={item.iri ?? ""}
+                    title={t["go-to-link"]}
+                    rel="nofollow noopener noreferrer"
+                    target="_blank"
+                  >
+                    <gov-icon name="box-arrow-up-right"></gov-icon>
+                  </a>
+                </dd>
+              ))}
+            </Dl>
+          ) : null}
+          {d.spatialResolutionInMetersVisible ? (
+            <Dl term={t["dt-spatial-resolution"]}>
+              <dd>
+                {" "}
+                {d.spatialResolutionInMeters}{" "}
+              </dd>
+            </Dl>
+          ) : null}
+          {d.temporalVisible ? (
+            <Dl term={t["dt-temporal"]}>
+              <dd>
+                {" "}
+                {d.temporal}{" "}
+              </dd>
+            </Dl>
+          ) : null}
+          {d.temporalResolutionVisible ? (
+            <Dl term={t["dt-temporal-resolution"]}>
+              <dd>
+                {" "}
+                {d.temporalResolution}{" "}
+              </dd>
+            </Dl>
+          ) : null}
+        </gov-grid-item>
+        <gov-grid-item size-sm="6/12" size-md="3/12">
+          {d.documentation.length > 0 ? (
+            <Dl term={t["dt-documentation"]}>
+              {d.documentation.map((url) => (
+                <dd class="documentation">
+                  <a href={url}>{t["show-documentation"]}</a>
+                  <span class="quality"></span>
+                </dd>
+              ))}
+            </Dl>
+          ) : null}
+          {d.contactVisible ? (
+            <Dl term={t["dt-contact"]}>
+              {d.contact.map((item) => (
+                <dd>
+                  <a href={item.href}>{item.label}</a>
+                </dd>
+              ))}
+            </Dl>
+          ) : null}
+          {d.conformsToVisible ? (
+            <Dl term={t["dt-specification"]}>
+              {d.conformsTo.map((item) => (
+                <dd class="specification">
+                  <a href={item.href}>{item.label}</a>
+                  <span class="quality"></span>
+                </dd>
+              ))}
+            </Dl>
+          ) : null}
+        </gov-grid-item>
+        <gov-grid-item size-sm="6/12" size-md="3/12">
+          {d.frequencyVisible && d.frequency ? (
+            <Dl term={t["dt-frequency"]}>
+              <dd>
+                {" "}
+                {d.frequency.label}{" "}
+                <a
+                  href={d.frequency.iri ?? ""}
+                  title={t["go-to-link"]}
+                  rel="nofollow noopener noreferrer"
+                  target="_blank"
+                >
+                  <gov-icon name="box-arrow-up-right"></gov-icon>
+                </a>
+              </dd>
+            </Dl>
+          ) : null}
+          {d.hvdCategoryVisible ? (
+            <Dl term={t["dt-hvd-category"]}>
+              {d.hvdCategory.map((item) => (
+                <CodelistDd item={item} goToLink={t["go-to-link"]} />
+              ))}
+            </Dl>
+          ) : null}
+          {d.landingPage ? (
+            <Dl term={t["dt-landing-page"]}>
+              <dd>
+                <a href={d.landingPage}>
+                  {" "}
+                  {t["show-landing-page"]}{" "}
+                </a>
+              </dd>
+            </Dl>
+          ) : null}
+          {d.publicInformationSystem.length > 0 ? (
+            <Dl term="ISVS">
+              {d.publicInformationSystem.map((item) => (
+                <dd>
+                  <a href={item.href}>{item.label}</a>
+                </dd>
+              ))}
+            </Dl>
+          ) : null}
+          {d.concernTerm.length > 0 ? (
+            <Dl term={t["dt-concepts"]}>
+              {d.concernTerm.map((item) => (
+                <dd>
+                  <a href={item.viewer}>
+                    <span data-label="http://www.w3.org/2004/02/skos/core#prefLabel">
+                      {item.url}
+                    </span>
+                  </a>
+                  <a href={item.url}>
+                    <gov-icon
+                      name="box-arrow-up-right"
+                      title={t["concept-link-title"]}
+                    ></gov-icon>
+                  </a>
+                </dd>
+              ))}
+            </Dl>
+          ) : null}
+        </gov-grid-item>
+      </gov-grid>
+      {d.parentDataset ? (
+        <p>
+          {" "}
+          {t["part-of-series"]}{" "}
+          <a href={d.parentDataset.href} title={t["series-link-title"]}>
+            {d.parentDataset.label}
+          </a>
+          .{" "}
+        </p>
+      ) : null}
+      <br />
+    </gov-container>
+  );
+}
+
+function DistributionsSection({
+  state,
+}: {
+  state: DatasetDetailTemplateModel;
+}) {
+  const t = state.translation;
+  const { items, pagination } = state.distributions;
+  return (
+    <gov-container class="distribution-container">
+      <h2>{t["h2-distributions"]}</h2>
+      <br />
+      <gov-grid>
+        {items.map((item) => (
+          <DistributionCard item={item} t={t} />
+        ))}
+      </gov-grid>
+      {pagination.visible ? (
+        <gov-grid-item size-sm="12/12" size-md="10/12">
+          <gov-pagination
+            total={String(pagination.total)}
+            current={String(pagination.currentPage)}
+            page-size={String(pagination.pageSize)}
+            wcag-label={t["pagination-label"]}
+            wcag-select-label={t["pagination-select-label"]}
+            link={pagination.linkTemplate}
+          ></gov-pagination>
+        </gov-grid-item>
+      ) : null}
+    </gov-container>
+  );
+}
+
+function DistributionCard({
+  item,
+  t,
+}: {
+  item: DistributionItem;
+  t: Dict;
+}) {
+  return (
+    <gov-grid-item
+      size-sm="12/12"
+      size-md={item.sizeMd}
+      size-lg={item.sizeLg}
+    >
+      <div class="distribution-item-wrap m-1 p-2" data-iri={item.iri}>
+        <h3 class="gov-text--xl">{item.title}</h3>
+        <h4 class="gov-text--xl gov-color--secondary-700 break-word-wrap">
+          {item.format}
+        </h4>
+        {item.applicableLegislation.length > 0 ? (
+          <div class="applicable-legislation chip-container mb-2">
+            {item.applicableLegislation.map((legislation) => (
+              <Chip chip={legislation.chip} />
+            ))}
+            <LegislationChip
+              items={item.applicableLegislation}
+              wrapInHiddenDiv={false}
+            />
+          </div>
+        ) : null}
+        <div class="flex-row">
+          {item.missingLegal ? (
+            <div class="distribution-item-wrap-column">
+              <div>
+                <h5 class="gov-text--l gov-color--secondary-700">
+                  {t["terms-unspecified"]}
+                </h5>
+              </div>
+            </div>
+          ) : null}
+          {item.dcatApLegal ? (
+            <div class="distribution-item-wrap-column">
+              <div>
+                <a href="" rel="nofollow noopener noreferrer" target="_blank">
+                  {t["terms-of-use-link"]}
+                </a>
+              </div>
+            </div>
+          ) : null}
+          {item.dcatApCzLegal ? (
+            <DcatApCzColumn legal={item.dcatApCzLegal} t={t} />
+          ) : null}
+          {item.distribution ? (
+            <FileDistributionColumn distribution={item.distribution} t={t} />
+          ) : null}
+          {item.dataService ? (
+            <DataServiceColumn service={item.dataService} t={t} />
+          ) : null}
+          {item.showSharingSpecifications ? (
+            <SharingSpecColumn item={item} t={t} />
+          ) : null}
+        </div>
+      </div>
+    </gov-grid-item>
+  );
+}
+
+function LicenseConditionLi({
+  className,
+  condition,
+  fallback,
+}: {
+  className: string;
+  condition: LicenseCondition;
+  fallback: string;
+}) {
+  return (
+    <li class={className}>
+      {condition.showQuality ? <span class="quality"></span> : null}
+      <div>
+        {condition.href ? (
+          <a
+            href={condition.href}
+            rel="nofollow noopener noreferrer"
+            target="_blank"
+          >
+            {condition.label}
+          </a>
+        ) : (
+          <>
+            {" "}
+            {condition.label}{" "}
+          </>
+        )}
+        <gov-icon
+          name={condition.icon}
+          class={condition.iconStyle}
+          title={condition.iconTitle}
+          type="bootstrap"
+        ></gov-icon>
+      </div>
+      {condition.author ? (
+        <>
+          {" "}
+          {condition.author}{" "}
+        </>
+      ) : (
+        <>
+          {" "}
+          {fallback}{" "}
+        </>
+      )}
+    </li>
+  );
+}
+
+function DcatApCzColumn({
+  legal,
+  t,
+}: {
+  legal: DcatApCzLegal;
+  t: Dict;
+}) {
+  const pd = legal.personalData as unknown as LicenseCondition | null;
+  return (
+    <div class="distribution-item-wrap-column">
+      <div>
+        <h5 class="gov-text--l gov-color--secondary-700">{t["terms-of-use"]}</h5>
+      </div>
+      <ul>
+        <LicenseConditionLi
+          className="authorship"
+          condition={legal.authorship}
+          fallback={t["copyrighted-work"]}
+        />
+        <LicenseConditionLi
+          className="databaseAuthorship"
+          condition={legal.databaseAuthorship}
+          fallback={t["copyrighted-database"]}
+        />
+        <LicenseConditionLi
+          className="protectedDatabaseAuthorship"
+          condition={legal.protectedDatabaseAuthorship}
+          fallback={t["sui-generis"]}
+        />
+        <li>
+          {pd ? (
+            <div>
+              {" "}
+              {pd.label}{" "}
+              <gov-icon
+                name={pd.icon}
+                class={pd.iconStyle}
+                title={pd.iconTitle}
+                type="bootstrap"
+              ></gov-icon>
+            </div>
+          ) : null}
+          {" "}
+          {t["personal-data"]}{" "}
+        </li>
+      </ul>
+    </div>
+  );
+}
+
+function FileDistributionColumn({
+  distribution,
+  t,
+}: {
+  distribution: FileDistribution;
+  t: Dict;
+}) {
+  return (
+    <div class="distribution-item-wrap-column">
+      <div>
+        <h5 class="gov-text--l gov-color--secondary-700">
+          {t["h5-downloadable-file"]}
+        </h5>
+      </div>
+      <ul>
+        {distribution.downloadArray.length > 0 ? (
+          <li>
+            {distribution.downloadArray.map((url) => (
+              <div class="download">
+                <a href={url}>{t["download"]}</a>
+                <span class="quality"></span>
+              </div>
+            ))}
+            {distribution.access ? (
+              <div class="access">
+                <a href={distribution.access}>{t["access-information"]}</a>
+                <span class="quality"></span>
+              </div>
+            ) : null}
+          </li>
+        ) : null}
+        {distribution.conformsTo.length > 0 ? (
+          <li class="schema">
+            {distribution.conformsTo.map((url) => (
+              <>
+                <a href={url}>{t["schema"]}</a>
+                <span class="quality"></span>
+              </>
+            ))}
+          </li>
+        ) : null}
+        {distribution.mediaType ? (
+          <li>
+            <div class="mediaType break-word-wrap">
+              {" "}
+              {distribution.mediaType.label}{" "}
+              <a href={distribution.mediaType.href}>
+                <gov-icon name="box-arrow-up-right"></gov-icon>
+              </a>
+              <span class="quality"></span>
+            </div>
+            {" "}
+            {t["media-type"]}{" "}
+          </li>
+        ) : null}
+        {distribution.compressFormat ? (
+          <li>
+            <div>
+              {" "}
+              {distribution.compressFormat.label}{" "}
+              <a href={distribution.compressFormat.href}>
+                <gov-icon name="box-arrow-up-right"></gov-icon>
+              </a>
+            </div>
+            {" "}
+            {t["compress-format"]}{" "}
+          </li>
+        ) : null}
+        {distribution.packageFormat ? (
+          <li>
+            <div>
+              {" "}
+              {distribution.packageFormat.label}{" "}
+              <a href={distribution.packageFormat.href}>
+                <gov-icon name="box-arrow-up-right"></gov-icon>
+              </a>
+            </div>
+            {" "}
+            {t["package-format"]}{" "}
+          </li>
+        ) : null}
+      </ul>
+    </div>
+  );
+}
+
+function DataServiceColumn({
+  service,
+  t,
+}: {
+  service: DataService;
+  t: Dict;
+}) {
+  return (
+    <div
+      class="distribution-item-wrap-column data-service"
+      data-iri={service.iri}
+    >
+      <div>
+        <h5 class="gov-text--l gov-color--secondary-700">
+          {" "}
+          {t["h5-data-service"]}{" "}
+        </h5>
+      </div>
+      <ul>
+        <li>
+          <div class="endpointDescription">
+            <a href={service.endpointDescription}>{t["endpoint-description"]}</a>
+            <span class="quality"></span>
+          </div>
+          {service.access ? (
+            <div class="access">
+              <a href={service.access}>{t["access-information"]}</a>
+              <span class="quality"></span>
+            </div>
+          ) : null}
+        </li>
+        <li>
+          <div class="endpointUrl">
+            <a href={service.endpointUrl}>Endpoint</a>
+            <span class="quality"></span>
+          </div>
+          {service.sparqlEditor ? (
+            <div>
+              <a href={service.sparqlEditor}>{t["sparql-query"]}</a>
+            </div>
+          ) : null}
+          {service.classesAndProperties ? (
+            <div>
+              <a href={service.classesAndProperties}>
+                {t["classes-and-properties"]}
+              </a>
+            </div>
+          ) : null}
+        </li>
+        {service.conformsTo.length > 0 ? (
+          <li class="schema">
+            {service.conformsTo.map((url) => (
+              <>
+                <a href={url}>Standard</a>
+                <span class="quality"></span>
+              </>
+            ))}
+          </li>
+        ) : null}
+        {service.contact.length > 0 ? (
+          <li>
+            <div>
+              {service.contact.map((contact) => (
+                <a href={contact.href}>{contact.label}</a>
+              ))}
+            </div>
+            {" "}
+            {t["label-contact"]}{" "}
+          </li>
+        ) : null}
+        {service.documentation.length > 0 ? (
+          <li>
+            {service.documentation.map((url) => (
+              <a href={url}>{t["show-documentation"]}</a>
+            ))}
+          </li>
+        ) : null}
+      </ul>
+    </div>
+  );
+}
+
+function SharingSpecColumn({
+  item,
+  t,
+}: {
+  item: DistributionItem;
+  t: Dict;
+}) {
+  return (
+    <div class="distribution-item-wrap-column share-specification">
+      <div>
+        <h5 class="gov-text--l gov-color--secondary-700">
+          {t["h5-sharing-specification"]}
+        </h5>
+      </div>
+      <ul>
+        {item.sharedInterfaceContentType.length > 0 ? (
+          <li>
+            <ul>
+              {item.sharedInterfaceContentType.map((entry) => (
+                <li>{entry.label}</li>
+              ))}
+            </ul>
+            {" "}
+            {t["shared-content-type"]}{" "}
+          </li>
+        ) : null}
+        {item.sharedInterfaceAccessType.length > 0 ? (
+          <li>
+            <ul>
+              {item.sharedInterfaceAccessType.map((entry) => (
+                <li>{entry.label}</li>
+              ))}
+            </ul>
+            {" "}
+            {t["shared-access-type"]}{" "}
+          </li>
+        ) : null}
+        {item.sharedInterfaceKind.length > 0 ? (
+          <li>
+            <ul>
+              {item.sharedInterfaceKind.map((entry) => (
+                <li>{entry.label}</li>
+              ))}
+            </ul>
+            {" "}
+            {t["shared-kind"]}{" "}
+          </li>
+        ) : null}
+        {item.facilitatesSharing.length > 0 ? (
+          <li class="facilitates-sharing">
+            {" "}
+            {item.facilitatesSharingText}{" "}
+            <a>
+              <gov-icon name="info-circle"></gov-icon>
+            </a>
+            <div style="display: none;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{t["th-corresponding-term"]}</th>
+                    <th>{t["th-obtained-by"]}</th>
+                    <th>{t["th-shared-as"]}</th>
+                    <th>{t["th-shared-by"]}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.facilitatesSharing.map((row) => (
+                    <tr>
+                      <td>
+                        {row.correspondingTerm ? (
+                          <>
+                            {row.correspondingTermViewer ? (
+                              <a
+                                href={row.correspondingTermViewer}
+                                rel="nofollow noopener noreferrer"
+                                target="_blank"
+                              >
+                                <span data-label="http://www.w3.org/2004/02/skos/core#prefLabel">
+                                  {row.correspondingTerm}
+                                </span>
+                              </a>
+                            ) : null}
+                            <a href={row.correspondingTerm}>
+                              <gov-icon
+                                name="box-arrow-up-right"
+                                title={t["concept-link-title"]}
+                              ></gov-icon>
+                            </a>
+                          </>
+                        ) : null}
+                      </td>
+                      <td>
+                        {row.obtainedBy ? (
+                          <a
+                            href={row.obtainedBy.href}
+                            rel="nofollow noopener noreferrer"
+                            target="_blank"
+                          >
+                            {row.obtainedBy.label}
+                          </a>
+                        ) : null}
+                      </td>
+                      <td>
+                        {row.sharedAs ? (
+                          <a
+                            href={row.sharedAs.href}
+                            rel="nofollow noopener noreferrer"
+                            target="_blank"
+                          >
+                            {row.sharedAs.label}
+                          </a>
+                        ) : null}
+                      </td>
+                      <td>
+                        {row.sharedBy ? (
+                          <a
+                            href={row.sharedBy.href}
+                            rel="nofollow noopener noreferrer"
+                            target="_blank"
+                          >
+                            {row.sharedBy.label}
+                          </a>
+                        ) : null}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </li>
+        ) : null}
+      </ul>
+    </div>
+  );
+}
+
+function SeriesSection({ state }: { state: DatasetDetailTemplateModel }) {
+  const t = state.translation;
+  const series = state.datasetSeries;
+  return (
+    <gov-container class="dataset-list-container">
+      <h2>{t["h2-series"]}</h2>
+      <br />
+      <div class="resource-list">
+        {series.items.map((item) => (
+          <div class="resource-list-item">
+            <a href={item.href} rel="nofollow noopener noreferrer">
+              <h3>{item.title}</h3>
+            </a>
+            <p>
+              {" "}
+              {item.description}{" "}
+            </p>
+          </div>
+        ))}
+      </div>
+      <a href={series.showAllHref}>
+        {" "}
+        {t["show-all-series"]}{" "}
+      </a>
+    </gov-container>
+  );
+}
+
+function ApplicationsSection({
+  state,
+}: {
+  state: DatasetDetailTemplateModel;
+}) {
+  const t = state.translation;
+  const applications = state.applications;
+  return (
+    <gov-container class="application-list-container">
+      <h2>{t["h2-applications"]}</h2>
+      <br />
+      <div class="document-list">
+        {applications.items.map((item) => (
+          <div class="document-list-item">
+            <a href={item.href} rel="nofollow noopener noreferrer">
+              <h3>{item.title}</h3>
+            </a>
+            <p>
+              {" "}
+              {item.description}{" "}
+            </p>
+          </div>
+        ))}
+      </div>
+    </gov-container>
+  );
 }

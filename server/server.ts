@@ -16,6 +16,6 @@ import { initializeFooter } from "./component/footer.ts";
   const server = await createHttpServer(configuration);
   const http = createHttpConnector();
   const services = await createServices(configuration, http);
-  registerRoutes(configuration, server, services);
+  registerRoutes(configuration, server, services, (handler) => handler);
   startServer(server, configuration);
 })();
