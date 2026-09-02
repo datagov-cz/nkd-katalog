@@ -1,4 +1,4 @@
-import { DEFAULT_FACET_SIZE } from "../constants.mjs";
+import { DEFAULT_FACET_SIZE } from "../constants.ts";
 import type { NavigationEntry } from "../service/navigation-service.ts";
 import type { TranslationService } from "../service/translation-service.ts";
 

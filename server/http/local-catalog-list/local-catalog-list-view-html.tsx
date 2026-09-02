@@ -1,12 +1,10 @@
 import { FastifyReply } from "fastify";
 
-import { ROUTE } from "../route-name.mjs";
 import { createHeadData } from "../../component/index.mjs";
 import { Head } from "../../component/head.tsx";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
-import { capture } from "../../capture/capture-manager.ts";
 import type { Language } from "../../localization/index.ts";
 import type {
   LocalCatalogListCatalog,
@@ -26,7 +24,6 @@ export function renderHtml(
 ): void {
   const state = prepareTemplateData(services, languages, query, data);
   const html = renderLocalCatalogListHtml(state, languages[0]);
-  capture.captureViewRender(ROUTE.LOCAL_CATALOG_LIST, state, html);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")

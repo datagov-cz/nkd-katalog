@@ -6,7 +6,6 @@ import { Head } from "../../component/head.tsx";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
-import { capture } from "../../capture/capture-manager.ts";
 import type { Configuration } from "../../configuration.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
@@ -36,7 +35,6 @@ export function renderHtml(
     data,
   );
   const html = renderPublisherListHtml(state, languages[0]);
-  capture.captureViewRender(ROUTE.PUBLISHER_LIST, state, html);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")

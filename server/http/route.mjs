@@ -88,12 +88,12 @@ export function registerHttpRoutes(server, services, wrapHandler) {
 
   //
 
-  server.setErrorHandler(function (error, request, reply) {
+  server.setErrorHandler(function (error, _request, reply) {
     this.log.error(error);
     httpStatusHandlers.handlerError(reply);
   });
 
-  server.setNotFoundHandler(function (request, reply) {
+  server.setNotFoundHandler(function (_request, reply) {
     httpStatusHandlers.handlePathNotFound(reply);
   });
 
@@ -103,6 +103,6 @@ function registerHandler(server, handler) {
   server.route({
     method: "GET",
     url: "/" + handler.path,
-    handler,
+    handler: handler.handler,
   });
 }

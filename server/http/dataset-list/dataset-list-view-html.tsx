@@ -11,7 +11,6 @@ import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
-import { capture } from "../../capture/capture-manager.ts";
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
@@ -56,7 +55,6 @@ export function renderHtml(
   const state = prepareTemplateData(
     services.configuration, services.translation, services.navigation, languages, query, data);
   const html = renderDatasetListHtml(state, languages[0]);
-  capture.captureViewRender(ROUTE.DATASET_LIST, state, html);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")

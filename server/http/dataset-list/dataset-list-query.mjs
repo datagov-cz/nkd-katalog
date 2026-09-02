@@ -1,4 +1,4 @@
-import {DEFAULT_FACET_SIZE, DEFAULT_PAGE_SIZE} from "../../constants.mjs";
+import {DEFAULT_FACET_SIZE, DEFAULT_PAGE_SIZE} from "../../constants.ts";
 
 const SORT_OPTIONS = ["title"]
 

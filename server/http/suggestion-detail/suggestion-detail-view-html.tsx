@@ -7,7 +7,6 @@ import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
-import { capture } from "../../capture/capture-manager.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { Language } from "../../localization/index.ts";
 import type {
@@ -32,7 +31,6 @@ export function renderHtml(
   }
   const state = prepareTemplateData(services, languages, query, data);
   const html = renderSuggestionDetailHtml(state, languages[0]);
-  capture.captureViewRender(ROUTE.SUGGESTION_DETAIL, state, html);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")

@@ -23,9 +23,7 @@ import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines, escapeExpression } from "../../html/escape.ts";
-import { capture } from "../../capture/capture-manager.ts";
-
-type Language = "cs" | "en";
+import { Language } from "../../localization/index.ts";
 
 export function renderHtml(
   services: {
@@ -55,7 +53,6 @@ export function renderHtml(
     services.link, languages, data, query);
 
   const html = renderDatasetDetailHtml(state, languages[0]);
-  capture.captureViewRender(ROUTE.DATASET_DETAIL, state, html);
 
   reply
     .code(200)
