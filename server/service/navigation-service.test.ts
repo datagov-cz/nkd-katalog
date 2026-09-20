@@ -67,6 +67,22 @@ describe("Navigation service", () => {
       "název");;
   });
 
+  it("Query name", () => {
+    assert.strictEqual(
+      service.view("cs", "list").queryNameFromServer("title"),
+      "název");
+    assert.strictEqual(
+      service.view("cs", "list").queryNameFromServer("missing"),
+      null);
+  });
+
+  it("Query name of multiple is the first", () => {
+    // The first name is the one used in links.
+    assert.strictEqual(
+      service.view("cs", "multiple").queryNameFromServer("keyword"),
+      "klíčová-slova");
+  });
+
   it("Link from server", () => {
     assert.strictEqual(
       service.view("cs", "list").linkFromServer({ "sort": "title" }),

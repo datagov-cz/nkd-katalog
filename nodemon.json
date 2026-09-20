@@ -1,5 +1,11 @@
 {
   "execMap": {
-      "ts": "tsx"
-  }
+    "ts": "tsx"
+  },
+  "ext": "js,ts,tsx",
+  "ignore": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts"
+  ]
 }

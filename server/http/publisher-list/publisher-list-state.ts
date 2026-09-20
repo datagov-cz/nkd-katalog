@@ -33,16 +33,6 @@ export interface PublisherListData {
 
 export interface PublisherListState {
   head: HeadData;
-  headerHtml: string;
-  footerHtml: string;
-  /** Localized strings, resolved by `prepareTemplateData`. */
-  pageTitle: string;
-  pageDescription: string;
-  heading: string;
-  dashboardMonthlyLabel: string;
-  dashboardDailyLabel: string;
-  vdfOriginatorLabel: string;
-  vdfPublisherLabel: string;
-  message: string;
   publishers: PublisherListPublisher[];
+  query: Record<string, string | string[]>;
 }

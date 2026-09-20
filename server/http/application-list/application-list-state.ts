@@ -36,8 +36,6 @@ export interface ApplicationListDocument {
     iri: string;
     label: string;
     href: string;
-    /** `theme-tooltip` with the label substituted, resolved in the mapper. */
-    tooltip: string;
   }[];
 }
 
@@ -50,21 +48,14 @@ export interface ApplicationListData {
 
 export interface ApplicationListState {
   head: HeadData;
-  headerHtml: string;
-  footerHtml: string;
-  /** Localized strings, resolved by `prepareTemplateData`. */
-  pageTitle: string;
-  pageDescription: string;
-  searchPlaceholder: string;
-  searchInputLabel: string;
-  searchButtonLabel: string;
-  searchButton: string;
-  extendedSearch: string;
-  clearFiltersLabel: string;
+  /** URL to page with no filters active. */
   clearFilters: string;
-  search: { value: string | null; "clear-href": string; "search-href": string };
-  "result-bar": ResultBarState;
+  search: { query: { searchQuery: string | null } };
+  /** First page of the current results, and the name of the search text parameter. */
+  navigation: { url: string; searchName: string };
+  resultBar: ResultBarState;
   pagination: PaginationState;
   documents: ApplicationListDocument[];
   facets: FacetData[];
+  query: ApplicationListQuery;
 }

@@ -9,8 +9,9 @@ import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { Language } from "../../localization/index.ts";
+import type { ViewContext } from "../../service/view-context.ts";
+import { Dl, DdLink, PropertiesColumn, RelatedItems } from "../../component/detail-parts.tsx";
 import type {
-  CodelistItem,
   SuggestionDetailData,
   SuggestionDetailQuery,
   SuggestionDetailState,
@@ -30,7 +31,12 @@ export function renderHtml(
     return;
   }
   const state = prepareTemplateData(services, languages, query, data);
-  const html = renderSuggestionDetailHtml(state, languages[0]);
+  const ctx: ViewContext = {
+    t: services.translation.t,
+    language: languages[0],
+    navigation: services.navigation,
+  };
+  const html = renderSuggestionDetailHtml(state, ctx);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")
@@ -47,25 +53,10 @@ export function prepareTemplateData(
   const datasets = data["datasets"];
   prepareDatasetsInPlace(services, data["datasets"]);
   const suggestion = prepareSuggestion(services.navigation, language, data);
-  const dictionary = services.translation.dictionary;
   return {
     "head": components.createHeadData(services.configuration),
-    "headerHtml": headerHtml(services.navigation, language, query),
-    "footerHtml": footerHtml(language),
-    "pageTitle": dictionary["page-title"],
-    "pageDescription": dictionary["page-description"],
-    "goToLink": dictionary["go-to-link"],
-    "dtTheme": dictionary["dt-theme"],
-    "dtCreated": dictionary["dt-created"],
-    "dtState": dictionary["dt-state"],
-    "dtPublicationPlan": dictionary["dt-publication-plan"],
-    "dtMandatory106": dictionary["dt-mandatory-106"],
-    "dtObstacleSpecial": dictionary["dt-obstacle-special"],
-    "dtObstacle106": dictionary["dt-obstacle-106"],
-    "yes": dictionary["yes"],
-    "no": dictionary["no"],
-    "h2Datasets": dictionary["h2-datasets"],
     "suggestion": suggestion,
+    "query": query,
     "datasets": {
       "visible": datasets.length > 0,
       "items": datasets,
@@ -131,167 +122,109 @@ function isNotEmpty(value: string | null | undefined): boolean {
 
 export function renderSuggestionDetailHtml(
   state: SuggestionDetailState,
-  language: "cs" | "en",
+  ctx: ViewContext,
 ): string {
-  const head = renderToHtml(<SuggestionDetailHead state={state} />);
-  const main = renderToHtml(<SuggestionDetailMain state={state} />);
-  return (
-    "<!DOCTYPE html>\n" +
-    `<html dir="ltr" lang="${language}">\n` +
-    `<head>\n${head}\n</head>\n` +
-    `<body>\n${state.headerHtml}\n${main}\n${state.footerHtml}\n</body>\n` +
-    "</html>\n"
-  );
+  return `<!DOCTYPE html>
+  <html dir="ltr" lang="${ctx.language}">
+  <head>${renderToHtml(<SuggestionDetailHead state={state} ctx={ctx} />)}</head>
+  <body>
+    <div class="gov-story-theme-scope">
+      ${headerHtml(ctx.navigation, ctx.language, state.query)}
+      ${renderToHtml(<SuggestionDetailMain state={state} ctx={ctx} />)}
+      ${footerHtml(ctx.language)}
+    </div>
+  </body>
+  </html>`;
 }
 
-function SuggestionDetailHead({ state }: { state: SuggestionDetailState }) {
+function SuggestionDetailHead({ state, ctx }: {
+  state: SuggestionDetailState,
+  ctx: ViewContext,
+}) {
   return (
     <>
       <Head state={state.head} />
-      <title>{state.pageTitle}</title>
-      <meta name="description" content={state.pageDescription} />
+      <title>{ctx.t("page-title")}</title>
+      <meta name="description" content={ctx.t("page-description")} />
       <link rel="canonical" href="/suggestion-for-dataset-to-be-opened" />
-      <link
-        rel="alternate"
-        href="/návrh-na-datovou-sadu-k-otevření"
-        hreflang="cs"
-      />
-      <link
-        rel="alternate"
-        href="/suggestion-for-dataset-to-be-opened"
-        hreflang="en"
-      />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/resource-list.css"
-      />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/resource-detail.css"
-      />
+      <link rel="alternate" href="/návrh-na-datovou-sadu-k-otevření" hreflang="cs" />
+      <link rel="alternate" href="/suggestion-for-dataset-to-be-opened" hreflang="en" />
     </>
   );
 }
 
-function SuggestionDetailMain({ state }: { state: SuggestionDetailState }) {
+function SuggestionDetailMain({ state, ctx }: {
+  state: SuggestionDetailState,
+  ctx: ViewContext,
+}) {
   const suggestion = state.suggestion;
+  const goToLink = ctx.t("go-to-link");
+  const yesNo = (value: boolean) => ctx.t(value ? "yes" : "no");
   return (
     <gov-container class="suggestion-container">
       <div>
         <h1>{suggestion.title}</h1>
-        <h2 class="inline">
-          {" "}
-          {suggestion.publisher.title}{" "}
-        </h2>
+        <h2 class="inline">{suggestion.publisher.title}</h2>
         <a
           href={suggestion.publisher.iri ?? ""}
-          title={state.goToLink}
+          title={goToLink}
           rel="nofollow noopener noreferrer"
           target="_blank"
         >
-          <gov-icon name="box-arrow-up-right"></gov-icon>
+          <gov-icon name="box-arrow-up-right" />
         </a>
       </div>
       <br />
-      <p
-        dangerouslySetInnerHTML={{
-          __html: " " + breakLines(suggestion.description) + " ",
-        }}
-      ></p>
-      <gov-grid>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtTheme}</dt>
+      <p dangerouslySetInnerHTML={{ __html: breakLines(suggestion.description) }} />
+      <gov-grid gap="l" class="gov-card-grid properties">
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-theme")}>
             {suggestion.themes.map((item) => (
-              <ThemeDd item={item} goToLink={state.goToLink} />
+              <DdLink item={item} title={goToLink} />
             ))}
-          </dl>
-        </gov-grid-item>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtCreated}</dt>
+          </Dl>
+        </PropertiesColumn>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-created")}>
             <dd>{suggestion.created}</dd>
-          </dl>
-        </gov-grid-item>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtState}</dt>
+          </Dl>
+        </PropertiesColumn>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-state")}>
             <dd>{suggestion.state?.label}</dd>
-          </dl>
-        </gov-grid-item>
+          </Dl>
+        </PropertiesColumn>
         {suggestion.publication_plan_visible ? (
-          <gov-grid-item size-sm="6/12" size-md="3/12">
-            <dl>
-              <dt>{state.dtPublicationPlan}</dt>
+          <PropertiesColumn>
+            <Dl term={ctx.t("dt-publication-plan")}>
               <dd>{suggestion.publication_plan}</dd>
-            </dl>
-          </gov-grid-item>
+            </Dl>
+          </PropertiesColumn>
         ) : null}
-      </gov-grid>
-      <gov-grid>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtMandatory106}</dt>
-            <dd>{suggestion.mandatory_106 ? state.yes : state.no}</dd>
-          </dl>
-        </gov-grid-item>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtObstacleSpecial}</dt>
-            <dd>
-              {suggestion.obstacle_special_regulation ? state.yes : state.no}
-            </dd>
-          </dl>
-        </gov-grid-item>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtObstacle106}</dt>
-            <dd>{suggestion.obstacle_106 ? state.yes : state.no}</dd>
-          </dl>
-        </gov-grid-item>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-mandatory-106")}>
+            <dd>{yesNo(suggestion.mandatory_106)}</dd>
+          </Dl>
+        </PropertiesColumn>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-obstacle-special")}>
+            <dd>{yesNo(suggestion.obstacle_special_regulation)}</dd>
+          </Dl>
+        </PropertiesColumn>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-obstacle-106")}>
+            <dd>{yesNo(suggestion.obstacle_106)}</dd>
+          </Dl>
+        </PropertiesColumn>
       </gov-grid>
       <br />
       {state.datasets.visible ? (
         <>
-          <h2>{state.h2Datasets}</h2>
+          <h2>{ctx.t("h2-datasets")}</h2>
           <br />
-          <div class="p-2 resource-list">
-            {state.datasets.items.map((dataset) => (
-              <div class="resource-list-item">
-                <a href={dataset.href ?? ""} rel="nofollow noopener noreferrer">
-                  <h3>{dataset.title}</h3>
-                </a>
-                <p>
-                  {" "}
-                  {dataset.description}{" "}
-                </p>
-              </div>
-            ))}
-          </div>
+          <RelatedItems items={state.datasets.items} />
         </>
       ) : null}
     </gov-container>
-  );
-}
-
-function ThemeDd({ item, goToLink }: { item: CodelistItem; goToLink: string }) {
-  return (
-    <dd>
-      <a href={item.href ?? ""}>
-        {" "}
-        {item.label}{" "}
-      </a>
-      {" "}
-      <a
-        href={item.iri ?? ""}
-        title={goToLink}
-        rel="nofollow noopener noreferrer"
-        target="_blank"
-      >
-        <gov-icon name="box-arrow-up-right"></gov-icon>
-      </a>
-    </dd>
   );
 }

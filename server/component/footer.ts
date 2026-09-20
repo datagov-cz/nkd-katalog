@@ -1,4 +1,4 @@
-import cron from "node-cron";
+import { schedule } from "../service/scheduling.ts";
 
 const FOOTER = {
   cs: "",
@@ -7,7 +7,7 @@ const FOOTER = {
 
 export async function initializeFooter(baseUrl: string): Promise<void> {
   await updateFooter(baseUrl);
-  cron.schedule("*/5 * * * *", () => updateFooter(baseUrl));
+  schedule({ minutes: 5 }, () => updateFooter(baseUrl));
 }
 
 async function updateFooter(baseUrl: string): Promise<void> {

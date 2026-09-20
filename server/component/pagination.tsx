@@ -1,17 +1,30 @@
 import type { NavigationEntry } from "../service/navigation-service.ts";
-import type { TranslationService } from "../service/translation-service.ts";
+import { ViewContext } from "../service/view-context.ts";
 
 export interface PaginationState {
-  visible: boolean;
+  /**
+   * Total number of items (not pages).
+   */
   total: number;
+  /**
+   * Size of a single page.
+   */
   pageSize: number;
+  /**
+   * Zero-based index of a current page from.
+   */
   currentPage: number;
+  /**
+   * Template for pagination navigation.
+   * Must contain "_PAGE_" which is replaced with the page index.
+   */
   linkTemplate: string;
-  pageSizeHref: string;
-  /** Localized strings, resolved by {@link createPaginationData}. */
-  wcagLabel: string;
-  wcagSelectLabel: string;
-  wcagPageSizeLabel: string;
+  /**
+   * Template for page size change navigation.
+   * Must contain "_PAGE_SIZE_".
+   * Set to null to not render page selection.
+   */
+  pageSizeHref: string | null;
 }
 
 /**
@@ -24,10 +37,8 @@ export function createPaginationData(
   navigation: NavigationEntry,
   query: PaginationQuery,
   documentsCount: number,
-  translation: TranslationService,
 ): PaginationState {
   return {
-    visible: documentsCount > query.pageSize,
     total: documentsCount,
     pageSize: query.pageSize,
     currentPage: query.page + 1,
@@ -40,39 +51,47 @@ export function createPaginationData(
       page: 0,
       pageSize: "_PAGE_SIZE_",
     }),
-    wcagLabel: translation.dictionary["pagination-label"],
-    wcagSelectLabel: translation.dictionary["pagination-select-label"],
-    wcagPageSizeLabel: translation.dictionary["pagination-page-size"],
   };
 }
 
-export function Pagination({ state }: { state: PaginationState }) {
+export function Pagination({ state, ctx }: {
+  state: PaginationState,
+  ctx: ViewContext,
+}) {
+  const hide = state.total <= state.pageSize;
   return (
-    <gov-grid>
-      <gov-grid-item size-sm="12/12" size-md="10/12">
-        {state.visible ? (
-          <gov-pagination
-            total={String(state.total)}
-            current={String(state.currentPage)}
-            page-size={String(state.pageSize)}
-            wcag-label={state.wcagLabel}
-            wcag-select-label={state.wcagSelectLabel}
-            link={state.linkTemplate}
-          ></gov-pagination>
-        ) : null}
-      </gov-grid-item>
-      <gov-grid-item size-sm="4/12" size-md="2/12" id="page-size">
-        <gov-form-select
-          wcag-label={state.wcagPageSizeLabel}
-          value={String(state.pageSize)}
-          data-href={state.pageSizeHref}
-        >
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="75">75</option>
-          <option value="100">100</option>
-        </gov-form-select>
-      </gov-grid-item>
-    </gov-grid>
+    <>
+      <br />
+      <gov-grid gap="l" class="gov-card-grid">
+        <gov-grid-item col-span="12" col-span-md="10">
+          {hide ? null :
+            <gov-pagination
+              color="primary"
+              type="button"
+              size="m"
+              current={String(state.currentPage)}
+              total={String(state.total)}
+              page-size={state.pageSize}
+              max-pages="8"
+              link={state.linkTemplate}
+            />
+          }
+        </gov-grid-item>
+        {state.pageSizeHref === null ? null :
+          <gov-grid-item col-span="12" col-span-md="2">
+            <gov-form-select
+              wcag-label={ctx.t("pagination-page-size")}
+              value={String(state.pageSize)}
+              data-href={state.pageSizeHref}
+            >
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="75">75</option>
+              <option value="100">100</option>
+            </gov-form-select>
+          </gov-grid-item>
+        }
+      </gov-grid>
+    </>
   );
 }

@@ -1,4 +1,9 @@
 
+/* Configuration for gov-design-system. */
+:root {
+  --container-padding-bottom: var(--spacing-s);
+}
+
 /* Branding */
 
 .gov-header gov-branding a {
@@ -39,7 +44,7 @@ a {
   padding-top: 1rem;
 }
 
-/* Custom component styles. */
+/* Custom component : chip-container */
 
 .chip-container {
   display: flex;
@@ -47,7 +52,22 @@ a {
   gap: 0.5rem;
 }
 
-/* General styles. */
+/* Custom component : properties */
+
+.properties {
+  dl {
+    &>dt {
+      font-weight: 700;
+    }
+    &>dd {
+      margin-bottom: .5rem;
+      margin-left: 0;
+      word-break: break-word;
+    }
+  }
+}
+
+/* General Tailwind inspired styles. */
 
 .italic {
   font-style: italic;
@@ -106,6 +126,10 @@ a {
   font-size: larger;
 }
 
+.m-0 {
+  margin: 0;
+}
+
 .m-1 {
   margin: .25rem;
 }
@@ -152,4 +176,17 @@ a {
 
 .gap-2 {
   gap: .5rem;
+}
+
+/* Show at most three lines of text, the rest is cut with an ellipsis. */
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.align-text-bottom {
+  vertical-align: text-bottom;
 }

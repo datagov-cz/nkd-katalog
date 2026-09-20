@@ -1,5 +1,5 @@
 import { VNode } from "preact";
-import { render } from "preact-render-to-string";
+import { render } from "preact-render-to-string/jsx";
 
 /**
  * Render a Preact element to an HTML string, server-side only, no hydration.
@@ -9,7 +9,7 @@ import { render } from "preact-render-to-string";
  * Handlebars -> JSX migration.
  */
 export function renderToHtml(element: VNode<{}>): string {
-  return render(element);
+  return render(element, {});
 }
 
 /** As {@link renderToHtml} but prefixed with the HTML5 doctype. */

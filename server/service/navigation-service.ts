@@ -11,6 +11,7 @@ const NOOP = (_, serverQuery) => serverQuery;
  *   queryArgumentFromClient: (clientQuery: object, serverKey: string) => string | null,
  *   queryArgumentArrayFromClient: (clientQuery: object, serverKey: string) => string[],
  *   argumentFromServer: (serverKey: string) => string | null,
+ *   queryNameFromServer: (serverKey: string) => string | null,
  *   linkFromServer: (query: object) => string,
  *   changeLanguage: (language: string) => NavigationEntry,
  *   changeView: (viewName: string) => NavigationEntry,
@@ -77,6 +78,13 @@ export interface NavigationEntry {
    * Returns local argument for server key.
    */
   argumentFromServer(serverKey: string): string | null;
+
+  /**
+   * Returns the local query parameter name for server key.
+   * When there are several accepted names, the first one is returned,
+   * which is the name used in the links.
+   */
+  queryNameFromServer(serverKey: string): string | null;
 
   /**
    * Returns a relative link to this view with given query.
@@ -196,6 +204,14 @@ class DefaultNavigationEntry {
       return clientQuery[0];
     }
     return value ?? null;
+  }
+
+  queryNameFromServer(serverKey) {
+    const name = this.data.query[serverKey];
+    if (Array.isArray(name)) {
+      return name[0] ?? null;
+    }
+    return name ?? null;
   }
 
   argumentFromServer(serverKey) {

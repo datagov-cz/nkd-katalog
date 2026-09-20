@@ -9,6 +9,8 @@ import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { Language } from "../../localization/index.ts";
+import type { ViewContext } from "../../service/view-context.ts";
+import { Dl, DdLink, PropertiesColumn, RelatedItems } from "../../component/detail-parts.tsx";
 import type {
   ApplicationDetailApplication,
   ApplicationDetailData,
@@ -30,7 +32,12 @@ export function renderHtml(
     return;
   }
   const state = prepareTemplateData(services, languages, query, data);
-  const html = renderApplicationDetailHtml(state, languages[0]);
+  const ctx: ViewContext = {
+    t: services.translation.t,
+    language: languages[0],
+    navigation: services.navigation,
+  };
+  const html = renderApplicationDetailHtml(state, ctx);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")
@@ -47,23 +54,10 @@ export function prepareTemplateData(
   const datasets = data["datasets"];
   prepareDatasetsInPlace(services.navigation, data["datasets"]);
   const application = prepareApplication(services.navigation, language, data);
-  const dictionary = services.translation.dictionary;
   return {
     "head": components.createHeadData(services.configuration),
-    "headerHtml": headerHtml(services.navigation, language, query),
-    "footerHtml": footerHtml(language),
-    "pageTitle": dictionary["page-title"],
-    "pageDescription": dictionary["page-description"],
-    "goToLink": dictionary["go-to-link"],
-    "dtState": dictionary["dt-state"],
-    "dtTheme": dictionary["dt-theme"],
-    "dtPlatform": dictionary["dt-platform"],
-    "dtType": dictionary["dt-type"],
-    "dtPublished": dictionary["dt-published"],
-    "dtModified": dictionary["dt-modified"],
-    "openApplication": dictionary["open-application"],
-    "usedDatasets": dictionary["used-datasets"],
     "application": application,
+    "query": query,
     "datasets": {
       "visible": datasets.length > 0,
       "items": datasets,
@@ -135,54 +129,50 @@ function updateCodelistInPlace(
 
 export function renderApplicationDetailHtml(
   state: ApplicationDetailState,
-  language: "cs" | "en",
+  ctx: ViewContext,
 ): string {
-  const head = renderToHtml(<ApplicationDetailHead state={state} />);
-  const main = renderToHtml(<ApplicationDetailMain state={state} />);
-  return (
-    "<!DOCTYPE html>\n" +
-    `<html dir="ltr" lang="${language}">\n` +
-    `<head>\n${head}\n</head>\n` +
-    `<body>\n${state.headerHtml}\n${main}\n${state.footerHtml}\n</body>\n` +
-    "</html>\n"
-  );
+  return `<!DOCTYPE html>
+  <html dir="ltr" lang="${ctx.language}">
+  <head>${renderToHtml(<ApplicationDetailHead state={state} ctx={ctx} />)}</head>
+  <body>
+    <div class="gov-story-theme-scope">
+      ${headerHtml(ctx.navigation, ctx.language, state.query)}
+      ${renderToHtml(<ApplicationDetailMain state={state} ctx={ctx} />)}
+      ${footerHtml(ctx.language)}
+    </div>
+  </body>
+  </html>`;
 }
 
-function ApplicationDetailHead({ state }: { state: ApplicationDetailState }) {
+function ApplicationDetailHead({ state, ctx }: {
+  state: ApplicationDetailState,
+  ctx: ViewContext,
+}) {
   return (
     <>
       <Head state={state.head} />
-      <title>{state.pageTitle}</title>
-      <meta name="description" content={state.pageDescription} />
+      <title>{ctx.t("page-title")}</title>
+      <meta name="description" content={ctx.t("page-description")} />
       <link rel="canonical" href="/application" />
       <link rel="alternate" href="/detail-aplikace" hreflang="cs" />
       <link rel="alternate" href="/application" hreflang="en" />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/resource-list.css"
-      />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/resource-detail.css"
-      />
     </>
   );
 }
 
-function ApplicationDetailMain({ state }: { state: ApplicationDetailState }) {
+function ApplicationDetailMain({ state, ctx }: {
+  state: ApplicationDetailState,
+  ctx: ViewContext,
+}) {
   const app = state.application;
+  const goToLink = ctx.t("go-to-link");
   return (
     <gov-container class="application-container">
       <div>
         {app.author.titleVisible ? (
           <>
             <h1>{app.title}</h1>
-            <h2 class="inline">
-              {" "}
-              {app.author.title}{" "}
-            </h2>
+            <h2 class="inline">{app.author.title}</h2>
           </>
         ) : (
           <h1 class="inline">{app.title}</h1>
@@ -190,107 +180,67 @@ function ApplicationDetailMain({ state }: { state: ApplicationDetailState }) {
         {app.author.iriVisible ? (
           <a
             href={app.author.iri ?? ""}
-            title={state.goToLink}
+            title={goToLink}
             rel="nofollow noopener noreferrer"
             target="_blank"
           >
-            <gov-icon name="box-arrow-up-right"></gov-icon>
+            <gov-icon name="box-arrow-up-right" />
           </a>
         ) : null}
       </div>
       <br />
-      <p
-        dangerouslySetInnerHTML={{
-          __html: " " + breakLines(app.description) + " ",
-        }}
-      ></p>
-      <gov-grid>
-        <CodelistColumn term={state.dtState} items={app.states} goToLink={state.goToLink} />
-        <CodelistColumn term={state.dtTheme} items={app.themes} goToLink={state.goToLink} />
-        <CodelistColumn term={state.dtPlatform} items={app.platforms} goToLink={state.goToLink} />
-        <CodelistColumn term={state.dtType} items={app.types} goToLink={state.goToLink} />
-      </gov-grid>
-      <gov-grid>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtPublished}</dt>
+      <p dangerouslySetInnerHTML={{ __html: breakLines(app.description) }} />
+      <gov-grid gap="l" class="gov-card-grid properties">
+        <CodelistColumn term={ctx.t("dt-state")} items={app.states} goToLink={goToLink} />
+        <CodelistColumn term={ctx.t("dt-theme")} items={app.themes} goToLink={goToLink} />
+        <CodelistColumn term={ctx.t("dt-platform")} items={app.platforms} goToLink={goToLink} />
+        <CodelistColumn term={ctx.t("dt-type")} items={app.types} goToLink={goToLink} />
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-published")}>
             <dd>{app.published}</dd>
-          </dl>
-        </gov-grid-item>
-        <gov-grid-item size-sm="6/12" size-md="3/12">
-          <dl>
-            <dt>{state.dtModified}</dt>
+          </Dl>
+        </PropertiesColumn>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-modified")}>
             <dd>{app.modified}</dd>
-          </dl>
-        </gov-grid-item>
+          </Dl>
+        </PropertiesColumn>
       </gov-grid>
       <div>
         <gov-button
-          variant="primary"
+          color="primary"
           type="outlined"
           href={app.link ?? ""}
-          expanded="true"
+          expanded=""
           rel="nofollow noopener noreferrer"
         >
-          {" "}
-          {state.openApplication}{" "}
+          {ctx.t("open-application")}
         </gov-button>
       </div>
       <br />
       {state.datasets.visible ? (
         <>
-          <h2>{state.usedDatasets}</h2>
+          <h2>{ctx.t("used-datasets")}</h2>
           <br />
-          <div class="resource-list">
-            {state.datasets.items.map((dataset) => (
-              <div class="resource-list-item">
-                <a href={dataset.href ?? ""} rel="nofollow noopener noreferrer">
-                  <h3>{dataset.title}</h3>
-                </a>
-                <p>
-                  {" "}
-                  {dataset.description}{" "}
-                </p>
-              </div>
-            ))}
-          </div>
+          <RelatedItems items={state.datasets.items} />
         </>
       ) : null}
     </gov-container>
   );
 }
 
-function CodelistColumn({
-  term,
-  items,
-  goToLink,
-}: {
-  term: string;
-  items: CodelistItem[];
-  goToLink: string;
+function CodelistColumn({ term, items, goToLink }: {
+  term: string,
+  items: CodelistItem[],
+  goToLink: string,
 }) {
   return (
-    <gov-grid-item size-sm="6/12" size-md="3/12">
-      <dl>
-        <dt>{term}</dt>
+    <PropertiesColumn>
+      <Dl term={term}>
         {items.map((item) => (
-          <dd>
-            <a href={item.href ?? ""}>
-              {" "}
-              {item.label}{" "}
-            </a>
-            {" "}
-            <a
-              href={item.iri ?? ""}
-              title={goToLink}
-              rel="nofollow noopener noreferrer"
-              target="_blank"
-            >
-              <gov-icon name="box-arrow-up-right"></gov-icon>
-            </a>
-          </dd>
+          <DdLink item={item} title={goToLink} />
         ))}
-      </dl>
-    </gov-grid-item>
+      </Dl>
+    </PropertiesColumn>
   );
 }

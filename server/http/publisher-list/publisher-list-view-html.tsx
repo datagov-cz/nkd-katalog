@@ -6,6 +6,8 @@ import { Head } from "../../component/head.tsx";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
+import { SimpleListPage } from "../../component/simple-list-page.tsx";
+import type { ViewContext } from "../../service/view-context.ts";
 import type { Configuration } from "../../configuration.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
@@ -34,7 +36,12 @@ export function renderHtml(
     query,
     data,
   );
-  const html = renderPublisherListHtml(state, languages[0]);
+  const ctx: ViewContext = {
+    t: services.translation.t,
+    language: languages[0],
+    navigation: services.navigation,
+  };
+  const html = renderPublisherListHtml(state, ctx);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")
@@ -57,17 +64,8 @@ export function prepareTemplateData(
   );
   return {
     head: createHeadData(configuration),
-    headerHtml: headerHtml(navigation, languages[0], query),
-    footerHtml: footerHtml(languages[0]),
-    pageTitle: translation.dictionary["page-title"],
-    pageDescription: translation.dictionary["page-description"],
-    heading: translation.dictionary["heading"],
-    dashboardMonthlyLabel: translation.dictionary["dashboard-monthly"],
-    dashboardDailyLabel: translation.dictionary["dashboard-daily"],
-    vdfOriginatorLabel: translation.dictionary["vdf-originator"],
-    vdfPublisherLabel: translation.dictionary["vdf-publisher"],
-    message: translation.translate("items-found", data["publishers"].length),
     publishers: data["publishers"],
+    query,
   };
 }
 
@@ -96,131 +94,106 @@ function preparePublishersInPlace(configuration, navigation, translation, publis
 
 // -- View -------------------------------------------------------------------
 
-/**
- * Full document as a string. The header and footer are pre-rendered HTML
- * fragments injected verbatim (as `{{{headerHtml}}}` / `{{{footerHtml}}}` did);
- * everything between them is JSX. The golden harness re-parses the whole
- * string, so the seams between the concatenated parts do not matter.
- */
 export function renderPublisherListHtml(
   state: PublisherListState,
-  language: "cs" | "en",
+  ctx: ViewContext,
 ): string {
-  const head = renderToHtml(<PublisherListHead state={state} />);
-  const main = renderToHtml(<PublisherListMain state={state} />);
-  return (
-    "<!DOCTYPE html>\n" +
-    `<html dir="ltr" lang="${language}">\n` +
-    `<head>\n${head}\n</head>\n` +
-    `<body>\n${state.headerHtml}\n${main}\n<br/>\n${state.footerHtml}\n</body>\n` +
-    "</html>\n"
-  );
+  return `<!DOCTYPE html>
+  <html dir="ltr" lang="${ctx.language}">
+  <head>${renderToHtml(<PublisherListHead state={state} ctx={ctx} />)}</head>
+  <body>
+    <div class="gov-story-theme-scope">
+      ${headerHtml(ctx.navigation, ctx.language, state.query)}
+      ${renderToHtml(<PublisherListMain state={state} ctx={ctx} />)}
+      ${footerHtml(ctx.language)}
+    </div>
+  </body>
+  </html>`;
 }
 
-function PublisherListHead({ state }: { state: PublisherListState }) {
+function PublisherListHead({ state, ctx }: {
+  state: PublisherListState,
+  ctx: ViewContext,
+}) {
   return (
     <>
       <Head state={state.head} />
-      <title>{state.pageTitle}</title>
-      <meta name="description" content={state.pageDescription} />
+      <title>{ctx.t("page-title")}</title>
+      <meta name="description" content={ctx.t("page-description")} />
       <link rel="canonical" href="/publishers" />
       <link rel="alternate" href="/poskytovatelé" hreflang="cs" />
       <link rel="alternate" href="/publishers" hreflang="en" />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/publisher-list.css"
-      />
     </>
   );
 }
 
-function PublisherListMain({ state }: { state: PublisherListState }) {
+function PublisherListMain({ state, ctx }: {
+  state: PublisherListState,
+  ctx: ViewContext,
+}) {
   return (
-    <gov-container class="publishers-container">
-      <br />
-      <h1>{state.heading}</h1>
-      <p>
-        {" "}
-        {state.message}{" "}
-      </p>
-      <gov-grid>
-        {state.publishers.map((publisher) => (
-          <PublisherCard publisher={publisher} state={state} />
-        ))}
-      </gov-grid>
-    </gov-container>
+    <SimpleListPage state={{
+      heading: ctx.t("heading"),
+      message: ctx.t("items-found", state.publishers.length),
+      items: state.publishers,
+      component: PublisherItem,
+      layout: "list",
+    }} ctx={ctx} />
   );
 }
 
-function PublisherCard({
-  publisher,
-  state,
-}: {
-  publisher: PublisherListPublisher;
-  state: PublisherListState;
+function PublisherItem({ value, ctx }: {
+  value: PublisherListPublisher,
+  ctx: ViewContext,
 }) {
+  const headlineId = "publisher-" + encodeURIComponent(value.iri);
+  const badges = value.badges;
   return (
-    <gov-grid-item
-      size-sm="12/12"
-      size-md="6/12"
-      size-lg="4/12"
-      size-xl="3/12"
-      class="p-1"
-    >
-      <gov-card>
-        <div class="gov-card__header">
-          <a href={publisher.href}>
-            <h3 class="gov-card__title inline">
-              {" "}
-              {publisher.label}{" "}
-            </h3>
-            <gov-icon name="box-arrow-up-right"></gov-icon>
-          </a>
-        </div>
-        <div class="gov-card__inner grow">
-          <div class="gov-card__main">
-            <div class="flex-row x-large gap-4">
-              <a
-                href={publisher.dashboardMonthly}
-                title={state.dashboardMonthlyLabel}
-              >
-                <gov-icon name="clipboard2-data" type="bootstrap"></gov-icon>
+    <article>
+      {/* No `href` on the card, as it contains links of its own. */}
+      <gov-card direction="horizontal" aria-labelledby={headlineId}>
+        <article>
+          <gov-flex gap="s" direction="column">
+            <header>
+              <h3 id={headlineId} class="gov-card__headline">
+                <a href={value.href}>{value.label}</a>
+              </h3>
+            </header>
+            {!badges.vdf && !badges.vdfOriginator && !badges.vdfPublisher ? null : (
+              <ul class="gov-tags gov-list--plain">
+                {badges.vdf ? (
+                  <li>
+                    <gov-tag color="neutral" type="subtle" size="xs">VDF</gov-tag>
+                  </li>
+                ) : null}
+                {badges.vdfOriginator ? (
+                  <li>
+                    <gov-tag color="neutral" type="subtle" size="xs">
+                      {ctx.t("vdf-originator")}
+                    </gov-tag>
+                  </li>
+                ) : null}
+                {badges.vdfPublisher ? (
+                  <li>
+                    <gov-tag color="neutral" type="subtle" size="xs">
+                      {ctx.t("vdf-publisher")}
+                    </gov-tag>
+                  </li>
+                ) : null}
+              </ul>
+            )}
+            <p>{value.message}</p>
+            <gov-flex gap="xl">
+              <a href={value.dashboardMonthly} title={ctx.t("dashboard-monthly")}>
+                <gov-icon name="clipboard2-data" type="bootstrap" size="xl" />
               </a>
-              <a
-                href={publisher.dashboardDaily}
-                title={state.dashboardDailyLabel}
-              >
-                <gov-icon name="clipboard2-pulse" type="bootstrap"></gov-icon>
+              <a href={value.dashboardDaily} title={ctx.t("dashboard-daily")}>
+                <gov-icon name="clipboard2-pulse" type="bootstrap" size="xl" />
               </a>
-            </div>
-            <div class="flex-row gap-2">
-              {publisher.badges.vdf ? (
-                <gov-chip variant="primary" type="outlined" size="xs">
-                  {" "}
-                  VDF{" "}
-                </gov-chip>
-              ) : null}
-              {publisher.badges.vdfOriginator ? (
-                <gov-chip variant="primary" type="outlined" size="xs">
-                  {" "}
-                  {state.vdfOriginatorLabel}{" "}
-                </gov-chip>
-              ) : null}
-              {publisher.badges.vdfPublisher ? (
-                <gov-chip variant="primary" type="outlined" size="xs">
-                  {" "}
-                  {state.vdfPublisherLabel}{" "}
-                </gov-chip>
-              ) : null}
-            </div>
-          </div>
-          <div class="gov-card__footer">
-            {" "}
-            {publisher.message}{" "}
-          </div>
-        </div>
+            </gov-flex>
+          </gov-flex>
+        </article>
       </gov-card>
-    </gov-grid-item>
+    </article>
   );
 }

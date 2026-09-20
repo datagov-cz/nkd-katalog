@@ -2,7 +2,8 @@
 
 import js from "@eslint/js";
 import { defineConfig } from "eslint/config";
-import tseslint from "typescript-eslint";
+// Disabled as typescript-eslint does not support typescript 7.
+// import tseslint from "typescript-eslint";
 import prettierConfig from "eslint-config-prettier";
 import globals from "globals";
 
@@ -30,7 +31,6 @@ export default defineConfig(
     },
     extends: [
       js.configs.recommended,
-      tseslint.configs.recommended,
       prettierConfig,
     ],
   },

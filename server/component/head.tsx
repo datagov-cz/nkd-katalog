@@ -36,21 +36,22 @@ const FAVICON_ICON = [
   { sizes: "16x16", href: "favicon-16x16.png" },
 ];
 
-/**
- * The design-system config is emitted as executable JavaScript, so it cannot
- * go through JSX text escaping. The indentation here mirrors what the
- * `{{> head }}` Handlebars include produced (its two-space body plus the
- * two-space include indent); a Commit B re-capture will re-flow it.
- */
-const GOV_DS_CONFIG_SCRIPT =
-  '\n    window.GOV_DS_CONFIG = {\n' +
-  '      "canValidateWcagOnRender": true,\n' +
-  '      "iconsPath": "../../icons",\n' +
-  "    };\n  ";
 
 /** JSX port of `head.html`. `<head>`-level tags only, no wrapping element. */
 export function Head({ state }: { state: HeadData }) {
   const ds = state.designSystem;
+
+  /**
+   * The design-system config is emitted as executable JavaScript, so it cannot
+   * go through JSX text escaping. The indentation here mirrors what the
+   * `{{> head }}` Handlebars include produced (its two-space body plus the
+   * two-space include indent); a Commit B re-capture will re-flow it.
+   */
+  const configuration = "window.GOV_DS_CONFIG = " + JSON.stringify({
+    canValidateWcagOnRender: true,
+    iconsPath: ds + "assets/icons",
+  }) + ";";
+
   return (
     <>
       <meta charset="utf-8" />
@@ -75,23 +76,25 @@ export function Head({ state }: { state: HeadData }) {
           href={`/assets/catalog/images/favicons/${icon.href}`}
         />
       ))}
+      {/* Section with gov-design system. */}
       {state.matomoIsActive ? (
         <script src="/assets/data-portal/js/matomo.js"></script>
       ) : null}
-      <script dangerouslySetInnerHTML={{ __html: GOV_DS_CONFIG_SCRIPT }}></script>
-      <link rel="stylesheet" href={ds + "assets/styles/critical.css"} />
-      <link rel="stylesheet" href={ds + "/assets/components/core/core.css"} />
-      <link rel="stylesheet" href={ds + "assets/fonts/roboto.css"} />
-      <script
-        type="module"
-        src={ds + "/assets/components/core/core.esm.js"}
-      ></script>
-      <script nomodule src={ds + "/assets/components/core/core.js"}></script>
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/main.css"
-      />
+      <script dangerouslySetInnerHTML={{ __html: configuration }}></script>
+      {/* The order of import matters! */}
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/tokens.css"} />
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/styles.css"} />
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/layout.css"} />
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/components.css"} />
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/animations.css"} />
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/content.css"} />
+      <link type="text/css" rel="stylesheet" href={ds + "assets/styles/templates.css"} />
+      {/*  */}
+      <script type="module" src={ds + "assets/components/core/core.esm.js"}></script>
+      <script type="module" src={ds + "assets/third-party/gov-navigation.js"}></script>
+      {/* Custom assets. */}
+      <link type="text/css" rel="stylesheet" href="/assets/catalog/css/main.css" />
+      <script type="module" src="/assets/catalog/js/main.js" />
     </>
   );
 }

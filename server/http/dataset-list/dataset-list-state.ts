@@ -13,7 +13,7 @@ import type { HeadData } from "../../component/head.tsx";
 import type { ResultBarState } from "../../component/result-bar.tsx";
 import type { PaginationState } from "../../component/pagination.tsx";
 import type { FacetData, FacetItemData } from "../../component/facet.tsx";
-import type { createQuerySectionData } from "../../component/query-section/index.ts";
+import type { createQuerySectionData } from "../../component/query-section.tsx";
 
 export type QuerySectionViewState = ReturnType<typeof createQuerySectionData>;
 
@@ -52,7 +52,6 @@ export interface DatasetListQuery {
   hvdCategoryLimit: number;
   isvs: string[];
   isvsLimit: number;
-  [key: string]: string | number | boolean | string[] | null | undefined;
 }
 
 /** A dataset card, after `updateDatasetsInPlace` and `prepareDocumentsInPlace`. */
@@ -85,50 +84,23 @@ export interface DatasetListData {
 
 export interface DatasetListState {
   head: HeadData;
-  headerHtml: string;
-  footerHtml: string;
-  /** Localized strings, resolved by `prepareTemplateData`. */
-  pageTitle: string;
-  pageDescription: string;
-  searchPlaceholder: string;
-  searchInputLabel: string;
-  wcagSearch: string;
-  searchButton: string;
-  extendedSearch: string;
-  temporalFrom: string;
-  temporalTo: string;
-  thisYear: string;
-  lastYear: string;
-  clearFiltersLabel: string;
+  /** URL to page with no filters active. */
   clearFilters: string;
-  hvdTooltip: string;
-  openData: string;
-  nonPublicData: string;
-  dynamicChip: string;
-  dynamicTooltip: string;
-  jsSearchQuery: string;
-  jsTemporalFrom: string;
-  jsTemporalTo: string;
-  jsPublicData: string;
-  jsCodelist: string;
-  search: {
-    "clear-href": string;
-    "base-url": string;
-    query: {
-      searchQuery: string | null;
-      temporalFrom: string | null;
-      temporalTo: string | null;
-      publicData: boolean;
-      codelist: boolean;
-      hvdDataset: boolean;
-      datasetType: string[];
-      isvs: string[];
-    };
-    queryObjectAsString: string;
+  search: { query: { searchQuery: string | null } };
+  /**
+   * First page of the current results, and the names of the query parameters
+   * with the search text and the temporal coverage.
+   */
+  navigation: {
+    url: string;
+    searchName: string;
+    temporalStartName: string;
+    temporalEndName: string;
   };
-  "query-section": QuerySectionViewState;
-  "result-bar": ResultBarState;
+  querySection: QuerySectionViewState;
+  resultBar: ResultBarState;
   pagination: PaginationState;
   documents: DatasetListDocument[];
   facets: FacetData[];
+  query: DatasetListQuery;
 }

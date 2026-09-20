@@ -37,16 +37,6 @@ export interface LocalCatalogListData {
 
 export interface LocalCatalogListState {
   head: HeadData;
-  headerHtml: string;
-  footerHtml: string;
-  /** Localized strings, resolved by `prepareTemplateData`. */
-  pageTitle: string;
-  pageDescription: string;
-  heading: string;
-  homepageLink: string;
-  endpointLink: string;
-  deleteLink: string;
-  validateLink: string;
-  message: string;
   catalogs: LocalCatalogListCatalog[];
+  query: Record<string, string | string[]>;
 }

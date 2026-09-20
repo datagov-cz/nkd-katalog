@@ -1,5 +1,5 @@
-import cron from "node-cron";
 import { NavigationEntry } from "../service/navigation-service.ts";
+import { schedule } from "../service/scheduling.ts";
 
 const HEADER = {
   cs: "",
@@ -8,7 +8,7 @@ const HEADER = {
 
 export async function initializeHeader(baseUrl: string): Promise<void> {
   await updateHeader(baseUrl);
-  cron.schedule("*/5 * * * *", () => updateHeader(baseUrl));
+  schedule({ minutes: 5 }, () => updateHeader(baseUrl));
 }
 
 async function updateHeader(baseUrl: string): Promise<void> {
@@ -30,7 +30,11 @@ function injectLanguageSelector(
   const label = otherLanguage === "cs" ? "Čeština" : "English";
   const url = navigation.changeLanguage(otherLanguage).linkFromServer(query);
   const selector = `<div class="language"><a href="${url}">${label}</a></div>`;
-  return template.replace(LANGUAGE_PLACEHOLDER, selector);
+  // TODO Replace also languageMobile placeholder.
+  return template.replace(PLACEHOLDERS.language, selector);
 }
 
-const LANGUAGE_PLACEHOLDER = "<!--PLACEHOLDER_LANGUAGE_SWITCH-->"
+const PLACEHOLDERS = {
+  language: "<!-- SLOT:LANGUAGE -->",
+  languageMobile: "<!-- SLOT:LANGUAGE=MOBILE -->",
+};

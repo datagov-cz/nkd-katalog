@@ -3,10 +3,7 @@ import { FastifyReply } from "fastify";
 import { ROUTE } from "../route-name.mjs";
 import * as components from "../../component/index.mjs";
 import { Head } from "../../component/head.tsx";
-import { Facet } from "../../component/facet.tsx";
-import { ResultBar } from "../../component/result-bar.tsx";
-import { Pagination } from "../../component/pagination.tsx";
-import { QuerySection } from "../../component/query-section/index.ts";
+import { OpenFacet, DurationFacet } from "../../component/facet.tsx";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
@@ -15,7 +12,7 @@ import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { Language } from "../../localization/index.ts";
-import type { QuerySectionState } from "../../component/query-section/index.ts";
+import type { QuerySectionState } from "../../component/query-section.tsx";
 import type {
   DatasetListData,
   DatasetListDocument,
@@ -23,12 +20,17 @@ import type {
   DatasetListState,
   DatasetListViewServices,
 } from "./dataset-list-state.ts";
+import { ViewContext } from "../../service/view-context.ts";
+import { ListSearchHeader } from "../../component/list-search-header.tsx";
+import { ListSearchControls } from "../../component/list-search-controls.tsx";
+import { ListOfItems } from "../../component/list-search-items.tsx";
 
 const FACET_SERIES = {
   "name": "datasetSeries",
   "tooltip": "datasetSeriesTooltip"
 };
 
+// TODO Replace with hard-coded facets in the DatasetListState.
 const FACETS = [
   { "name": "publisher", "tooltip": "publisherTooltip" },
   { "name": "datasetType", "tooltip": "datasetTypeTooltip" },
@@ -53,8 +55,14 @@ export function renderHtml(
   reply: FastifyReply,
 ): void {
   const state = prepareTemplateData(
-    services.configuration, services.translation, services.navigation, languages, query, data);
-  const html = renderDatasetListHtml(state, languages[0]);
+    services.configuration, services.translation, services.navigation,
+    languages, query, data);
+  const ctx: ViewContext = {
+    t: services.translation.t,
+    language: languages[0],
+    navigation: services.navigation
+  };
+  const html = renderDatasetListHtml(state, ctx);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")
@@ -73,7 +81,6 @@ export function prepareTemplateData(
   prepareDocumentsInPlace(translation, navigation, documents);
   const count = data["found"]["documents"];
   const facets = prepareFacets(translation, navigation, query, data["facets"], data["found"]);
-  const dictionary = translation.dictionary;
 
   const querySection: QuerySectionState = {
     temporalStart: null,
@@ -118,65 +125,22 @@ export function prepareTemplateData(
   querySection.keywords = active(keywords);
   querySection.isvs = active(isvs);
 
-  const queryForBootstrap = {
-    "searchQuery": query.searchQuery,
-    "temporalFrom": query.temporalStart,
-    "temporalTo": query.temporalEnd,
-    "publicData": query.vdfPublicData,
-    "codelist": query.vdfCodelist,
-    "hvdDataset": query.hvdDataset,
-    "datasetType": query.datasetType,
-    "isvs": query.isvs,
-  };
-
   return {
     "head": components.createHeadData(configuration),
-    "headerHtml": headerHtml(navigation, languages[0], query),
-    "footerHtml": footerHtml(languages[0]),
-    "pageTitle": dictionary["page-title"],
-    "pageDescription": dictionary["page-description"],
-    "searchPlaceholder": dictionary["search-placeholder"],
-    "searchInputLabel": dictionary["search-input-label"],
-    "wcagSearch": dictionary["wcag-search"],
-    "searchButton": dictionary["search-button"],
-    "extendedSearch": dictionary["extended-search"],
-    "temporalFrom": dictionary["temporal-from"],
-    "temporalTo": dictionary["temporal-to"],
-    "thisYear": dictionary["this-year"],
-    "lastYear": dictionary["last-year"],
-    "clearFiltersLabel": dictionary["clear-filters-label"],
-    "clearFilters": dictionary["clear-filters"],
-    "hvdTooltip": dictionary["hvd-tooltip"],
-    "openData": dictionary["open-data"],
-    "nonPublicData": dictionary["non-public-data"],
-    "dynamicChip": dictionary["dynamic-chip"],
-    "dynamicTooltip": dictionary["dynamic-tooltip"],
-    "jsSearchQuery": dictionary["js-searchQuery"],
-    "jsTemporalFrom": dictionary["js-temporalFrom"],
-    "jsTemporalTo": dictionary["js-temporalTo"],
-    "jsPublicData": dictionary["js-publicData"],
-    "jsCodelist": dictionary["js-codelist"],
-    "search": {
-      "clear-href": navigation.linkFromServer({}),
-      // Empty query used by client-side JavaScript search functionality.
-      "base-url": navigation.linkFromServer({
-        ...query,
-        "searchQuery": null,
-        "page": 0,
-        "temporalStart": null,
-        "temporalEnd": null,
-        "vdfPublicData": false,
-        "vdfCodelist": false,
-        "hvdDataset": false,
-      }),
-      "query": queryForBootstrap,
-      "queryObjectAsString": JSON.stringify(queryForBootstrap),
+    "clearFilters": navigation.linkFromServer({}),
+    "search": { "query": { "searchQuery": query.searchQuery } },
+    "navigation": {
+      "url": navigation.linkFromServer({ ...query, "page": 0 }),
+      "searchName": navigation.queryNameFromServer("query"),
+      "temporalStartName": navigation.queryNameFromServer("temporal-start"),
+      "temporalEndName": navigation.queryNameFromServer("temporal-end"),
     },
-    "query-section": components.createQuerySectionData(querySection, languages[0]),
-    "result-bar": components.createResultBarData(translation, navigation, query, SORT_OPTIONS, count),
-    "pagination": components.createPaginationData(navigation, query, count, translation),
+    "querySection": components.createQuerySectionData(querySection, languages[0]),
+    "resultBar": components.createResultBarData(translation, navigation, query, SORT_OPTIONS, count),
+    "pagination": components.createPaginationData(navigation, query, count),
     "documents": documents,
     "facets": facets,
+    "query": query,
   };
 }
 
@@ -217,246 +181,205 @@ function prepareFacets(translation, navigation, query, facets, counts) {
 
 export function renderDatasetListHtml(
   state: DatasetListState,
-  language: "cs" | "en",
+  ctx: ViewContext,
 ): string {
-  const head = renderToHtml(<DatasetListHead state={state} />);
-  const main = renderToHtml(<DatasetListMain state={state} language={language} />);
-  return (
-    "<!DOCTYPE html>\n" +
-    `<html dir="ltr" lang="${language}">\n` +
-    `<head>\n${head}\n</head>\n` +
-    `<body>\n${state.headerHtml}\n${main}\n${state.footerHtml}\n</body>\n` +
-    "</html>\n"
-  );
+  return `<!DOCTYPE html>
+  <html dir="ltr" lang="${ctx.language}">
+  <head>${renderToHtml(<DatasetListHead state={state} ctx={ctx} />)}</head>
+  <body>
+    <div class="gov-story-theme-scope">
+      ${headerHtml(ctx.navigation, ctx.language, state.query)}
+      ${renderToHtml(<Main state={state} ctx={ctx} />)}
+      ${footerHtml(ctx.language)}
+    </div>
+  </body>
+  </html>`;
 }
 
-function windowSearchScript(state: DatasetListState): string {
-  return (
-    "\n          window.search = {\n" +
-    '            "localization": {\n' +
-    `              "searchQuery": ${JSON.stringify(state.jsSearchQuery)},\n` +
-    `              "temporalFrom": ${JSON.stringify(state.jsTemporalFrom)},\n` +
-    `              "temporalTo": ${JSON.stringify(state.jsTemporalTo)},\n` +
-    `              "publicData": ${JSON.stringify(state.jsPublicData)},\n` +
-    `              "codelist": ${JSON.stringify(state.jsCodelist)},\n` +
-    "            },\n" +
-    `            "query": ${state.search.queryObjectAsString},\n` +
-    "          };\n" +
-    "        "
-  );
-}
-
-function DatasetListHead({ state }: { state: DatasetListState }) {
+function DatasetListHead({ state, ctx }: {
+  state: DatasetListState,
+  ctx: ViewContext,
+}) {
   return (
     <>
       <Head state={state.head} />
-      <title>{state.pageTitle}</title>
-      <meta name="description" content={state.pageDescription} />
+      <title>{ctx.t("page-title")}</title>
+      <meta name="description" content={ctx.t("page-description")} />
       <link rel="canonical" href="/datasets" />
       <link rel="alternate" href="/datové-sady" hreflang="cs" />
       <link rel="alternate" href="/datasets" hreflang="en" />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/resource-list.css"
-      />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/dataset-list.css"
-      />
-      <script src="/assets/catalog/js/dataset-list.js"></script>
     </>
   );
 }
 
-function DatasetListMain({
-  state,
-  language,
-}: {
-  state: DatasetListState;
-  language: Language;
+function Main({ state, ctx }: {
+  state: DatasetListState,
+  ctx: ViewContext,
 }) {
-  return (
-    <gov-container class="datasets-container">
-      <gov-grid>
-        <gov-grid-item size-sm="12/12" size-md="4/12">
-          {state.facets.map((facet) => (
-            <Facet state={facet} />
-          ))}
-        </gov-grid-item>
-        <gov-grid-item size-sm="12/12" size-md="8/12" class="p-2">
-          <gov-form-search
-            variant="primary"
-            id="search"
-            data-query="dotaz"
-            data-base-url={state.search["base-url"]}
-          >
-            <gov-form-input
-              slot="input"
-              size="m"
-              placeholder={state.searchPlaceholder}
-              wcag-label={state.searchInputLabel}
-              value={state.search.query.searchQuery ?? ""}
-              data-type="query"
-            ></gov-form-input>
-            <gov-button
-              slot="button"
-              variant="primary"
-              size="s"
-              wcag-label={state.wcagSearch}
-              data-type="submit"
-            >
-              {" "}
-              {state.searchButton}{" "}
-            </gov-button>
-          </gov-form-search>
-          <gov-accordion size="xs" wcag-label={state.extendedSearch}>
-            <gov-accordion-item>
-              <h3 slot="label">{state.extendedSearch}</h3>
-              <div class="extended-search">
-                <div class="time-coverage mb-2">
-                  <div class="time-inputs">
-                    {" "}
-                    {state.temporalFrom}{" "}
-                    <gov-form-input
-                      input-type="date"
-                      data-type="time-from"
-                      value={state.search.query.temporalFrom ?? ""}
-                    ></gov-form-input>
-                    {" "}
-                    {state.temporalTo}{" "}
-                    <gov-form-input
-                      input-type="date"
-                      data-type="time-to"
-                      value={state.search.query.temporalTo ?? ""}
-                    ></gov-form-input>
-                  </div>
-                  <div class="flex-justify-end time-buttons">
-                    <gov-button variant="primary" size="m" data-type="this-year">
-                      {state.thisYear}
-                    </gov-button>
-                    <gov-button variant="primary" size="m" data-type="last-year">
-                      {state.lastYear}
-                    </gov-button>
-                  </div>
-                </div>
-                <div class="flex-space-between">
-                  <gov-button
-                    variant="warning"
-                    size="m"
-                    href={state.search["clear-href"]}
-                    wcag-label={state.clearFiltersLabel}
-                  >
-                    {" "}
-                    {state.clearFilters}{" "}
-                  </gov-button>
-                  <gov-button
-                    variant="primary"
-                    size="m"
-                    wcag-label={state.searchButton}
-                    data-type="submit"
-                  >
-                    {" "}
-                    {state.searchButton}{" "}
-                  </gov-button>
-                </div>
-              </div>
-            </gov-accordion-item>
-          </gov-accordion>
-          <script
-            dangerouslySetInnerHTML={{ __html: windowSearchScript(state) }}
-          ></script>
-          <QuerySection state={state["query-section"]} language={language} />
-          <ResultBar state={state["result-bar"]} />
-          <hr />
-          <div class="p-2 resource-list">
-            {state.documents.map((document) => (
-              <DatasetCard document={document} state={state} />
-            ))}
-          </div>
-          <Pagination state={state.pagination} />
-        </gov-grid-item>
-      </gov-grid>
-    </gov-container>
-  );
-}
-
-function DatasetCard({
-  document,
-  state,
-}: {
-  document: DatasetListDocument;
-  state: DatasetListState;
-}) {
-  return (
+  const filters: { label: string, ariaLabel: string, href: string }[] = [];
+  if (state.querySection.temporalStart !== null) {
+    filters.push({
+      href: state.querySection.temporalStart.href,
+      label: state.querySection.temporalStart.label,
+      ariaLabel: ctx.t("cancel-filter", state.querySection.temporalStart.label),
+    });
+  }
+  if (state.querySection.temporalEnd !== null) {
+    filters.push({
+      href: state.querySection.temporalEnd.href,
+      label: state.querySection.temporalEnd.label,
+      ariaLabel: ctx.t("cancel-filter", state.querySection.temporalEnd.label),
+    });
+  }
+  for (const facet of state.facets) {
+    for (const item of facet.items) {
+      if (!item.active) {
+        continue;
+      }
+      //
+      const label = item.label ?? item.iri;
+      filters.push({
+        href: item.href,
+        label: label,
+        ariaLabel: ctx.t("cancel-filter", label),
+      });
+    }
+  }
+  //
+  const facets = (
     <>
-      <div class="p-2 resource-list-item">
-        <a href={document.href ?? ""} class="flex-space-between">
-          <h3 class="inline">
-            {" "}
-            {document.title}{" "}
-          </h3>
-          <gov-icon name="chevron-right"></gov-icon>
-        </a>
-        <p
-          class="description-preview"
-          dangerouslySetInnerHTML={{
-            __html: " " + breakLines(document.description) + " ",
-          }}
-        ></p>
-        <div>
-          {document.isHvd ? (
-            <gov-tooltip>
-              <gov-chip variant="error" type="outlined" size="xs">
-                {" "}
-                HVD{" "}
-              </gov-chip>
-              <gov-tooltip-content>
-                {" "}
-                {state.hvdTooltip}{" "}
-              </gov-tooltip-content>
-            </gov-tooltip>
-          ) : null}
-          {document.isOpenData ? (
-            <gov-chip variant="success" type="outlined" size="xs">
-              {" "}
-              {state.openData}{" "}
-            </gov-chip>
-          ) : null}
-          {document.isNonPublicData ? (
-            <gov-chip variant="warning" type="outlined" size="xs">
-              {" "}
-              {state.nonPublicData}{" "}
-            </gov-chip>
-          ) : null}
-          {document.isDynamicData ? (
-            <gov-tooltip>
-              <gov-chip variant="warning" type="outlined" size="xs">
-                {" "}
-                {state.dynamicChip}{" "}
-              </gov-chip>
-              <gov-tooltip-content>
-                {" "}
-                {state.dynamicTooltip}{" "}
-              </gov-tooltip-content>
-            </gov-tooltip>
-          ) : null}
-          {document.format.map((format) => (
-            <gov-tooltip>
-              <gov-chip variant="primary" type="outlined" size="xs">
-                {" "}
-                {format.label}{" "}
-              </gov-chip>
-              <gov-tooltip-content>
-                {" "}
-                {format.tooltip}{" "}
-              </gov-tooltip-content>
-            </gov-tooltip>
-          ))}
-        </div>
-      </div>
-      <hr />
+      {state.facets.map(item => <OpenFacet ctx={ctx} state={item} />)}
+      <DurationFacet state={{
+        from: state.query.temporalStart,
+        to: state.query.temporalEnd,
+        label: ctx.t("temporal-coverage"),
+        labelFrom: ctx.t("temporal-from"),
+        labelTo: ctx.t("temporal-to"),
+        navigationNameFrom: state.navigation.temporalStartName,
+        navigationNameTo: state.navigation.temporalEndName,
+      }} />
     </>
   );
+  //
+  return (
+    <gov-container data-navigation-url={state.navigation.url}>
+      <gov-layout type="aside" variant="left">
+        <gov-layout-column className="gov-desktop-only">
+          <aside aria-label={ctx.t("search-result-filters")}>
+            <form className="gov-filters">
+              <gov-flex direction="column" gap="s">
+                {facets}
+              </gov-flex>
+            </form>
+          </aside>
+        </gov-layout-column>
+        <gov-layout-column>
+          <main>
+            <ListSearchHeader state={{ value: state.search.query.searchQuery, navigationName: state.navigation.searchName }} ctx={ctx} />
+            <gov-flex direction="column" gap="xl">
+              <ListSearchControls state={{
+                message: state.resultBar.message,
+                ordering: {
+                  active: state.resultBar.ordering.items.find(item => item.href === state.resultBar.ordering.active)
+                    ?? state.resultBar.ordering.items[0],
+                  items: state.resultBar.ordering.items,
+                },
+                filters,
+                clearFilters: state.clearFilters,
+              }} ctx={ctx} facets={facets}/>
+              <ListOfItems state={{
+                items: state.documents,
+                pagination: state.pagination,
+                component: DatasetItem,
+              }} ctx={ctx} />
+            </gov-flex>
+          </main>
+        </gov-layout-column>
+      </gov-layout>
+    </gov-container>
+  )
+}
+
+function DatasetItem({ value, ctx }: {
+  value: DatasetListDocument,
+  ctx: ViewContext,
+}) {
+  const tags = [];
+
+  if (value.isHvd) {
+    tags.push((
+      <li>
+        <gov-chip color="error" type="outlined" size="xs">
+          {ctx.t("high-value-dataset")}
+        </gov-chip>
+      </li>
+    ));
+  }
+
+  if (value.isOpenData) {
+    tags.push((
+      <li>
+        <gov-chip color="success" type="outlined" size="xs">
+          {/* open-data-dataset */}
+          {ctx.t("open-data")}
+        </gov-chip>
+      </li>
+    ));
+  }
+
+  if (value.isNonPublicData) {
+    tags.push((
+      <li>
+        <gov-chip color="secondary" type="outlined" size="xs">
+          {/* non-public-dataset */}
+          {ctx.t("non-public-data")}
+        </gov-chip>
+      </li>
+    ));
+  }
+
+  if (value.isDynamicData) {
+    tags.push((
+      <li>
+        <gov-chip color="neutral" type="outlined" size="xs">
+          {/* dynamic-dataset */}
+          {ctx.t("dynamic-chip")}
+        </gov-chip>
+      </li>
+    ));
+  }
+
+  const description = " " + breakLines(value.description) + " ";
+  const headlineId = "dataset-" + encodeURIComponent(value.iri);
+
+  return (
+    <article>
+      <gov-card direction="horizontal" href={value.href} aria-labelledby={headlineId}>
+        <gov-flex gap="s" direction="column">
+          <header>
+            <gov-flex gap="s" direction="column">
+              {tags.length === 0 ? null : (
+                <ul className="gov-tags gov-list--plain">
+                  {tags}
+                </ul>
+              )}
+              <h3 id={headlineId} className="gov-card__headline">
+                {value.title}
+              </h3>
+            </gov-flex>
+          </header>
+          <p className="line-clamp-3" dangerouslySetInnerHTML={{ __html: description }} />
+          <ul className="gov-tags gov-list--plain">
+            {value.format.map(item => (
+              <li>
+                <gov-tag color="neutral" type="subtle" size="xs">
+                  {item.label}
+                </gov-tag>
+              </li>
+            ))}
+          </ul>
+        </gov-flex>
+      </gov-card>
+    </article>
+  )
 }

@@ -18,6 +18,10 @@ export type Translations = Record<string, string | Function | (string | number)[
 export type TranslationDictionary = Record<string, string>;
 
 export interface TranslationService {
+  t: (serverMessage: string, args?: any) => string;
+  /**
+   * @deprecated Use "t" instead.
+   */
   translate: (serverMessage: string, args?: any) => string;
   readonly dictionary: TranslationDictionary;
 }
@@ -49,6 +53,12 @@ class DefaultTranslationService implements TranslationService {
         return value;
       },
     });
+    //
+    this.t = this.t.bind(this);
+  }
+
+  t(serverMessage: string, args?: any) {
+    return this.translate(serverMessage, args);
   }
 
   translate(serverMessage: string, args: any) {

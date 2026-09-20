@@ -65,22 +65,7 @@ export interface SuggestionDetailSuggestion {
 
 export interface SuggestionDetailState {
   head: HeadData;
-  headerHtml: string;
-  footerHtml: string;
-  /** Localized strings, resolved by `prepareTemplateData`. */
-  pageTitle: string;
-  pageDescription: string;
-  goToLink: string;
-  dtTheme: string;
-  dtCreated: string;
-  dtState: string;
-  dtPublicationPlan: string;
-  dtMandatory106: string;
-  dtObstacleSpecial: string;
-  dtObstacle106: string;
-  yes: string;
-  no: string;
-  h2Datasets: string;
   suggestion: SuggestionDetailSuggestion;
   datasets: { visible: boolean; items: SuggestionDetailDataset[] };
+  query: SuggestionDetailQuery;
 }

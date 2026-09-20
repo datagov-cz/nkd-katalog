@@ -5,6 +5,8 @@ import { Head } from "../../component/head.tsx";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
+import { SimpleListPage } from "../../component/simple-list-page.tsx";
+import type { ViewContext } from "../../service/view-context.ts";
 import type { Language } from "../../localization/index.ts";
 import type {
   LocalCatalogListCatalog,
@@ -22,8 +24,13 @@ export function renderHtml(
   data: LocalCatalogListData,
   reply: FastifyReply,
 ): void {
-  const state = prepareTemplateData(services, languages, query, data);
-  const html = renderLocalCatalogListHtml(state, languages[0]);
+  const state = prepareTemplateData(services, query, data);
+  const ctx: ViewContext = {
+    t: services.translation.t,
+    language: languages[0],
+    navigation: services.navigation,
+  };
+  const html = renderLocalCatalogListHtml(state, ctx);
   reply
     .code(200)
     .header("Content-Type", "text/html; charset=utf-8")
@@ -32,7 +39,6 @@ export function renderHtml(
 
 export function prepareTemplateData(
   services: LocalCatalogListViewServices,
-  languages: Language[],
   query: ServerQuery,
   data: LocalCatalogListData,
 ): LocalCatalogListState {
@@ -45,17 +51,8 @@ export function prepareTemplateData(
   );
   return {
     head: createHeadData(services.configuration),
-    headerHtml: headerHtml(services.navigation, languages[0], query),
-    footerHtml: footerHtml(languages[0]),
-    pageTitle: translation.dictionary["page-title"],
-    pageDescription: translation.dictionary["page-description"],
-    heading: translation.dictionary["heading"],
-    homepageLink: translation.dictionary["homepage-link"],
-    endpointLink: translation.dictionary["endpoint-link"],
-    deleteLink: translation.dictionary["delete-link"],
-    validateLink: translation.dictionary["validate-link"],
-    message: translation.translate("items-found", data["catalogs"].length),
     catalogs: data["catalogs"],
+    query,
   };
 }
 
@@ -81,113 +78,102 @@ function substituteToTemplate(template, url) {
 
 export function renderLocalCatalogListHtml(
   state: LocalCatalogListState,
-  language: "cs" | "en",
+  ctx: ViewContext,
 ): string {
-  const head = renderToHtml(<LocalCatalogListHead state={state} />);
-  const main = renderToHtml(<LocalCatalogListMain state={state} />);
-  return (
-    "<!DOCTYPE html>\n" +
-    `<html dir="ltr" lang="${language}">\n` +
-    `<head>\n${head}\n</head>\n` +
-    `<body>\n${state.headerHtml}\n${main}\n<br/>\n${state.footerHtml}\n</body>\n` +
-    "</html>\n"
-  );
+  return `<!DOCTYPE html>
+  <html dir="ltr" lang="${ctx.language}">
+  <head>${renderToHtml(<LocalCatalogListHead state={state} ctx={ctx} />)}</head>
+  <body>
+    <div class="gov-story-theme-scope">
+      ${headerHtml(ctx.navigation, ctx.language, state.query)}
+      ${renderToHtml(<LocalCatalogListMain state={state} ctx={ctx} />)}
+      ${footerHtml(ctx.language)}
+    </div>
+  </body>
+  </html>`;
 }
 
-function LocalCatalogListHead({ state }: { state: LocalCatalogListState }) {
+function LocalCatalogListHead({ state, ctx }: {
+  state: LocalCatalogListState,
+  ctx: ViewContext,
+}) {
   return (
     <>
       <Head state={state.head} />
-      <title>{state.pageTitle}</title>
-      <meta name="description" content={state.pageDescription} />
+      <title>{ctx.t("page-title")}</title>
+      <meta name="description" content={ctx.t("page-description")} />
       <link rel="canonical" href="/local-catalogs" />
       <link rel="alternate" href="/lokální-katalogy" hreflang="cs" />
       <link rel="alternate" href="/local-catalogs" hreflang="en" />
-      <link
-        type="text/css"
-        rel="stylesheet"
-        href="/assets/catalog/css/catalog-list.css"
-      />
     </>
   );
 }
 
-function LocalCatalogListMain({ state }: { state: LocalCatalogListState }) {
+function LocalCatalogListMain({ state, ctx }: {
+  state: LocalCatalogListState,
+  ctx: ViewContext,
+}) {
   return (
-    <gov-container class="catalogs-container">
-      <br />
-      <h1>{state.heading}</h1>
-      <p>
-        {" "}
-        {state.message}{" "}
-      </p>
-      <gov-grid>
-        {state.catalogs.map((catalog) => (
-          <CatalogCard catalog={catalog} state={state} />
-        ))}
-      </gov-grid>
-    </gov-container>
+    <SimpleListPage state={{
+      heading: ctx.t("heading"),
+      message: ctx.t("items-found", state.catalogs.length),
+      items: state.catalogs,
+      component: CatalogItem,
+      layout: "list",
+    }} ctx={ctx} />
   );
 }
 
-function CatalogCard({
-  catalog,
-  state,
-}: {
-  catalog: LocalCatalogListCatalog;
-  state: LocalCatalogListState;
+function CatalogItem({ value, ctx }: {
+  value: LocalCatalogListCatalog,
+  ctx: ViewContext,
 }) {
+  const headlineId = "catalog-" + encodeURIComponent(value.iri);
   return (
-    <gov-grid-item
-      size-sm="12/12"
-      size-md="6/12"
-      size-lg="4/12"
-      size-xl="3/12"
-      class="p-1"
-    >
-      <gov-card>
-        <div class="gov-card__header">
-          <a href={catalog.publisher.iri ?? ""}>
-            <h3 class="gov-card__title inline">{catalog.publisher.label}</h3>
-            <gov-icon name="box-arrow-up-right"></gov-icon>
-          </a>
-        </div>
-        <div class="gov-card__inner grow">
-          <div class="gov-card__main">
-            <div>
-              {" "}
-              {catalog.title}{" "}
-              <a href={catalog.url ?? ""}>
-                <gov-icon name="box-arrow-up-right"></gov-icon>
+    <article>
+      {/* No `href` on the card, as it contains links of its own. */}
+      <gov-card direction="horizontal" aria-labelledby={headlineId}>
+        <article>
+          <gov-flex gap="s" direction="column">
+            <header>
+              <h3 id={headlineId} class="gov-card__headline">
+                <a href={value.url ?? ""}>{value.title}</a>
+              </h3>
+            </header>
+            <p>
+              <a href={value.publisher.iri ?? ""}>{value.publisher.label}</a>
+            </p>
+            <p>
+              <a href={mailtoUrl(value.contactPoint.email)}>
+                <gov-icon name="envelope" size="xl" className="align-text-bottom" />
+                {value.contactPoint.name}
               </a>
-            </div>
-            <div>
-              <a href={catalog.contactPoint.email ?? ""}>
-                <gov-icon name="envelope"></gov-icon>
-                {" "}
-                {catalog.contactPoint.name}{" "}
+            </p>
+            <gov-flex gap="xl">
+              <a href={value.homepageUrl} title={ctx.t("homepage-link")}>
+                <gov-icon name="house-door-fill" size="xl" />
               </a>
-            </div>
-          </div>
-          <div
-            class="gov-card__footer flex-space-evenly"
-            style="font-size: x-large;"
-          >
-            <a href={catalog.homepageUrl ?? ""} title={state.homepageLink}>
-              <gov-icon name="house-door-fill"></gov-icon>
-            </a>
-            <a href={catalog.endpointUrl ?? ""} title={state.endpointLink}>
-              <gov-icon name="link-45deg"></gov-icon>
-            </a>
-            <a href={catalog.deleteUrl ?? ""} title={state.deleteLink}>
-              <gov-icon name="trash"></gov-icon>
-            </a>
-            <a href={catalog.validateUrl ?? ""} title={state.validateLink}>
-              <gov-icon name="communication" type="complex"></gov-icon>
-            </a>
-          </div>
-        </div>
+              <a href={value.endpointUrl} title={ctx.t("endpoint-link")}>
+                <gov-icon name="link-45deg" type="bootstrap" size="xl" />
+              </a>
+              <a href={value.validateUrl} title={ctx.t("validate-link")}>
+                <gov-icon name="communication" type="complex" size="xl" />
+              </a>
+              <a href={value.deleteUrl} title={ctx.t("delete-link")}>
+                <gov-icon name="trash" type="bootstrap" size="xl" />
+              </a>
+            </gov-flex>
+          </gov-flex>
+        </article>
       </gov-card>
-    </gov-grid-item>
+    </article>
   );
+}
+
+/** The stored contact value may or may not include the `mailto:` scheme. */
+function mailtoUrl(email: string | null | undefined): string {
+  if (!email) {
+    return "";
+  }
+  return email.startsWith("mailto:") ? email : "mailto:" + email;
 }

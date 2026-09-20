@@ -67,20 +67,7 @@ export interface ApplicationDetailApplication {
 
 export interface ApplicationDetailState {
   head: HeadData;
-  headerHtml: string;
-  footerHtml: string;
-  /** Localized strings, resolved by `prepareTemplateData`. */
-  pageTitle: string;
-  pageDescription: string;
-  goToLink: string;
-  dtState: string;
-  dtTheme: string;
-  dtPlatform: string;
-  dtType: string;
-  dtPublished: string;
-  dtModified: string;
-  openApplication: string;
-  usedDatasets: string;
   application: ApplicationDetailApplication;
   datasets: { visible: boolean; items: ApplicationDetailDataset[] };
+  query: ApplicationDetailQuery;
 }
