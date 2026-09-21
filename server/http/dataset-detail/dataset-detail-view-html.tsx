@@ -1250,7 +1250,7 @@ function DcatApCzLicenseColumn({ state, ctx }: {
   ctx: ViewContext,
 }) {
   return (
-    <div>
+    <div className="distribution-item-wrap-column">
       <div>
         <h5 className="gov-text--l gov-color--secondary-700">{ctx.t("terms-of-use")}</h5>
       </div>
@@ -1325,7 +1325,7 @@ function FileDistributionColumn({ state, ctx }: {
   state: FileDistribution, ctx: ViewContext,
 }) {
   return (
-    <div>
+    <div className="distribution-item-wrap-column">
       <div>
         <h5 className="gov-text--l gov-color--secondary-700">
           {ctx.t("h5-downloadable-file")}
@@ -1405,7 +1405,7 @@ function DataServiceColumn({ state, ctx }: {
 }) {
   return (
     <div
-      className="data-service"
+      className="distribution-item-wrap-column data-service"
       data-iri={state.iri}
     >
       <div>
@@ -1483,7 +1483,7 @@ function SharingSpecColumn({ index, state, ctx }: {
 }) {
   const id = `${index}-sharing-specification`;
   return (
-    <div>
+    <div className="distribution-item-wrap-column">
       <div>
         <h5 className="gov-text--l gov-color--secondary-700">
           {ctx.t("h5-sharing-specification")}

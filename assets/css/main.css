@@ -67,6 +67,83 @@ a {
   }
 }
 
+/* Custom component : distribution */
+
+.distribution-container {
+  margin-bottom: 1rem;
+
+  gov-grid gov-grid-item {
+    margin-bottom: 1rem;
+  }
+}
+
+.distribution-item-wrap {
+  --distribution-border: var(--border-subtle);
+  height: 100%;
+  border: 1px solid var(--distribution-border);
+  border-radius: 1em;
+
+  /* Format is not always known. */
+  h4:empty {
+    display: none;
+  }
+
+  & > .flex-row > div {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: .25rem;
+  }
+
+  /* Quality indicators are aligned to the end of the row. */
+  :has(> .quality) {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .quality {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    gap: .25rem;
+    margin-right: .5rem;
+    font-size: larger;
+  }
+}
+
+/* Column is a box with a header cell and one cell per row. */
+.distribution-item-wrap-column {
+  & > div:first-of-type {
+    padding: .25rem;
+    border: 1px solid var(--distribution-border);
+    border-radius: .5em .5em 0 0;
+  }
+
+  & > ul {
+    padding: 0;
+    list-style-type: none;
+    margin-top: 0;
+    margin-bottom: 0;
+
+    & > li {
+      list-style: none;
+      padding: .25rem;
+      border: 1px solid var(--distribution-border);
+      margin-top: -1px;
+      word-break: break-word;
+      margin-bottom: 0;
+    }
+
+    /* Rows are cells, the design system bullet is not needed. */
+    & > li::before {
+      content: none;
+    }
+
+    & > li:last-of-type {
+      border-radius: 0 0 .5em .5em;
+    }
+  }
+}
+
 /* General Tailwind inspired styles. */
 
 .italic {
