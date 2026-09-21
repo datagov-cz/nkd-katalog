@@ -21,12 +21,15 @@ export async function prepareDatasetDetailViewModel(
     distributionPage: number,
     distributionPageSize: number,
   },
-): Promise<DatasetDetailViewModel> {
+): Promise<DatasetDetailViewModel | null> {
 
   // TODO Check for catalog and catalogRecord
+  const response = await services.couchDbDataset.fetchDataset(query.iri);
+  if (response === null) {
+    return null;
+  }
 
-  const { dataset, catalog, catalogRecord, publicSystem } =
-    await services.couchDbDataset.fetchDataset(query.iri);
+  const { dataset, catalog, catalogRecord, publicSystem } = response;
 
   const applications = await services.solrApplication
     .fetchApplicationsWithDatasets(languages, [query.iri]);

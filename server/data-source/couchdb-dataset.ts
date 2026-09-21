@@ -19,7 +19,7 @@ export function createCouchDbDatasetSource(
 
 export interface CouchDbDatasetSource {
 
-  fetchDataset(iri: string): Promise<CouchDbDatasetEntry>;
+  fetchDataset(iri: string): Promise<CouchDbDatasetEntry | null>;
 
   fetchDatasetPreview(iri: string) : Promise<Dataset | null>;
 

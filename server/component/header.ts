@@ -29,9 +29,11 @@ function injectLanguageSelector(
   const otherLanguage = language === "cs" ? "en" : "cs";
   const label = otherLanguage === "cs" ? "Čeština" : "English";
   const url = navigation.changeLanguage(otherLanguage).linkFromServer(query);
-  const selector = `<div class="language"><a href="${url}">${label}</a></div>`;
-  // TODO Replace also languageMobile placeholder.
-  return template.replace(PLACEHOLDERS.language, selector);
+  // TODO Add aria-label
+  const selector = `<gov-button color="primary" type="base" size="l" href="${url}">${label}</gov-button>`;
+  return template
+    .replace(PLACEHOLDERS.language, selector)
+    .replace(PLACEHOLDERS.languageMobile, selector);
 }
 
 const PLACEHOLDERS = {
