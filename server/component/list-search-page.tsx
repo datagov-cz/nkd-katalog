@@ -48,6 +48,12 @@ export function ListSearchPage<ItemType>({ state, ctx }: {
     }
   }
   const ordering = state.resultBar.ordering;
+  //
+  const facets = (
+    <>
+      {state.facets.map(item => <OpenFacet ctx={ctx} state={item} />)}
+    </>
+  );
   return (
     <gov-container data-navigation-url={state.navigationUrl}>
       <gov-layout type="aside" variant="left">
@@ -55,7 +61,7 @@ export function ListSearchPage<ItemType>({ state, ctx }: {
           <aside aria-label={ctx.t("search-result-filters")}>
             <form class="gov-filters">
               <gov-flex direction="column" gap="s">
-                {state.facets.map(item => <OpenFacet ctx={ctx} state={item} />)}
+                {facets}
               </gov-flex>
             </form>
           </aside>
@@ -73,7 +79,7 @@ export function ListSearchPage<ItemType>({ state, ctx }: {
                 },
                 filters,
                 clearFilters: state.clearFilters,
-              }} ctx={ctx} />
+              }} ctx={ctx} facets={facets} />
               <ListOfItems state={{
                 items: state.items,
                 pagination: state.pagination,
