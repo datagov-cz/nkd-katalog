@@ -1,7 +1,7 @@
 import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
 import { parseClientQuery, beforeLinkCallback } from "./dataset-list-query.mjs";
-import { prepareData } from "./dataset-list-model.mjs";
+import { prepareData } from "./dataset-list-model.ts";
 import { renderHtml } from "./dataset-list-view-html.tsx";
 import localization from "./dataset-list-localization.mjs";
 

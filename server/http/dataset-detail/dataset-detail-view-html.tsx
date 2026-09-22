@@ -12,7 +12,6 @@ import {
 } from "../../component/index.mjs";
 import { Head } from "../../component/head.tsx";
 import type {
-  ApplicableLegislationItem,
   DataService,
   DatasetDetailQuery,
   DatasetDetailState,
@@ -30,7 +29,6 @@ import type { Configuration } from "../../configuration.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { LinkService } from "../../service/link-service.ts";
 import type {
-  TranslationDictionary,
   TranslationService,
 } from "../../service/translation-service.ts";
 import { NKOD } from "../../data-source/shared/vocabulary.ts";
@@ -42,6 +40,13 @@ import { breakLines, escapeExpression } from "../../html/escape.ts";
 import { Language } from "../../localization/index.ts";
 import { ViewContext } from "../../service/view-context.ts";
 import { RelatedItems } from "../../component/detail-parts.tsx";
+import {
+  containsDynamicData, containsHighValueDataset,
+  containsPublicRegistry,
+  isDynamicData, isHighValueDataset, containsNonPublicData, containsOpenData,
+  isPublicRegistry,
+} from "../../dcat-ap-cz/index.ts";
+import { DynamicDataChip, HighValueDatasetChip, NonPublicChip, OpenDataChip, PublicRegistryChip } from "../../component/legislation-chips.tsx";
 
 export function renderHtml(
   services: DatasetDetailViewServices,
@@ -56,7 +61,7 @@ export function renderHtml(
   }
   const state = prepareTemplateData(
     services.configuration, services.translation, services.navigation,
-    services.link, languages, data, query);
+    services.link, data, query);
   const ctx: ViewContext = {
     t: services.translation.t,
     language: languages[0],
@@ -74,7 +79,6 @@ export function prepareTemplateData(
   translation: TranslationService,
   navigation: NavigationEntry,
   link: LinkService,
-  languages: Language[],
   data: DatasetDetailViewModel,
   query: DatasetDetailQuery,
 ): DatasetDetailState {
@@ -116,6 +120,7 @@ export function prepareTemplateData(
     labelEndpoint: configuration.client.conceptSparql,
     dataset: {
       iri: dataset.iri,
+      types: dataset.type,
       heading,
       publisher: {
         label: dataset.publisher.label,
@@ -190,7 +195,7 @@ export function prepareTemplateData(
         label: item.label,
       })),
       //
-      applicableLegislation: prepareApplicableLegislation(dataset.applicableLegislation),
+      applicableLegislation: dataset.applicableLegislation.map(item => item.url),
       //
       landingPage: dataset.landingPage[0]?.url ?? null,
       publicInformationSystem: dataset.publicInformationSystem.map(asHrefLabel),
@@ -202,9 +207,6 @@ export function prepareTemplateData(
           viewer
         };
       }),
-      //
-      isOpenData: dataset.type.includes(DATASET_TYPE_OPEN_DATA),
-      isNonPublicData: dataset.type.includes(DATASET_TYPE_NON_PUBLIC_DATA),
     },
     // ...query,
     distributions: {
@@ -392,50 +394,9 @@ function parseXsdDuration(value: string) {
 }
 
 function prepareApplicableLegislation(applicableLegislation: { url: string }[]) {
-  const result = applicableLegislation.map(({ url }) => ({
-    url: url,
-    label: url,
-    chip: createChipForApplicableLegislation(url),
-  }));
-  result.sort((left, right) => {
-    if (left.chip !== null && right.chip === null) {
-      return -1;
-    }
-    if (left.chip === null && right.chip !== null) {
-      return 1;
-    }
-    return left.url.localeCompare(right.url, 'en');
-  });
-  return result;
-}
-
-/** TODO Export to vocabulary file. */
-const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
-
-/** TODO Export to vocabulary file. */
-const LEGISLATION_DYNAMIC_DATA = "https://www.e-sbirka.cz/eli/cz/sb/1999/106/2024-01-01/dokument/norma/cast_1/par_3a/odst_6";
-
-/** TODO Export to vocabulary file. */
-const DATASET_TYPE_OPEN_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/otevřená-data";
-
-/** TODO Export to vocabulary file. */
-const DATASET_TYPE_NON_PUBLIC_DATA = "https://data.dia.gov.cz/zdroj/číselníky/typ-datové-sady/položky/neveřejná-data";
-
-function createChipForApplicableLegislation(url: string) {
-  switch (url) {
-    case LEGISLATION_HVD:
-      return {
-        variant: "error",
-        label: "HVD",
-      };
-    case LEGISLATION_DYNAMIC_DATA:
-      return {
-        variant: "warning",
-        label: "Dynamická",
-      };
-    default:
-      return null;
-  }
+  return applicableLegislation
+    .map(({ url }) => url)
+    .toSorted((left, right) => left.localeCompare(right, 'en'));
 }
 
 const SPARQL_SCHEMA = "https://www.w3.org/TR/sparql11-protocol/";
@@ -461,11 +422,7 @@ function prepareDistribution(
       iri: value.iri,
       title: value.title,
       format: value.format?.label ?? null,
-      applicableLegislation: value.applicableLegislation.map(item => ({
-        chip: null,
-        label: item.url,
-        url: item.url,
-      })),
+      applicableLegislation: prepareApplicableLegislation(value.applicableLegislation),
       missingLegal: value.termsOfUse === null,
       dcatApLegal: value.termsOfUse?.type === "DcatAp",
       dcatApCzLegal: prepareDcatApCzTermsOfUse(translation, value),
@@ -509,11 +466,7 @@ function prepareDistribution(
       iri: value.iri,
       title: value.title,
       format: value.format?.label ?? null,
-      applicableLegislation: value.applicableLegislation.map(item => ({
-        chip: null,
-        label: item.url,
-        url: item.url,
-      })),
+      applicableLegislation: prepareApplicableLegislation(value.applicableLegislation),
       missingLegal: value.termsOfUse === null,
       dcatApLegal: value.termsOfUse.type === "DcatAp",
       dcatApCzLegal: prepareDcatApCzTermsOfUse(translation, value),
@@ -890,21 +843,13 @@ function DatasetProperties({ state, ctx }: {
         ) : null}
       </div>
       <div className="chip-container mb-2">
-        {/* TODO Export into dataset component */}
-        {dataset.isOpenData ? (
-          <gov-chip color="success" type="outlined" size="xs">
-            {ctx.t("open-data")}
-          </gov-chip>
+        {containsOpenData(dataset.types) ? (
+          <OpenDataChip ctx={ctx} />
         ) : null}
-        {dataset.isNonPublicData ? (
-          <gov-chip color="warning" type="outlined" size="xs">
-            {ctx.t("non-public-data")}
-          </gov-chip>
+        {containsNonPublicData(dataset.types) ? (
+          <NonPublicChip ctx={ctx} />
         ) : null}
-        {dataset.applicableLegislation.map((item) => (
-          <Chip chip={item.chip} />
-        ))}
-        <LegislationChip items={dataset.applicableLegislation} ctx={ctx} id="dataset-legislation"/>
+        <LegislationChips legislation={dataset.applicableLegislation} ctx={ctx} id="dataset-legislation" />
       </div>
       <div className="chip-container mb-2">
         {dataset.keywords.map((keyword) => (
@@ -1095,16 +1040,25 @@ function DatasetProperties({ state, ctx }: {
   );
 }
 
-function LegislationChip({ id, items, ctx }: {
+function LegislationChips({ id, legislation, ctx }: {
   id: string,
-  items: ApplicableLegislationItem[],
+  legislation: string[],
   ctx: ViewContext,
 }) {
-  if (items.length === 0) {
+  if (legislation.length === 0) {
     return null;
   }
   return (
     <>
+      {containsHighValueDataset(legislation) ? (
+        <HighValueDatasetChip ctx={ctx} />
+      ) : null}
+      {containsDynamicData(legislation) ? (
+        <DynamicDataChip ctx={ctx} />
+      ) : null}
+      {containsPublicRegistry(legislation) ? (
+        <PublicRegistryChip ctx={ctx} />
+      ) : null}
       <gov-chip color="primary" type="outlined" size="s" tag="button" data-toggle="dialog" data-target={id}>
         §
       </gov-chip>
@@ -1112,28 +1066,19 @@ function LegislationChip({ id, items, ctx }: {
       <gov-dialog role="dialog" id={id} >
         <h2 slot="title">{ctx.t("modal-legislation")}</h2>
         <ul>
-          {items.map((item) => (
+          {legislation.map((item) => (
             <li>
-              <Chip chip={item.chip} />
-              <a href={item.url} rel="nofollow noopener noreferrer" target="_blank">
-                {item.label}
+              {isHighValueDataset(item) ? <HighValueDatasetChip ctx={ctx} /> : null}
+              {isDynamicData(item) ? <DynamicDataChip ctx={ctx} /> : null}
+              {isPublicRegistry(item) ? <PublicRegistryChip ctx={ctx} /> : null}
+              <a href={item} rel="nofollow noopener noreferrer" target="_blank">
+                {item}
               </a>
             </li>
           ))}
         </ul>
       </gov-dialog>
     </>
-  );
-}
-
-function Chip({ chip }: { chip: { variant: string; label: string } | null }) {
-  if (!chip) {
-    return null;
-  }
-  return (
-    <gov-chip color={chip.variant} type="outlined" size="s">
-      {chip.label}
-    </gov-chip>
   );
 }
 
@@ -1200,10 +1145,7 @@ function DistributionItem({ index, state, ctx }: {
       </h4>
       {state.applicableLegislation.length > 0 ? (
         <div className="chip-container mb-2">
-          {state.applicableLegislation.map((legislation) => (
-            <Chip chip={legislation.chip} />
-          ))}
-          <LegislationChip items={state.applicableLegislation} ctx={ctx} id={`distribution-legislation-${index}`}/>
+          <LegislationChips legislation={state.applicableLegislation} ctx={ctx} id={`distribution-legislation-${index}`} />
         </div>
       ) : null}
       <div className="flex-row">

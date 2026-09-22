@@ -52,10 +52,11 @@ export interface DatasetDetailState {
 
   dataset: {
     iri: string;
+    types: string[];
     heading: HeadingViewModel;
     publisher: HrefLabel | null;
     description: string;
-    applicableLegislation: ApplicableLegislationItem[];
+    applicableLegislation: string[];
     keywords: HrefLabel[];
     themesVisible: boolean;
     themes: HrefLabelIri[];
@@ -85,9 +86,6 @@ export interface DatasetDetailState {
       url: string;
       viewer: string;
     }[];
-    //
-    isOpenData: boolean;
-    isNonPublicData: boolean;
   };
 
   distributions: Distributions;
@@ -114,16 +112,6 @@ export interface HeadingViewModel {
   copyUrl: string | null;
   deleteDatasetUrl: string | null;
   deleteCatalogUrl: string | null;
-}
-
-export interface ApplicableLegislationItem {
-  url: string;
-  label: string;
-  /* When set render as a chip in the heading section. */
-  chip: {
-    variant: string;
-    label: string;
-  } | null;
 }
 
 export interface HrefLabelIri {
@@ -161,7 +149,7 @@ export interface DistributionItemState {
   iri: string;
   title: string;
   format: string;
-  applicableLegislation: ApplicableLegislationItem[];
+  applicableLegislation: string[];
   missingLegal: boolean;
   dcatApLegal: boolean;
   dcatApCzLegal: DcatApCzLegal | null;

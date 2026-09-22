@@ -24,6 +24,7 @@ import { ViewContext } from "../../service/view-context.ts";
 import { ListSearchHeader } from "../../component/list-search-header.tsx";
 import { ListSearchControls } from "../../component/list-search-controls.tsx";
 import { ListOfItems } from "../../component/list-search-items.tsx";
+import { DynamicDataChip, HighValueDatasetChip, NonPublicChip, OpenDataChip } from "../../component/legislation-chips.tsx";
 
 const FACET_SERIES = {
   "name": "datasetSeries",
@@ -309,9 +310,7 @@ function DatasetItem({ value, ctx }: {
   if (value.isHvd) {
     tags.push((
       <li>
-        <gov-chip color="error" type="outlined" size="xs">
-          {ctx.t("high-value-dataset")}
-        </gov-chip>
+        <HighValueDatasetChip ctx={ctx} />
       </li>
     ));
   }
@@ -319,10 +318,7 @@ function DatasetItem({ value, ctx }: {
   if (value.isOpenData) {
     tags.push((
       <li>
-        <gov-chip color="success" type="outlined" size="xs">
-          {/* open-data-dataset */}
-          {ctx.t("open-data")}
-        </gov-chip>
+        <OpenDataChip ctx={ctx} />
       </li>
     ));
   }
@@ -330,10 +326,7 @@ function DatasetItem({ value, ctx }: {
   if (value.isNonPublicData) {
     tags.push((
       <li>
-        <gov-chip color="secondary" type="outlined" size="xs">
-          {/* non-public-dataset */}
-          {ctx.t("non-public-data")}
-        </gov-chip>
+        <NonPublicChip ctx={ctx} />
       </li>
     ));
   }
@@ -341,10 +334,7 @@ function DatasetItem({ value, ctx }: {
   if (value.isDynamicData) {
     tags.push((
       <li>
-        <gov-chip color="neutral" type="outlined" size="xs">
-          {/* dynamic-dataset */}
-          {ctx.t("dynamic-chip")}
-        </gov-chip>
+        <DynamicDataChip ctx={ctx} />
       </li>
     ));
   }
