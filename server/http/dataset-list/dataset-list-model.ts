@@ -1,10 +1,5 @@
 import { createLanguageSelector } from "../../service/language-selector.ts";
 import { Language } from "../../localization/index.ts";
-import {
-  containsDynamicData, containsHighValueDataset,
-  containsNonPublicData, containsOpenData,
-} from "../../dcat-ap-cz/index.ts";
-
 
 const LEGISLATION_HVD = "http://data.europa.eu/eli/reg_impl/2023/138/oj";
 
@@ -98,19 +93,12 @@ export async function prepareData(services, languages: Language[], query) {
 
 async function updateDatasetsInPlace(services, languages, documents) {
   for (const document of documents) {
-    // Tags based on distribution formats.
+    //
+    document["applicableLegislation"] = document["applicable_legislation"] ?? [];
+    delete document["applicable_legislation"];
+    //
     document["format"] = document["file_type"].map(iri => ({ "iri": iri }));
     delete document["file_type"];
-    // Tags based on legislation.
-    const legislation = document["applicable_legislation"];
-    delete document["applicable_legislation"];
-    document["isHvd"] =  containsHighValueDataset(legislation);
-    document["isDynamicData"] =  containsDynamicData(legislation);
-    // Tags based on dataset_type.
-    const datasetType = document["dataset_type"];
-    delete document["dataset_type"];
-    document["isOpenData"] = containsOpenData(datasetType);
-    document["isNonPublicData"] = containsNonPublicData(datasetType);
     //
     await services.label.addLabelToResources(languages, document["format"]);
   }

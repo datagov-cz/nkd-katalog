@@ -24,7 +24,7 @@ import { ViewContext } from "../../service/view-context.ts";
 import { ListSearchHeader } from "../../component/list-search-header.tsx";
 import { ListSearchControls } from "../../component/list-search-controls.tsx";
 import { ListOfItems } from "../../component/list-search-items.tsx";
-import { DynamicDataChip, HighValueDatasetChip, NonPublicChip, OpenDataChip } from "../../component/legislation-chips.tsx";
+import { DatasetChips } from "../../component/chips.tsx";
 
 const FACET_SERIES = {
   "name": "datasetSeries",
@@ -305,54 +305,17 @@ function DatasetItem({ value, ctx }: {
   value: DatasetListDocument,
   ctx: ViewContext,
 }) {
-  const tags = [];
-
-  if (value.isHvd) {
-    tags.push((
-      <li>
-        <HighValueDatasetChip ctx={ctx} />
-      </li>
-    ));
-  }
-
-  if (value.isOpenData) {
-    tags.push((
-      <li>
-        <OpenDataChip ctx={ctx} />
-      </li>
-    ));
-  }
-
-  if (value.isNonPublicData) {
-    tags.push((
-      <li>
-        <NonPublicChip ctx={ctx} />
-      </li>
-    ));
-  }
-
-  if (value.isDynamicData) {
-    tags.push((
-      <li>
-        <DynamicDataChip ctx={ctx} />
-      </li>
-    ));
-  }
-
   const description = " " + breakLines(value.description) + " ";
   const headlineId = "dataset-" + encodeURIComponent(value.iri);
-
   return (
     <article>
       <gov-card direction="horizontal" href={value.href} aria-labelledby={headlineId}>
         <gov-flex gap="s" direction="column">
           <header>
             <gov-flex gap="s" direction="column">
-              {tags.length === 0 ? null : (
-                <ul className="gov-tags gov-list--plain">
-                  {tags}
-                </ul>
-              )}
+              <ul className="gov-tags gov-list--plain">
+                <DatasetChips ctx={ctx} legislation={value.applicableLegislation} />
+              </ul>
               <h3 id={headlineId} className="gov-card__headline">
                 {value.title}
               </h3>

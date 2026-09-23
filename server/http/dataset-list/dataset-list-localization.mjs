@@ -89,6 +89,7 @@ export default {
       "active-filters": "Aktivní filtry:",
       "cancel-filter": (filter) => `Odstranit filtr ${filter}`,
       "search-result-list": "Výpis výsledků vyhledávání",
+      "public-registry": "Veřejné registry",
     },
   },
   "en": {
@@ -180,6 +181,7 @@ export default {
       "clear-filters-aria": "Clear all active filters",
       "active-filters": "Active filters:",
       "cancel-filter": (filter) => `Remove filter ${filter}`,
+      "public-registry": "Public registry",
     },
   },
 };

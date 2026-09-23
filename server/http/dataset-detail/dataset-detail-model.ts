@@ -92,8 +92,7 @@ export async function prepareDatasetDetailViewModel(
       tags: [], // TODO
       // We do not use label from the dataset as it is not part of the data.
       publisher: labels.wrap(publisher.iri),
-      applicableLegislation: dataset.applicableLegislation
-        .map(item => ({ url: item })),
+      applicableLegislation: dataset.applicableLegislation,
       keywords: dataset.keyword
         .map(item => item[language])
         .filter(item => item !== undefined),
@@ -174,7 +173,7 @@ export interface DatasetDetailViewModel {
 
     publisher: Link;
 
-    applicableLegislation: { url: string }[];
+    applicableLegislation: string[];
 
     keywords: string[];
 
@@ -288,7 +287,7 @@ export interface FileDistribution extends Distributable {
 
   tags: Link[];
 
-  applicableLegislation: { url: string }[];
+  applicableLegislation: string[];
 
   format: Link | null;
 
@@ -378,7 +377,7 @@ export interface DataService extends Distributable {
 
   tags: Link[];
 
-  applicableLegislation: { url: string }[];
+  applicableLegislation: string[];
 
   endpointDescription: string | null;
 
@@ -477,9 +476,7 @@ function asDistributable(
       title: lang(distribution.title),
       tags: [],
       format: labels.wrapFirst(distribution.format),
-      applicableLegislation: distribution.applicableLegislation
-        .map(item => ({ url: item }))
-        .toSorted((left, right) => left.url.localeCompare(right.url)),
+      applicableLegislation: distribution.applicableLegislation,
       accessUrl: first(distribution.accessUrl),
       termsOfUse: termsOfUse === null ? (
         distribution.license.length === 0 ? null : ({
@@ -526,9 +523,7 @@ function asDistributable(
       type: "DataService",
       // Loading from distribution
       format: labels.wrapFirst(distribution.format),
-      applicableLegislation: distribution.applicableLegislation
-        .map(item => ({ url: item }))
-        .toSorted((left, right) => left.url.localeCompare(right.url)),
+      applicableLegislation: distribution.applicableLegislation,
       accessUrl: first(distribution.accessUrl),
       termsOfUse: termsOfUse === null ? (
         distribution.license.length === 0 ? null : ({

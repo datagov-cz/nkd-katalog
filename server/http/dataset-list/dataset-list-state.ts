@@ -57,14 +57,11 @@ export interface DatasetListQuery {
 /** A dataset card, after `updateDatasetsInPlace` and `prepareDocumentsInPlace`. */
 export interface DatasetListDocument {
   iri: string;
+  applicableLegislation: [];
   title: string;
   description: string;
   /** Added by `prepareDocumentsInPlace`. */
   href: string;
-  isHvd: boolean;
-  isDynamicData: boolean;
-  isOpenData: boolean;
-  isNonPublicData: boolean;
   format: {
     iri: string;
     label: string;

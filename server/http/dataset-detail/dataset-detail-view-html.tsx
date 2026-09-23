@@ -40,13 +40,13 @@ import { breakLines, escapeExpression } from "../../html/escape.ts";
 import { Language } from "../../localization/index.ts";
 import { ViewContext } from "../../service/view-context.ts";
 import { RelatedItems } from "../../component/detail-parts.tsx";
+import { createApplicableLegislation } from "../../dcat-ap-cz/index.ts";
 import {
-  containsDynamicData, containsHighValueDataset,
-  containsPublicRegistry,
-  isDynamicData, isHighValueDataset, containsNonPublicData, containsOpenData,
-  isPublicRegistry,
-} from "../../dcat-ap-cz/index.ts";
-import { DynamicDataChip, HighValueDatasetChip, NonPublicChip, OpenDataChip, PublicRegistryChip } from "../../component/legislation-chips.tsx";
+  DatasetChips,
+  DynamicDataChip, HighValueDatasetChip, NonPublicChip, OpenDataChip, PublicRegistryChip,
+} from "../../component/chips.tsx";
+
+const applicableLegislation = createApplicableLegislation();
 
 export function renderHtml(
   services: DatasetDetailViewServices,
@@ -195,7 +195,7 @@ export function prepareTemplateData(
         label: item.label,
       })),
       //
-      applicableLegislation: dataset.applicableLegislation.map(item => item.url),
+      applicableLegislation: dataset.applicableLegislation,
       //
       landingPage: dataset.landingPage[0]?.url ?? null,
       publicInformationSystem: dataset.publicInformationSystem.map(asHrefLabel),
@@ -393,12 +393,6 @@ function parseXsdDuration(value: string) {
   return result;
 }
 
-function prepareApplicableLegislation(applicableLegislation: { url: string }[]) {
-  return applicableLegislation
-    .map(({ url }) => url)
-    .toSorted((left, right) => left.localeCompare(right, 'en'));
-}
-
 const SPARQL_SCHEMA = "https://www.w3.org/TR/sparql11-protocol/";
 
 function prepareDistribution(
@@ -422,7 +416,7 @@ function prepareDistribution(
       iri: value.iri,
       title: value.title,
       format: value.format?.label ?? null,
-      applicableLegislation: prepareApplicableLegislation(value.applicableLegislation),
+      applicableLegislation: value.applicableLegislation,
       missingLegal: value.termsOfUse === null,
       dcatApLegal: value.termsOfUse?.type === "DcatAp",
       dcatApCzLegal: prepareDcatApCzTermsOfUse(translation, value),
@@ -466,7 +460,7 @@ function prepareDistribution(
       iri: value.iri,
       title: value.title,
       format: value.format?.label ?? null,
-      applicableLegislation: prepareApplicableLegislation(value.applicableLegislation),
+      applicableLegislation: value.applicableLegislation,
       missingLegal: value.termsOfUse === null,
       dcatApLegal: value.termsOfUse.type === "DcatAp",
       dcatApCzLegal: prepareDcatApCzTermsOfUse(translation, value),
@@ -843,13 +837,15 @@ function DatasetProperties({ state, ctx }: {
         ) : null}
       </div>
       <div className="chip-container mb-2">
-        {containsOpenData(dataset.types) ? (
-          <OpenDataChip ctx={ctx} />
-        ) : null}
-        {containsNonPublicData(dataset.types) ? (
-          <NonPublicChip ctx={ctx} />
-        ) : null}
-        <LegislationChips legislation={dataset.applicableLegislation} ctx={ctx} id="dataset-legislation" />
+        <ul className="gov-tags gov-list--plain">
+          <DatasetChips ctx={ctx} legislation={dataset.applicableLegislation} />
+          <li>
+            <gov-chip color="primary" type="outlined" size="xs" tag="button" data-toggle="dialog" data-target="dataset-legislation">
+              §
+            </gov-chip>
+          </li>
+        </ul>
+        <LegislationDialog ctx={ctx} legislation={dataset.applicableLegislation} id="dataset-legislation" />
       </div>
       <div className="chip-container mb-2">
         {dataset.keywords.map((keyword) => (
@@ -1040,7 +1036,7 @@ function DatasetProperties({ state, ctx }: {
   );
 }
 
-function LegislationChips({ id, legislation, ctx }: {
+function LegislationDialog({ id, legislation, ctx }: {
   id: string,
   legislation: string[],
   ctx: ViewContext,
@@ -1048,37 +1044,25 @@ function LegislationChips({ id, legislation, ctx }: {
   if (legislation.length === 0) {
     return null;
   }
+  // TODO accessible-close-label="Close dialog box with more information"
   return (
-    <>
-      {containsHighValueDataset(legislation) ? (
-        <HighValueDatasetChip ctx={ctx} />
-      ) : null}
-      {containsDynamicData(legislation) ? (
-        <DynamicDataChip ctx={ctx} />
-      ) : null}
-      {containsPublicRegistry(legislation) ? (
-        <PublicRegistryChip ctx={ctx} />
-      ) : null}
-      <gov-chip color="primary" type="outlined" size="s" tag="button" data-toggle="dialog" data-target={id}>
-        §
-      </gov-chip>
-      {/* TODO accessible-close-label="Close dialog box with more information" */}
-      <gov-dialog role="dialog" id={id} >
-        <h2 slot="title">{ctx.t("modal-legislation")}</h2>
-        <ul>
-          {legislation.map((item) => (
-            <li>
-              {isHighValueDataset(item) ? <HighValueDatasetChip ctx={ctx} /> : null}
-              {isDynamicData(item) ? <DynamicDataChip ctx={ctx} /> : null}
-              {isPublicRegistry(item) ? <PublicRegistryChip ctx={ctx} /> : null}
-              <a href={item} rel="nofollow noopener noreferrer" target="_blank">
-                {item}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </gov-dialog>
-    </>
+    <gov-dialog role="dialog" id={id} >
+      <h2 slot="title">{ctx.t("modal-legislation")}</h2>
+      <ul>
+        {legislation.map((item) => (
+          <li>
+            {applicableLegislation.isOpenData(item) ? <OpenDataChip ctx={ctx} /> : null}
+            {applicableLegislation.isPublicRegistry(item) ? <PublicRegistryChip ctx={ctx} /> : null}
+            {applicableLegislation.isHighValueDataset(item) ? <HighValueDatasetChip ctx={ctx} /> : null}
+            {applicableLegislation.isDynamicData(item) ? <DynamicDataChip ctx={ctx} /> : null}
+            {applicableLegislation.isNonPublicData(item) ? <NonPublicChip ctx={ctx} /> : null}
+            <a href={item} rel="nofollow noopener noreferrer" target="_blank">
+              {item}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </gov-dialog>
   );
 }
 
@@ -1145,7 +1129,15 @@ function DistributionItem({ index, state, ctx }: {
       </h4>
       {state.applicableLegislation.length > 0 ? (
         <div className="chip-container mb-2">
-          <LegislationChips legislation={state.applicableLegislation} ctx={ctx} id={`distribution-legislation-${index}`} />
+          <ul className="gov-tags gov-list--plain">
+            <DatasetChips ctx={ctx} legislation={state.applicableLegislation} />
+            <li>
+              <gov-chip color="primary" type="outlined" size="xs" tag="button" data-toggle="dialog" data-target={`distribution-legislation-${index}`}>
+                §
+              </gov-chip>
+            </li>
+          </ul>
+          <LegislationDialog ctx={ctx} legislation={state.applicableLegislation} id={`distribution-legislation-${index}`} />
         </div>
       ) : null}
       <div className="flex-row">
