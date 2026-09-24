@@ -43,8 +43,9 @@ export function ListSearchControls(props: {
     filters: ActiveFilter[],
     /**
      * Link to a website with all filters disabled.
+     * When null no button to clear filters is rendered.
      */
-    clearFilters: string,
+    clearFilters: string | null,
   },
   ctx: ViewContext,
   /**
@@ -67,9 +68,11 @@ export function ListSearchControls(props: {
             <form class="gov-filters">
               {facets}
             </form>
-            <gov-button color="error" size="m" type="base" expanded="" slot="footer" href={state.clearFilters}>
-              {ctx.t("clear-filters")}
-            </gov-button>
+            {state.clearFilters === null ? null :
+              <gov-button color="error" size="m" type="base" expanded="" slot="footer" href={state.clearFilters}>
+                {ctx.t("clear-filters")}
+              </gov-button>
+            }
             {/* For now we apply by direct action on the facet element.
             <gov-button color="primary" size="m" type="solid" expanded="" slot="footer">
               {ctx.t("apply-filter-dialog")}
@@ -111,27 +114,29 @@ export function ListSearchControls(props: {
           </gov-dropdown>
         </gov-flex>
       </section>
-      <section aria-label={ctx.t("active-filters")}>
-        <gov-flex justify-content="space-between" align-items="center" responsive="false" class="gov-mobile-only gov-mb--s">
-          <span>{ctx.t("active-filters")}</span>
-        </gov-flex>
-        <gov-flex justify-content="space-between" align-items="center" responsive="false">
-          <gov-flex gap="s" align-items="center" wrap="wrap" responsive="false">
-            <span class="gov-desktop-only"></span>
-            {state.filters.map(item => (
-              <div class="gov-filter-tag">
-                {item.label}
-                <gov-button color="primary" size="s" type="base" aria-label={item.ariaLabel} href={item.href}>
-                  <gov-icon slot="icon-start" type="components" name="x-lg" />
-                </gov-button>
-              </div>
-            ))}
+      {state.clearFilters === null && state.filters.length === 0 ? null :
+        <section aria-label={ctx.t("active-filters")}>
+          <gov-flex justify-content="space-between" align-items="center" responsive="false" class="gov-mobile-only gov-mb--s">
+            <span>{ctx.t("active-filters")}</span>
           </gov-flex>
-          <gov-button color="primary" size="s" type="base" aria-label={ctx.t("clear-filters-aria")} href={state.clearFilters}>
-            {ctx.t("clear-filters")}
-          </gov-button>
-        </gov-flex>
-      </section>
+          <gov-flex justify-content="space-between" align-items="center" responsive="false">
+            <gov-flex gap="s" align-items="center" wrap="wrap" responsive="false">
+              <span class="gov-desktop-only"></span>
+              {state.filters.map(item => (
+                <div class="gov-filter-tag">
+                  {item.label}
+                  <gov-button color="primary" size="s" type="base" aria-label={item.ariaLabel} href={item.href}>
+                    <gov-icon slot="icon-start" type="components" name="x-lg" />
+                  </gov-button>
+                </div>
+              ))}
+            </gov-flex>
+            <gov-button color="primary" size="s" type="base" aria-label={ctx.t("clear-filters-aria")} href={state.clearFilters}>
+              {ctx.t("clear-filters")}
+            </gov-button>
+          </gov-flex>
+        </section>
+      }
     </>
   )
 }

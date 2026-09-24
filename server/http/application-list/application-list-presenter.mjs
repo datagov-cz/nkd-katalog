@@ -1,6 +1,6 @@
 import { ROUTE } from "../route-name.mjs";
 import { createTranslationService } from "../../service/translation-service.ts";
-import { parseClientQuery, beforeLinkCallback } from "./application-list-query.mjs";
+import { parseApplicationListQuery, beforeLinkCallback } from "./application-list-query.ts";
 import { prepareData } from "./application-list-model.mjs";
 import { renderHtml } from "./application-list-view-html.tsx";
 import localization from "./application-list-localization.mjs";
@@ -34,7 +34,7 @@ export default function createHandler(services, languages) {
 }
 
 async function handleRequest(services, languages, request, reply) {
-  const serverQuery = parseClientQuery(services.navigation, request.query);
+  const serverQuery = parseApplicationListQuery(services.navigation, request.query);
   const data = await prepareData(services, languages, serverQuery);
   renderHtml(services, languages, serverQuery, data, reply);
 }

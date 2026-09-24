@@ -26,7 +26,7 @@ export function ListSearchPage<ItemType>({ state, ctx }: {
     facets: FacetData[],
     resultBar: ResultBarState,
     /** Link to a page with all filters disabled. */
-    clearFilters: string,
+    clearFilters: string | null,
     items: ItemType[],
     pagination: PaginationState,
     component: FunctionComponent<{ value: ItemType, ctx: ViewContext }>,

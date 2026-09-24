@@ -14,6 +14,9 @@ import type { ResultBarState } from "../../component/result-bar.tsx";
 import type { PaginationState } from "../../component/pagination.tsx";
 import type { FacetData, FacetItemData } from "../../component/facet.tsx";
 import type { createQuerySectionData } from "../../component/query-section.tsx";
+import type { DatasetListQuery } from "./dataset-list-query.ts";
+
+export type { DatasetListQuery } from "./dataset-list-query.ts";
 
 export type QuerySectionViewState = ReturnType<typeof createQuerySectionData>;
 
@@ -21,37 +24,6 @@ export interface DatasetListViewServices {
   configuration: Configuration;
   translation: TranslationService;
   navigation: NavigationEntry;
-}
-
-/** Parsed client query, as produced by `parseClientQuery`. */
-export interface DatasetListQuery {
-  searchQuery: string | null;
-  publisher: string[];
-  publisherLimit: number;
-  theme: string[];
-  themeLimit: number;
-  keyword: string[];
-  keywordLimit: number;
-  format: string[];
-  formatLimit: number;
-  dataServiceType: string[];
-  dataServiceTypeLimit: number;
-  temporalStart: string | null;
-  temporalEnd: string | null;
-  vdfPublicData: boolean;
-  vdfCodelist: boolean;
-  isPartOf: string[];
-  sort: string;
-  sortDirection: string;
-  page: number;
-  pageSize: number;
-  hvdDataset: boolean;
-  datasetType: string[];
-  datasetTypeLimit: number;
-  hvdCategory: string[];
-  hvdCategoryLimit: number;
-  isvs: string[];
-  isvsLimit: number;
 }
 
 /** A dataset card, after `updateDatasetsInPlace` and `prepareDocumentsInPlace`. */
@@ -82,7 +54,7 @@ export interface DatasetListData {
 export interface DatasetListState {
   head: HeadData;
   /** URL to page with no filters active. */
-  clearFilters: string;
+  clearFilters: string | null,
   search: { query: { searchQuery: string | null } };
   /**
    * First page of the current results, and the names of the query parameters

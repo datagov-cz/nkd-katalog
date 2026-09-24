@@ -1,21 +1,10 @@
-import {DEFAULT_FACET_SIZE, DEFAULT_PAGE_SIZE} from "../../constants.ts";
+import { DEFAULT_FACET_SIZE, DEFAULT_PAGE_SIZE } from "../../constants.ts";
+import type { NavigationEntry } from "../../service/navigation-service.ts";
 
-const SORT_OPTIONS = ["title"]
-
-const SORT_DIRECTION_OPTIONS = ["asc", "desc"];
-
-const DEFAULT_SORT = "title";
-
-const DEFAULT_SORT_DIRECTION = "asc";
-
-const DEFAULT_PAGE = 0;
-
-/**
- * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
- * @param {Record<string, string | string[]>} query
- * @returns {any}
- */
-export function parseClientQuery(navigation, query) {
+export function parseDatasetListQuery(
+  navigation: NavigationEntry,
+  query: Record<string, string | string[]>,
+): DatasetListQuery {
   const clientSort = navigation.queryArgumentFromClient(query, "sort");
   const sort = selectArgumentFromClientQueryOrDefault(
     navigation, SORT_OPTIONS, clientSort,
@@ -84,6 +73,89 @@ export function parseClientQuery(navigation, query) {
   };
 }
 
+
+export interface DatasetListQuery {
+  vdfPublicData: boolean;
+  vdfCodelist: boolean;
+  hvdDataset: boolean;
+
+  // Text query.
+  searchQuery: string | null;
+  // Sort.
+  sort: string;
+  sortDirection: string;
+  // Pagination.
+  page: number;
+  pageSize: number;
+  // Support for dataset series.
+  isPartOf: string[];
+  // Temporal search.
+  temporalStart: string | null;
+  temporalEnd: string | null;
+  // Theme facet.
+  theme: string[];
+  themeLimit: number;
+  // Keywords facet.
+  keyword: string[];
+  keywordLimit: number;
+  // Format facet.
+  format: string[];
+  formatLimit: number;
+  // Data service type facet.
+  dataServiceType: string[];
+  dataServiceTypeLimit: number;
+  // Publisher facet.
+  publisher: string[];
+  publisherLimit: number;
+  // Dataset type facet.
+  datasetType: string[];
+  datasetTypeLimit: number;
+  // HVD category facet.
+  hvdCategory: string[];
+  hvdCategoryLimit: number;
+  // ISVS facet.
+  isvs: string[];
+  isvsLimit: number;
+}
+
+const SORT_OPTIONS = ["title"]
+
+const SORT_DIRECTION_OPTIONS = ["asc", "desc"];
+
+const DEFAULT_SORT = "title";
+
+const DEFAULT_SORT_DIRECTION = "asc";
+
+const DEFAULT_PAGE = 0;
+
+
+/**
+ * A query is empty when no filter is applied, i.e. every property other
+ * than pagination (page, pageSize), sorting (sort, sortDirection), and the
+ * facet-size settings (the *Limit properties) is at its empty/default value.
+ */
+export function isDatasetListQueryEmpty(query: DatasetListQuery): boolean {
+  return isEmptyString(query.searchQuery)
+    && query.publisher.length === 0
+    && query.theme.length === 0
+    && query.keyword.length === 0
+    && query.format.length === 0
+    && query.dataServiceType.length === 0
+    && isEmptyString(query.temporalStart)
+    && isEmptyString(query.temporalEnd)
+    && !query.vdfPublicData
+    && !query.vdfCodelist
+    && query.isPartOf.length === 0
+    && !query.hvdDataset
+    && query.datasetType.length === 0
+    && query.hvdCategory.length === 0
+    && query.isvs.length === 0;
+}
+
+function isEmptyString(value: string | null): boolean {
+  return value === null || value === "";
+}
+
 function selectArgumentFromClientQueryOrDefault(
   navigation, options, clientValue, defaultValue
 ) {
@@ -108,12 +180,10 @@ function asPositiveNumber(value, defaultValue) {
   }
 }
 
-/**
- * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
- * @param {any} serverQuery
- * @returns {Record<string, any>}
- */
-export function beforeLinkCallback(navigation, serverQuery) {
+export function beforeLinkCallback(
+  navigation: NavigationEntry,
+  serverQuery: DatasetListQuery,
+): Record<string, string | number> {
   const result = {};
   setIfNotEmpty(result, "query", serverQuery.searchQuery);
   setIfNotEmpty(result, "publisher", serverQuery.publisher);

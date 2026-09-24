@@ -20,6 +20,7 @@ import type {
   SuggestionListState,
   SuggestionListViewServices,
 } from "./suggestion-list-state.ts";
+import { isSuggestionListQueryEmpty } from "./suggestion-list-query.ts";
 
 const FACETS = [
   { "name": "state", "tooltip": "stateTooltip" },
@@ -68,7 +69,8 @@ export function prepareTemplateData(
   const suggestionCount = data["found"]["documents"];
   return {
     "head": components.createHeadData(configuration),
-    "clearFilters": navigation.linkFromServer({}),
+    "clearFilters":
+      isSuggestionListQueryEmpty(query) ? null : navigation.linkFromServer({}),
     "search": { "query": { "searchQuery": query.searchQuery } },
     "navigation": {
       "url": navigation.linkFromServer({ ...query, "page": 0 }),

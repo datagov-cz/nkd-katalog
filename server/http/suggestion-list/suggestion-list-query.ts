@@ -1,21 +1,10 @@
-import {DEFAULT_FACET_SIZE, DEFAULT_PAGE_SIZE} from "../../constants.ts";
+import { DEFAULT_FACET_SIZE, DEFAULT_PAGE_SIZE } from "../../constants.ts";
+import type { NavigationEntry } from "../../service/navigation-service.ts";
 
-const SORT_OPTIONS = ["title", "created"]
-
-const SORT_DIRECTION_OPTIONS = ["asc", "desc"];
-
-const DEFAULT_SORT = "title";
-
-const DEFAULT_SORT_DIRECTION = "asc";
-
-const DEFAULT_PAGE = 0;
-
-/**
- * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
- * @param {Record<string, string | string[]>} query
- * @returns {any}
- */
-export function parseClientQuery(navigation, query) {
+export function parseSuggestionListQuery(
+  navigation: NavigationEntry,
+  query: Record<string, string | string[]>,
+): SuggestionListQuery {
   const clientSort = navigation.queryArgumentFromClient(query, "sort");
   const sort = selectArgumentFromClientQueryOrDefault(
     navigation, SORT_OPTIONS, clientSort,
@@ -48,6 +37,54 @@ export function parseClientQuery(navigation, query) {
   };
 }
 
+
+export interface SuggestionListQuery {
+  // Text query.
+  searchQuery: string | null;
+  // Sort.
+  sort: string;
+  sortDirection: string;
+  // Pagination.
+  page: number;
+  pageSize: number;
+  // Theme facet.
+  theme: string[];
+  themeLimit: number;
+  // Publisher facet.
+  publisher: string[];
+  publisherLimit: number;
+  // State facet.
+  state: string[];
+  stateLimit: number;
+}
+
+const SORT_OPTIONS = ["title", "created"]
+
+const SORT_DIRECTION_OPTIONS = ["asc", "desc"];
+
+const DEFAULT_SORT = "title";
+
+const DEFAULT_SORT_DIRECTION = "asc";
+
+const DEFAULT_PAGE = 0;
+
+
+/**
+ * A query is empty when no filter is applied, i.e. every property other
+ * than pagination (page, pageSize), sorting (sort, sortDirection), and the
+ * facet-size settings (the *Limit properties) is at its empty/default value.
+ */
+export function isSuggestionListQueryEmpty(query: SuggestionListQuery): boolean {
+  return isEmptyString(query.searchQuery)
+    && query.theme.length === 0
+    && query.publisher.length === 0
+    && query.state.length === 0;
+}
+
+function isEmptyString(value: string | null): boolean {
+  return value === null || value === "";
+}
+
 function selectArgumentFromClientQueryOrDefault(
   navigation, options, clientValue, defaultValue
 ) {
@@ -72,12 +109,10 @@ function asPositiveNumber(value, defaultValue) {
   }
 }
 
-/**
- * @param {import('../../service/navigation-service.ts').NavigationEntry} navigation
- * @param {any} serverQuery
- * @returns {Record<string, any>}
- */
-export function beforeLinkCallback(navigation, serverQuery) {
+export function beforeLinkCallback(
+  navigation: NavigationEntry,
+  serverQuery: SuggestionListQuery,
+): Record<string, string | number> {
   const result = {};
   setIfNotEmpty(result, "query", serverQuery.searchQuery);
   setIfNotEmpty(result, "theme", serverQuery.theme);
@@ -110,4 +145,3 @@ function setIfNotEmpty(query, key, value) {
   }
   query[key] = value;
 }
-

@@ -20,6 +20,7 @@ import type {
   ApplicationListState,
   ApplicationListViewServices,
 } from "./application-list-state.ts";
+import { isApplicationListQueryEmpty } from "./application-list-query.ts";
 
 const FACETS = [
   { "name": "theme", "tooltip": "themeTooltip" },
@@ -69,7 +70,8 @@ export function prepareTemplateData(
   const applicationCount = data["found"]["documents"];
   return {
     "head": components.createHeadData(configuration),
-    "clearFilters": navigation.linkFromServer({}),
+    "clearFilters":
+      isApplicationListQueryEmpty(query) ? null : navigation.linkFromServer({}),
     "search": { "query": { "searchQuery": query.searchQuery } },
     "navigation": {
       "url": navigation.linkFromServer({ ...query, "page": 0 }),

@@ -8,22 +8,14 @@ import type { HeadData } from "../../component/head.tsx";
 import type { ResultBarState } from "../../component/result-bar.tsx";
 import type { PaginationState } from "../../component/pagination.tsx";
 import type { FacetData, FacetItemData } from "../../component/facet.tsx";
+import type { ApplicationListQuery } from "./application-list-query.ts";
+
+export type { ApplicationListQuery } from "./application-list-query.ts";
 
 export interface ApplicationListViewServices {
   configuration: Configuration;
   translation: TranslationService;
   navigation: NavigationEntry;
-}
-
-/**
- * Parsed client query. The view only reads `searchQuery` by name; every other
- * key is passed straight through to `navigation.linkFromServer`.
- */
-export interface ApplicationListQuery {
-  searchQuery: string | null;
-  page: number;
-  pageSize: number;
-  [key: string]: string | number | boolean | string[] | null | undefined;
 }
 
 export interface ApplicationListDocument {

@@ -25,6 +25,7 @@ import { ListSearchHeader } from "../../component/list-search-header.tsx";
 import { ListSearchControls } from "../../component/list-search-controls.tsx";
 import { ListOfItems } from "../../component/list-search-items.tsx";
 import { DatasetChips } from "../../component/chips.tsx";
+import { isDatasetListQueryEmpty } from "./dataset-list-query.ts";
 
 const FACET_SERIES = {
   "name": "datasetSeries",
@@ -128,7 +129,8 @@ export function prepareTemplateData(
 
   return {
     "head": components.createHeadData(configuration),
-    "clearFilters": navigation.linkFromServer({}),
+    "clearFilters":
+      isDatasetListQueryEmpty(query) ? null : navigation.linkFromServer({}),
     "search": { "query": { "searchQuery": query.searchQuery } },
     "navigation": {
       "url": navigation.linkFromServer({ ...query, "page": 0 }),
