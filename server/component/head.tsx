@@ -91,6 +91,8 @@ export function Head({ state }: { state: HeadData }) {
       <link type="text/css" rel="stylesheet" href={ds + "assets/styles/templates.css"} />
       {/*  */}
       <script type="module" src={ds + "assets/components/core/core.esm.js"}></script>
+      {/* Third party specific parts of design system. */}
+      <link type="text/css" rel="stylesheet" href={ds + "assets/third-party/data-gov-design-system.css"} />
       <script type="module" src={ds + "assets/third-party/gov-navigation.js"}></script>
       {/* Custom assets. */}
       <link type="text/css" rel="stylesheet" href="/assets/catalog/css/main.css" />
