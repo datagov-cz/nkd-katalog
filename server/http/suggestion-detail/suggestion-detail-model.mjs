@@ -12,6 +12,7 @@ export async function prepareData(services, languages, query) {
   }
   data["themes"] = await irisToResources(labelService, languages, data["themes"]);
   data["state"] = await iriToResource(labelService, languages, data["state"]);
+  data["source"] = await irisToResources(labelService, languages, data["source"]);
   data["datasets"] = await services.dataset.fetchDatasetPreviews(languages, data["datasets"]);
   return data;
 };

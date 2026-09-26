@@ -77,12 +77,14 @@ function prepareSuggestion(
   suggestion: SuggestionDetailData,
 ): SuggestionDetailSuggestion {
   updateCodelistInPlace(navigation, suggestion["themes"], "theme");
+  updateCodelistInPlace(navigation, suggestion["source"], "source");
   return {
     "iri": suggestion["iri"],
     "title": suggestion["title"],
     "description": suggestion["description"],
     "themes": suggestion["themes"],
     "state": suggestion["state"],
+    "source": suggestion["source"],
     "created": formatDate(language, suggestion["created"]),
     "mandatory_106": suggestion["mandatory_106"],
     "obstacle_special_regulation": suggestion["obstacle_special_regulation"],
@@ -192,6 +194,13 @@ function SuggestionDetailMain({ state, ctx }: {
         <PropertiesColumn>
           <Dl term={ctx.t("dt-state")}>
             <dd>{suggestion.state?.label}</dd>
+          </Dl>
+        </PropertiesColumn>
+        <PropertiesColumn>
+          <Dl term={ctx.t("dt-source")}>
+            {suggestion.source.map((item) => (
+              <DdLink item={item} title={goToLink} />
+            ))}
           </Dl>
         </PropertiesColumn>
         {suggestion.publication_plan_visible ? (

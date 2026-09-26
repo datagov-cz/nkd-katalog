@@ -9,6 +9,7 @@ import { emptyAsNull, parseFacet, parseDate } from "./shared/solr-response.ts";
  *   created: Date | null,
  *   themes: any[],
  *   state: any,
+ *   source: any,
  *   datasets: any[],
  *   publisher: { iri: string | null, title: string | null },
  *   mandatory_106: unknown,
@@ -22,6 +23,7 @@ import { emptyAsNull, parseFacet, parseDate } from "./shared/solr-response.ts";
  *   theme: string[],
  *   publisher: string[],
  *   state: string[],
+ *   source: string[],
  *   sort: string,
  *   sortDirection: "asc" | "desc",
  *   offset: number,
@@ -42,6 +44,7 @@ import { emptyAsNull, parseFacet, parseDate } from "./shared/solr-response.ts";
  *     theme: import('./shared/solr-response.ts').FacetItem[],
  *     publisher: import('./shared/solr-response.ts').FacetItem[],
  *     state: import('./shared/solr-response.ts').FacetItem[],
+ *     source: import('./shared/solr-response.ts').FacetItem[],
  *   },
  * }} SolrSuggestionsResponse
  *
@@ -83,6 +86,7 @@ function buildSuggestionQuery(iri) {
       "publisher",
       "publisher_cs",
       "state",
+      "source",
       "dataset",
       "mandatory_106",
       "obstacle_special_regulation",
@@ -109,6 +113,7 @@ function parseSuggestionResponse(response) {
     "created": parseDate(document["created"]),
     "themes": document["theme"] ?? [],
     "state": document["state"] ?? [],
+    "source": document["source"] ?? [],
     "datasets": document["dataset"] ?? [],
     "publisher": {
       "iri": emptyAsNull(document["publisher"]),
@@ -134,6 +139,7 @@ function buildSuggestionsQuery(query) {
     theme,
     publisher,
     state,
+    source,
     sort,
     sortDirection,
     offset,
@@ -144,6 +150,7 @@ function buildSuggestionsQuery(query) {
       "theme",
       "publisher",
       "state",
+      "source",
     ],
     "fl": [
       "iri",
@@ -155,6 +162,7 @@ function buildSuggestionsQuery(query) {
       ...prepareFieldQuery("theme", theme),
       ...prepareFieldQuery("publisher", publisher),
       ...prepareFieldQuery("state", state),
+      ...prepareFieldQuery("source", source),
     ],
     "sort": prepareSort("cs", sort, sortDirection),
     "facet": true,
@@ -179,6 +187,7 @@ function parseSuggestionsResponse(response) {
     "theme": parseFacet(facet_fields["theme"]),
     "publisher": parseFacet(facet_fields["publisher"]),
     "state": parseFacet(facet_fields["state"]),
+    "source": parseFacet(facet_fields["source"]),
   };
 
   return {

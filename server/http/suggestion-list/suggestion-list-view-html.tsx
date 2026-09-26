@@ -24,6 +24,7 @@ import { isSuggestionListQueryEmpty } from "./suggestion-list-query.ts";
 
 const FACETS = [
   { "name": "state", "tooltip": "stateTooltip" },
+  { "name": "source", "tooltip": "sourceTooltip" },
   { "name": "theme", "tooltip": "themeTooltip" },
   { "name": "publisher", "tooltip": "publisherTooltip" },
 ];
@@ -43,7 +44,7 @@ export function renderHtml(
   reply: FastifyReply,
 ): void {
   const state = prepareTemplateData(
-    services.configuration, services.translation, services.navigation, languages, query, data);
+    services.configuration, services.translation, services.navigation, query, data);
   const ctx: ViewContext = {
     t: services.translation.t,
     language: languages[0],
@@ -60,7 +61,6 @@ export function prepareTemplateData(
   configuration: Configuration,
   translation: TranslationService,
   navigation: NavigationEntry,
-  languages: Language[],
   query: SuggestionListQuery,
   data: SuggestionListData,
 ): SuggestionListState {

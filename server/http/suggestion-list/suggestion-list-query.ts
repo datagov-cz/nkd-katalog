@@ -21,6 +21,7 @@ export function parseSuggestionListQuery(
   const themeLimit = navigation.queryArgumentFromClient(query, "theme-limit");
   const publisherLimit = navigation.queryArgumentFromClient(query, "publisher-limit");
   const stateLimit = navigation.queryArgumentFromClient(query, "state-limit");
+  const sourceLimit = navigation.queryArgumentFromClient(query, "source-limit");
 
   return {
     "searchQuery": navigation.queryArgumentFromClient(query, "query"),
@@ -30,6 +31,8 @@ export function parseSuggestionListQuery(
     "publisherLimit": asPositiveNumber(publisherLimit, DEFAULT_FACET_SIZE),
     "state": navigation.queryArgumentArrayFromClient(query, "state"),
     "stateLimit": asPositiveNumber(stateLimit, DEFAULT_FACET_SIZE),
+    "source": navigation.queryArgumentArrayFromClient(query, "source"),
+    "sourceLimit": asPositiveNumber(sourceLimit, DEFAULT_FACET_SIZE),
     "sort": sort,
     "sortDirection": sortDirection,
     "page": asPositiveNumber(page, 1) - 1,
@@ -56,6 +59,9 @@ export interface SuggestionListQuery {
   // State facet.
   state: string[];
   stateLimit: number;
+  // Source facet.
+  source: string[];
+  sourceLimit: number;
 }
 
 const SORT_OPTIONS = ["title", "created"]
@@ -78,7 +84,8 @@ export function isSuggestionListQueryEmpty(query: SuggestionListQuery): boolean 
   return isEmptyString(query.searchQuery)
     && query.theme.length === 0
     && query.publisher.length === 0
-    && query.state.length === 0;
+    && query.state.length === 0
+    && query.source.length === 0;
 }
 
 function isEmptyString(value: string | null): boolean {
@@ -121,6 +128,8 @@ export function beforeLinkCallback(
   setIfNotDefault(result, "publisher-limit", serverQuery.publisherLimit, DEFAULT_FACET_SIZE);
   setIfNotEmpty(result, "state", serverQuery.state);
   setIfNotDefault(result, "state-limit", serverQuery.stateLimit, DEFAULT_FACET_SIZE);
+  setIfNotEmpty(result, "source", serverQuery.source);
+  setIfNotDefault(result, "source-limit", serverQuery.sourceLimit, DEFAULT_FACET_SIZE);
   if (serverQuery.sort !== DEFAULT_SORT) {
     result["sort"] = navigation.argumentFromServer(serverQuery.sort);
   }

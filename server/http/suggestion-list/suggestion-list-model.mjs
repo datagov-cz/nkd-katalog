@@ -11,6 +11,7 @@ export async function prepareData(services, languages, query) {
     "theme": query.theme,
     "publisher": query.publisher,
     "state": query.state,
+    "source": query.source,
     "sort": query.sort,
     "sortDirection": query.sortDirection,
     "offset": query.page * query.pageSize,
@@ -24,6 +25,7 @@ export async function prepareData(services, languages, query) {
     "theme": facets["theme"].length,
     "publisher": facets["publisher"].length,
     "state": facets["state"].length,
+    "source": facets["source"].length,
   };
 
   await updateApplicationsInPlace(services, languages, data["documents"]);
@@ -34,6 +36,8 @@ export async function prepareData(services, languages, query) {
     languages, facets["publisher"], query["publisher"], query["publisherLimit"]);
   await services.facet.updateFacetInPlace(
     languages, facets["state"], query["state"], query["stateLimit"]);
+  await services.facet.updateFacetInPlace(
+    languages, facets["source"], query["source"], query["sourceLimit"]);
 
   return data;
 }

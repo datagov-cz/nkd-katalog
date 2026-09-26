@@ -39,6 +39,7 @@ export interface SuggestionDetailData {
   description: string;
   themes: CodelistItem[];
   state: { label: string } | null;
+  source: CodelistItem[];
   created: Date | null;
   mandatory_106: boolean;
   obstacle_special_regulation: boolean;
@@ -54,6 +55,7 @@ export interface SuggestionDetailSuggestion {
   description: string;
   themes: CodelistItem[];
   state: { label: string } | null;
+  source: CodelistItem[];
   created: string;
   mandatory_106: boolean;
   obstacle_special_regulation: boolean;
