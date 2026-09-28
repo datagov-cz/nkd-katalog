@@ -6,6 +6,7 @@ import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
 import { SimpleListPage } from "../../component/simple-list-page.tsx";
+import { buildDetailSeoLinks } from "../../html/search-engine-optimization.ts";
 import type { ViewContext } from "../../service/view-context.ts";
 import type { Language } from "../../localization/index.ts";
 import type {
@@ -51,6 +52,8 @@ export function prepareTemplateData(
   );
   return {
     head: createHeadData(services.configuration),
+    seo: buildDetailSeoLinks(
+      services.navigation, services.configuration.client.siteOrigin, {}),
     catalogs: data["catalogs"],
     query,
   };
@@ -102,9 +105,9 @@ function LocalCatalogListHead({ state, ctx }: {
       <Head state={state.head} />
       <title>{ctx.t("page-title")}</title>
       <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/local-catalogs" />
-      <link rel="alternate" href="/lokální-katalogy" hreflang="cs" />
-      <link rel="alternate" href="/local-catalogs" hreflang="en" />
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }

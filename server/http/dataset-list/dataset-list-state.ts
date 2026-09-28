@@ -15,6 +15,7 @@ import type { PaginationState } from "../../component/pagination.tsx";
 import type { FacetData, FacetItemData } from "../../component/facet.tsx";
 import type { createQuerySectionData } from "../../component/query-section.tsx";
 import type { DatasetListQuery } from "./dataset-list-query.ts";
+import type { SeoLinks } from "../../html/search-engine-optimization.ts";
 
 export type { DatasetListQuery } from "./dataset-list-query.ts";
 
@@ -53,6 +54,7 @@ export interface DatasetListData {
 
 export interface DatasetListState {
   head: HeadData;
+  seo: SeoLinks & { noindex: boolean; metaDescription: string };
   /** URL to page with no filters active. */
   clearFilters: string | null,
   search: { query: { searchQuery: string | null } };

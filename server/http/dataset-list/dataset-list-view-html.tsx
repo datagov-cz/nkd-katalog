@@ -8,6 +8,7 @@ import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
+import { buildListSeoLinks, computeListSeo } from "../../html/search-engine-optimization.ts";
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
@@ -47,6 +48,11 @@ const FACETS = [
 const SORT_OPTIONS = [
   ["title", "asc"],
   ["title", "desc"],
+];
+
+/** Facets whose single-value pages are indexable landing pages; see `html/seo.ts`. */
+const INDEXABLE_FACETS: (keyof DatasetListQuery)[] = [
+  "publisher", "datasetType", "theme", "hvdCategory", "dataServiceType", "isvs",
 ];
 
 export function renderHtml(
@@ -127,8 +133,15 @@ export function prepareTemplateData(
   querySection.keywords = active(keywords);
   querySection.isvs = active(isvs);
 
+  const seo = computeListSeo(query, INDEXABLE_FACETS, isDatasetListQueryEmpty);
   return {
     "head": components.createHeadData(configuration),
+    "seo": {
+      ...buildListSeoLinks(navigation, configuration.client.siteOrigin, seo),
+      "metaDescription": query.searchQuery
+        ? translation.translate("search-page-description", query.searchQuery)
+        : translation.translate("page-description"),
+    },
     "clearFilters":
       isDatasetListQueryEmpty(query) ? null : navigation.linkFromServer({}),
     "search": { "query": { "searchQuery": query.searchQuery } },
@@ -207,10 +220,13 @@ function DatasetListHead({ state, ctx }: {
     <>
       <Head state={state.head} />
       <title>{ctx.t("page-title")}</title>
-      <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/datasets" />
-      <link rel="alternate" href="/datové-sady" hreflang="cs" />
-      <link rel="alternate" href="/datasets" hreflang="en" />
+      <meta name="description" content={state.seo.metaDescription} />
+      {state.seo.noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : null}
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }
@@ -278,7 +294,11 @@ function Main({ state, ctx }: {
         </gov-layout-column>
         <gov-layout-column>
           <main>
-            <ListSearchHeader state={{ value: state.search.query.searchQuery, navigationName: state.navigation.searchName }} ctx={ctx} />
+            <ListSearchHeader state={{
+              heading: ctx.t("search-heading"),
+              value: state.search.query.searchQuery,
+              navigationName: state.navigation.searchName,
+            }} ctx={ctx} />
             <gov-flex direction="column" gap="xl">
               <ListSearchControls state={{
                 message: state.resultBar.message,

@@ -9,6 +9,7 @@ import type { ResultBarState } from "../../component/result-bar.tsx";
 import type { PaginationState } from "../../component/pagination.tsx";
 import type { FacetData, FacetItemData } from "../../component/facet.tsx";
 import type { ApplicationListQuery } from "./application-list-query.ts";
+import type { SeoLinks } from "../../html/search-engine-optimization.ts";
 
 export type { ApplicationListQuery } from "./application-list-query.ts";
 
@@ -40,6 +41,7 @@ export interface ApplicationListData {
 
 export interface ApplicationListState {
   head: HeadData;
+  seo: SeoLinks & { noindex: boolean; metaDescription: string };
   /** URL to page with no filters active. */
   clearFilters: string;
   search: { query: { searchQuery: string | null } };

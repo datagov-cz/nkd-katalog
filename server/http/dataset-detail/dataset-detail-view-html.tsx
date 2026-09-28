@@ -36,7 +36,8 @@ import { ROUTE } from "../route-name.mjs";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
-import { breakLines, escapeExpression } from "../../html/escape.ts";
+import { breakLines, escapeExpression, truncateForMetaDescription } from "../../html/escape.ts";
+import { buildDetailSeoLinks } from "../../html/search-engine-optimization.ts";
 import { Language } from "../../localization/index.ts";
 import { ViewContext } from "../../service/view-context.ts";
 import { RelatedItems } from "../../component/detail-parts.tsx";
@@ -116,6 +117,12 @@ export function prepareTemplateData(
 
   return {
     head: createHeadData(configuration),
+    seo: {
+      ...buildDetailSeoLinks(
+        navigation, configuration.client.siteOrigin, { iri: dataset.iri }),
+      metaDescription: truncateForMetaDescription(dataset.description)
+        ?? translation.translate("page-description"),
+    },
     translation: translation.dictionary,
     labelEndpoint: configuration.client.conceptSparql,
     dataset: {
@@ -786,10 +793,10 @@ function DatasetDetailHead({ state, ctx }: {
     <>
       <Head state={state.head} />
       <title>{state.dataset.heading.title} - {ctx.t("title-suffix")}</title>
-      <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/dataset" />
-      <link rel="alternate" href="/datová-sada" hreflang="cs" />
-      <link rel="alternate" href="/dataset" hreflang="en" />
+      <meta name="description" content={state.seo.metaDescription} />
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }

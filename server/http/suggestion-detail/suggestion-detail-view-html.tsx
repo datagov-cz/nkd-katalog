@@ -6,7 +6,8 @@ import { Head } from "../../component/head.tsx";
 import { headerHtml } from "../../component/header.ts";
 import { footerHtml } from "../../component/footer.ts";
 import { renderToHtml } from "../../html/render-html.ts";
-import { breakLines } from "../../html/escape.ts";
+import { breakLines, truncateForMetaDescription } from "../../html/escape.ts";
+import { buildDetailSeoLinks } from "../../html/search-engine-optimization.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { Language } from "../../localization/index.ts";
 import type { ViewContext } from "../../service/view-context.ts";
@@ -55,6 +56,13 @@ export function prepareTemplateData(
   const suggestion = prepareSuggestion(services.navigation, language, data);
   return {
     "head": components.createHeadData(services.configuration),
+    "seo": {
+      ...buildDetailSeoLinks(
+        services.navigation, services.configuration.client.siteOrigin,
+        { iri: query.iri }),
+      "metaDescription": truncateForMetaDescription(suggestion.description)
+        ?? services.translation.translate("page-description"),
+    },
     "suggestion": suggestion,
     "query": query,
     "datasets": {
@@ -147,10 +155,10 @@ function SuggestionDetailHead({ state, ctx }: {
     <>
       <Head state={state.head} />
       <title>{ctx.t("page-title")}</title>
-      <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/suggestion-for-dataset-to-be-opened" />
-      <link rel="alternate" href="/návrh-na-datovou-sadu-k-otevření" hreflang="cs" />
-      <link rel="alternate" href="/suggestion-for-dataset-to-be-opened" hreflang="en" />
+      <meta name="description" content={state.seo.metaDescription} />
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }

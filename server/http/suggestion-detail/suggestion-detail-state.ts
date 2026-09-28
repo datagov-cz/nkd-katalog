@@ -5,6 +5,7 @@ import type { Configuration } from "../../configuration.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { HeadData } from "../../component/head.tsx";
+import type { SeoLinks } from "../../html/search-engine-optimization.ts";
 
 export interface SuggestionDetailViewServices {
   configuration: Configuration;
@@ -67,6 +68,7 @@ export interface SuggestionDetailSuggestion {
 
 export interface SuggestionDetailState {
   head: HeadData;
+  seo: SeoLinks & { metaDescription: string };
   suggestion: SuggestionDetailSuggestion;
   datasets: { visible: boolean; items: SuggestionDetailDataset[] };
   query: SuggestionDetailQuery;

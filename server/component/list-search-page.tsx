@@ -19,6 +19,8 @@ export function ListSearchPage<ItemType>({ state, ctx }: {
      * The client changes a single query parameter of it and navigates.
      */
     navigationUrl: string,
+    /** What kind of items this search lists, e.g. "Search datasets". */
+    heading: string,
     /** Name of the query parameter with the search text. */
     searchNavigationName: string,
     /** Current search query, shown in the heading and the search input. */
@@ -68,7 +70,11 @@ export function ListSearchPage<ItemType>({ state, ctx }: {
         </gov-layout-column>
         <gov-layout-column>
           <main>
-            <ListSearchHeader state={{ value: state.searchQuery, navigationName: state.searchNavigationName }} ctx={ctx} />
+            <ListSearchHeader state={{
+              heading: state.heading,
+              value: state.searchQuery,
+              navigationName: state.searchNavigationName,
+            }} ctx={ctx} />
             <gov-flex direction="column" gap="xl">
               <ListSearchControls state={{
                 message: state.resultBar.message,

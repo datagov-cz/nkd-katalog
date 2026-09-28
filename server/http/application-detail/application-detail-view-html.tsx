@@ -6,7 +6,8 @@ import { Head } from "../../component/head.tsx";
 import { footerHtml } from "../../component/footer.ts";
 import { headerHtml } from "../../component/header.ts";
 import { renderToHtml } from "../../html/render-html.ts";
-import { breakLines } from "../../html/escape.ts";
+import { breakLines, truncateForMetaDescription } from "../../html/escape.ts";
+import { buildDetailSeoLinks } from "../../html/search-engine-optimization.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { Language } from "../../localization/index.ts";
 import type { ViewContext } from "../../service/view-context.ts";
@@ -56,6 +57,13 @@ export function prepareTemplateData(
   const application = prepareApplication(services.navigation, language, data);
   return {
     "head": components.createHeadData(services.configuration),
+    "seo": {
+      ...buildDetailSeoLinks(
+        services.navigation, services.configuration.client.siteOrigin,
+        { iri: query.iri }),
+      "metaDescription": truncateForMetaDescription(application.description)
+        ?? services.translation.translate("page-description"),
+    },
     "application": application,
     "query": query,
     "datasets": {
@@ -152,10 +160,10 @@ function ApplicationDetailHead({ state, ctx }: {
     <>
       <Head state={state.head} />
       <title>{ctx.t("page-title")}</title>
-      <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/application" />
-      <link rel="alternate" href="/detail-aplikace" hreflang="cs" />
-      <link rel="alternate" href="/application" hreflang="en" />
+      <meta name="description" content={state.seo.metaDescription} />
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }

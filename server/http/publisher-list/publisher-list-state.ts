@@ -5,6 +5,7 @@ import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { HeadData } from "../../component/head.tsx";
+import type { SeoLinks } from "../../html/search-engine-optimization.ts";
 
 export interface PublisherListViewServices {
   configuration: Configuration;
@@ -33,6 +34,7 @@ export interface PublisherListData {
 
 export interface PublisherListState {
   head: HeadData;
+  seo: SeoLinks;
   publishers: PublisherListPublisher[];
   query: Record<string, string | string[]>;
 }

@@ -8,6 +8,7 @@ import { footerHtml } from "../../component/footer.ts";
 import { ListSearchPage } from "../../component/list-search-page.tsx";
 import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
+import { buildListSeoLinks, computeListSeo } from "../../html/search-engine-optimization.ts";
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
@@ -35,6 +36,9 @@ const SORT_OPTIONS = [
   ["modified", "asc"],
   ["modified", "desc"],
 ];
+
+/** Facets whose single-value pages are indexable landing pages; see `html/seo.ts`. */
+const INDEXABLE_FACETS: (keyof ApplicationListQuery)[] = ["theme"];
 
 export function renderHtml(
   services: ApplicationListViewServices,
@@ -68,8 +72,15 @@ export function prepareTemplateData(
   const documents = data["documents"];
   prepareDocumentsInPlace(navigation, documents);
   const applicationCount = data["found"]["documents"];
+  const seo = computeListSeo(query, INDEXABLE_FACETS, isApplicationListQueryEmpty);
   return {
     "head": components.createHeadData(configuration),
+    "seo": {
+      ...buildListSeoLinks(navigation, configuration.client.siteOrigin, seo),
+      "metaDescription": query.searchQuery
+        ? translation.translate("search-page-description", query.searchQuery)
+        : translation.translate("page-description"),
+    },
     "clearFilters":
       isApplicationListQueryEmpty(query) ? null : navigation.linkFromServer({}),
     "search": { "query": { "searchQuery": query.searchQuery } },
@@ -134,10 +145,13 @@ function ApplicationListHead({ state, ctx }: {
     <>
       <Head state={state.head} />
       <title>{ctx.t("page-title")}</title>
-      <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/applications" />
-      <link rel="alternate" href="/aplikace" hreflang="cs" />
-      <link rel="alternate" href="/applications" hreflang="en" />
+      <meta name="description" content={state.seo.metaDescription} />
+      {state.seo.noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : null}
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }
@@ -148,6 +162,7 @@ function ApplicationListMain({ state, ctx }: {
 }) {
   return (
     <ListSearchPage state={{
+      heading: ctx.t("search-heading"),
       searchQuery: state.search.query.searchQuery,
       navigationUrl: state.navigation.url,
       searchNavigationName: state.navigation.searchName,

@@ -5,6 +5,9 @@ import { ViewContext } from "../service/view-context.ts";
  */
 export function ListSearchHeader({ state, ctx }: {
   state: {
+    /** What kind of items this search lists, e.g. "Search datasets". */
+    heading: string,
+    /** Text value we are searching for on null. */
     value: string | null,
     /**
      * Name of the URL query parameter with the search text.
@@ -18,7 +21,7 @@ export function ListSearchHeader({ state, ctx }: {
   return (
     <header class="gov-page-heading">
       <gov-flex direction="column" gap="l">
-        <h1>{ctx.t("search")}{state.value ? ` "${state.value}"` : ""}</h1>
+        <h1>{state.heading}{state.value ? ` "${state.value}"` : ""}</h1>
         <gov-form-control>
           <gov-form-group>
             <gov-form-search color="neutral" size="m">

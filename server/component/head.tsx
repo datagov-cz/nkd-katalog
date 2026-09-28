@@ -5,6 +5,8 @@ export interface HeadData {
   matomoUrl: string | null;
   matomoSiteId: string | null;
   designSystem: string;
+  /** Public origin of this application, used to build absolute SEO URLs. */
+  siteOrigin: string;
 }
 
 export function createHeadData({ client }: Configuration): HeadData {
@@ -14,6 +16,7 @@ export function createHeadData({ client }: Configuration): HeadData {
     matomoUrl: client.matomoUrl,
     matomoSiteId: client.matomoSiteId,
     designSystem: client.govDesignSystem,
+    siteOrigin: client.siteOrigin,
   };
 }
 

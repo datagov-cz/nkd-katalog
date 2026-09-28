@@ -8,7 +8,7 @@ export default {
     "translation": {
       "url-remove-link": "odstranění-lokálního-katalogu?catalog=",
       "page-title": "Lokální katalogy - Národní katalog dat (NKD)",
-      "page-description": "Portál o datech a Národní katalog dat České republiky",
+      "page-description": "Přehled lokálních katalogů otevřených dat napojených na Národní katalog dat České republiky.",
       "heading": "Lokální katalogy",
       "homepage-link": "Domovská stránka katalogu",
       "endpoint-link": "Endpoint",
@@ -31,7 +31,7 @@ export default {
     "translation": {
       "url-remove-link": "local-catalog-withdrawn?catalog=",
       "page-title": "Local catalogs - National Data Catalog (NKD)",
-      "page-description": "Data portal and National Data Catalog of the Czech Republic",
+      "page-description": "Overview of local open data catalogs connected to the National Data Catalog of the Czech Republic.",
       "heading": "Local catalogs",
       "homepage-link": "Home page of the catalog",
       "endpoint-link": "Endpoint",

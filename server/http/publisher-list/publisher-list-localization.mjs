@@ -7,7 +7,7 @@ export default {
     },
     "translation": {
       "page-title": "Poskytovatelé - Národní katalog dat (NKD)",
-      "page-description": "Portál o datech a Národní katalog dat České republiky",
+      "page-description": "Seznam poskytovatelů otevřených dat zapojených do Národního katalogu dat České republiky.",
       "heading": "Poskytovatelé",
       "dashboard-monthly": "Dashboard - měsíční průměry",
       "dashboard-daily": "Dashboard - denní měření",
@@ -35,7 +35,7 @@ export default {
     },
     "translation": {
       "page-title": "Publishers - National Data Catalog (NKD)",
-      "page-description": "Data portal and National Data Catalog of the Czech Republic",
+      "page-description": "List of open data publishers participating in the National Data Catalog of the Czech Republic.",
       "heading": "Publishers",
       "dashboard-monthly": "Dashboard - monthly averages",
       "dashboard-daily": "Dashboard - daily measures",

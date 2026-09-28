@@ -89,6 +89,11 @@ const ConfigurationZod = z.object({
      * URL of the design system.
      */
     govDesignSystem: z.string(),
+    /**
+     * Public origin of this application, e.g. "https://data.gov.cz".
+     * Used to build absolute canonical and hreflang URLs.
+     */
+    siteOrigin: z.string().url(),
   }),
 });
 
@@ -135,6 +140,7 @@ const createConfiguration = (): Configuration => {
       conceptTemplate: process.env.CONCEPT_VIEWER_URL_TEMPLATE ?? null,
       conceptSparql: process.env.CONCEPT_SPARQL,
       govDesignSystem: stripTrailingSlash(process.env.GOV_DESIGN_SYSTEM_BASE) + "/",
+      siteOrigin: stripTrailingSlash(process.env.SITE_ORIGIN),
     },
   });
 };

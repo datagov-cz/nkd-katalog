@@ -6,6 +6,7 @@ import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
 import type { LinkService } from "../../service/link-service.ts";
 import type { HeadData } from "../../component/head.tsx";
+import type { SeoLinks } from "../../html/search-engine-optimization.ts";
 
 export interface LocalCatalogListViewServices {
   configuration: Configuration;
@@ -37,6 +38,7 @@ export interface LocalCatalogListData {
 
 export interface LocalCatalogListState {
   head: HeadData;
+  seo: SeoLinks;
   catalogs: LocalCatalogListCatalog[];
   query: Record<string, string | string[]>;
 }

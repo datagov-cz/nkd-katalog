@@ -8,6 +8,7 @@ import { footerHtml } from "../../component/footer.ts";
 import { ListSearchPage } from "../../component/list-search-page.tsx";
 import { renderToHtml } from "../../html/render-html.ts";
 import { breakLines } from "../../html/escape.ts";
+import { buildListSeoLinks, computeListSeo } from "../../html/search-engine-optimization.ts";
 import type { Configuration } from "../../configuration.ts";
 import type { TranslationService } from "../../service/translation-service.ts";
 import type { NavigationEntry } from "../../service/navigation-service.ts";
@@ -35,6 +36,9 @@ const SORT_OPTIONS = [
   ["created", "asc"],
   ["created", "desc"],
 ];
+
+/** Facets whose single-value pages are indexable landing pages; see `html/seo.ts`. */
+const INDEXABLE_FACETS: (keyof SuggestionListQuery)[] = ["theme", "state"];
 
 export function renderHtml(
   services: SuggestionListViewServices,
@@ -67,8 +71,15 @@ export function prepareTemplateData(
   const documents = data["documents"];
   prepareDocumentsInPlace(navigation, documents);
   const suggestionCount = data["found"]["documents"];
+  const seo = computeListSeo(query, INDEXABLE_FACETS, isSuggestionListQueryEmpty);
   return {
     "head": components.createHeadData(configuration),
+    "seo": {
+      ...buildListSeoLinks(navigation, configuration.client.siteOrigin, seo),
+      "metaDescription": query.searchQuery
+        ? translation.translate("search-page-description", query.searchQuery)
+        : translation.translate("page-description"),
+    },
     "clearFilters":
       isSuggestionListQueryEmpty(query) ? null : navigation.linkFromServer({}),
     "search": { "query": { "searchQuery": query.searchQuery } },
@@ -133,10 +144,13 @@ function SuggestionListHead({ state, ctx }: {
     <>
       <Head state={state.head} />
       <title>{ctx.t("page-title")}</title>
-      <meta name="description" content={ctx.t("page-description")} />
-      <link rel="canonical" href="/suggestions-for-datasets-to-be-opened" />
-      <link rel="alternate" href="/návrhy-na-datové-sady-k-otevření" hreflang="cs" />
-      <link rel="alternate" href="/suggestions-for-datasets-to-be-opened" hreflang="en" />
+      <meta name="description" content={state.seo.metaDescription} />
+      {state.seo.noindex ? (
+        <meta name="robots" content="noindex, follow" />
+      ) : null}
+      <link rel="canonical" href={state.seo.canonical} />
+      <link rel="alternate" href={state.seo.alternateCs} hreflang="cs" />
+      <link rel="alternate" href={state.seo.alternateEn} hreflang="en" />
     </>
   );
 }
@@ -147,6 +161,7 @@ function SuggestionListMain({ state, ctx }: {
 }) {
   return (
     <ListSearchPage state={{
+      heading: ctx.t("search-heading"),
       searchQuery: state.search.query.searchQuery,
       navigationUrl: state.navigation.url,
       searchNavigationName: state.navigation.searchName,

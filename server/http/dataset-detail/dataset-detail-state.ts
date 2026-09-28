@@ -13,6 +13,7 @@ import type {
   TranslationService,
 } from "../../service/translation-service.ts";
 import type { HeadData } from "../../component/head.tsx";
+import type { SeoLinks } from "../../html/search-engine-optimization.ts";
 
 export interface DatasetDetailViewServices {
   http: any;
@@ -34,6 +35,8 @@ export interface DatasetDetailQuery {
 export interface DatasetDetailState {
 
   head: HeadData;
+
+  seo: SeoLinks & { metaDescription: string };
 
   translation: TranslationDictionary;
 
