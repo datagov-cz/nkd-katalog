@@ -213,6 +213,7 @@ function buildDatasetsQuery(language, query) {
       "file_type",
       "applicable_legislation",
       "dataset_type",
+      "publisher",
     ],
     "fq": fq,
     "sort": prepareSort(language, sort, sortDirection),
@@ -271,6 +272,8 @@ function parseDatasetResponseDocument(document, languages) {
     "applicable_legislation": document["applicable_legislation"] ?? [],
     "dataset_type": document["dataset_type"] ?? [],
     "isvs": document["isvs"] ?? [],
+    // The field may be single- or multi-valued; a dataset has one publisher.
+    "publisher": [document["publisher"] ?? []].flat()[0] ?? null,
   }
 }
 

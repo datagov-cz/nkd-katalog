@@ -344,15 +344,22 @@ function DatasetItem({ value, ctx }: {
             </gov-flex>
           </header>
           <p className="line-clamp-3" dangerouslySetInnerHTML={{ __html: description }} />
-          <ul className="gov-tags gov-list--plain">
-            {value.format.map(item => (
-              <li>
-                <gov-tag color="neutral" type="subtle" size="xs">
-                  {item.label}
-                </gov-tag>
-              </li>
-            ))}
-          </ul>
+          <div className="ds-foot">
+            <ul className="gov-tags gov-list--plain ds-formats">
+              {value.format.map(item => (
+                <li>
+                  <gov-tag color="neutral" type="subtle" size="xs">
+                    {item.label}
+                  </gov-tag>
+                </li>
+              ))}
+            </ul>
+            {value.publisher === null ? null : (
+              <p className="ds-publisher">
+                {ctx.t("dataset-publisher")} <strong>{value.publisher.label}</strong>
+              </p>
+            )}
+          </div>
         </gov-flex>
       </gov-card>
     </article>

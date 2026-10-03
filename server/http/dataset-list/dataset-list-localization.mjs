@@ -48,6 +48,7 @@ export default {
       "non-public-data": "Neveřejná data",
       "dynamic-chip": "Dynamická",
       "format-tooltip": "Datová sada je distribuovaná ve formátu {}.",
+      "dataset-publisher": "Poskytovatel:",
       "items-found": [
         [0, "Nebyla nalezen žádný datová sada."],
         [1, "Nalezena jedna datová sada."],
@@ -143,6 +144,7 @@ export default {
       "non-public-data": "Non-Public Data",
       "dynamic-chip": "Dynamic",
       "format-tooltip": "Dataset is distributed using {}.",
+      "dataset-publisher": "Publisher:",
       "items-found": [
         [0, "No dataset found."],
         [1, "One dataset found."],

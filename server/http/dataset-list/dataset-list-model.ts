@@ -101,5 +101,9 @@ async function updateDatasetsInPlace(services, languages, documents) {
     delete document["file_type"];
     //
     await services.label.addLabelToResources(languages, document["format"]);
+    //
+    document["publisher"] = document["publisher"] ?
+      { "iri": document["publisher"] } : null;
+    await services.label.addLabelToResources(languages, [document["publisher"]]);
   }
 }
