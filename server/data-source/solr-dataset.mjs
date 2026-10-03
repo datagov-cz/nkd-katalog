@@ -28,6 +28,7 @@
  * file_type: string[],
  * applicable_legislation: string[],
  * dataset_type: [],
+ * publisher: string | null,
  * }} SolrDataset
  *
  * @typedef {{
@@ -213,6 +214,7 @@ function buildDatasetsQuery(language, query) {
       "file_type",
       "applicable_legislation",
       "dataset_type",
+      "publisher",
     ],
     "fq": fq,
     "sort": prepareSort(language, sort, sortDirection),
@@ -271,6 +273,7 @@ function parseDatasetResponseDocument(document, languages) {
     "applicable_legislation": document["applicable_legislation"] ?? [],
     "dataset_type": document["dataset_type"] ?? [],
     "isvs": document["isvs"] ?? [],
+    "publisher": document["publisher"] ?? null,
   }
 }
 

@@ -41,6 +41,10 @@ export interface DatasetListDocument {
     /** `format-tooltip` with the label substituted, resolved in the mapper. */
     tooltip: string;
   }[];
+  publisher: {
+    iri: string;
+    label: string;
+  } | null;
 }
 
 /** Model output the view consumes. */

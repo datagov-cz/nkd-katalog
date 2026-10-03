@@ -91,6 +91,7 @@ export default {
       "cancel-filter": (filter) => `Odstranit filtr ${filter}`,
       "search-result-list": "Výpis výsledků vyhledávání",
       "public-registry": "Veřejné registry",
+       "dataset-publisher": "Poskytovatel:",
     },
   },
   "en": {
@@ -184,6 +185,7 @@ export default {
       "active-filters": "Active filters:",
       "cancel-filter": (filter) => `Remove filter ${filter}`,
       "public-registry": "Public registry",
+      "dataset-publisher": "Publisher:",
     },
   },
 };

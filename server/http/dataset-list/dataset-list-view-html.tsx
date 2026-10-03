@@ -309,7 +309,7 @@ function Main({ state, ctx }: {
                 },
                 filters,
                 clearFilters: state.clearFilters,
-              }} ctx={ctx} facets={facets}/>
+              }} ctx={ctx} facets={facets} />
               <ListOfItems state={{
                 items: state.documents,
                 pagination: state.pagination,
@@ -330,7 +330,7 @@ function DatasetItem({ value, ctx }: {
   const description = " " + breakLines(value.description) + " ";
   const headlineId = "dataset-" + encodeURIComponent(value.iri);
   return (
-    <article>
+    <article class="dataset-item">
       <gov-card direction="horizontal" href={value.href} aria-labelledby={headlineId}>
         <gov-flex gap="s" direction="column">
           <header>
@@ -344,15 +344,23 @@ function DatasetItem({ value, ctx }: {
             </gov-flex>
           </header>
           <p className="line-clamp-3" dangerouslySetInnerHTML={{ __html: description }} />
-          <ul className="gov-tags gov-list--plain">
-            {value.format.map(item => (
-              <li>
-                <gov-tag color="neutral" type="subtle" size="xs">
-                  {item.label}
-                </gov-tag>
-              </li>
-            ))}
-          </ul>
+          <div className="dataset-item-footer">
+            <ul className="gov-tags gov-list--plain">
+              {value.format.map(item => (
+                <li>
+                  <gov-tag color="neutral" type="subtle" size="xs">
+                    {item.label}
+                  </gov-tag>
+                </li>
+              ))}
+            </ul>
+            {value.publisher === null ? null : (
+              <p className="dataset-publisher">
+                {ctx.t("dataset-publisher")}
+                <strong>{value.publisher.label}</strong>
+              </p>
+            )}
+          </div>
         </gov-flex>
       </gov-card>
     </article>
