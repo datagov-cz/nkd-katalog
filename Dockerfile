@@ -1,4 +1,4 @@
-FROM node:26.1.0-slim
+FROM node:26.12.1-slim
 
 WORKDIR /opt/catalog/
 COPY ./package*.json ./
